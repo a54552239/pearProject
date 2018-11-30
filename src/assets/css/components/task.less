@@ -1,0 +1,1316 @@
+.task-info .wrapper-content {
+  background: #f1f1f1;
+  padding: 0;
+  position: fixed;
+  height: 100%;
+}
+
+.task-info .layout-content {
+  padding: 100px 10px 20px 0;
+  height: 100%;
+  margin-left: 0;
+  margin-right: 0;
+}
+
+.task-info .manage-contents {
+  padding-left: 32px;
+  padding-right: 32px;
+}
+
+.task-info .manage-contents h4 {
+  display: block;
+  border-bottom: 1px solid #e5e5e5;
+  padding-bottom: 12px;
+}
+
+
+ .task-info .board-scrum-stages {
+   position: relative;
+   padding: 0 10px 10px 10px;
+   white-space: nowrap;
+   overflow-x: auto;
+   overflow-y: hidden;
+   -webkit-overflow-scrolling: touch;
+   height: 100%;
+   -webkit-transform: translate3d(0, 0, 0);
+   transform: translate3d(0, 0, 0);
+ }
+
+.scrum-stage {
+  position: relative;
+  height: 100%;
+  width: 295px;
+  display: -webkit-inline-flex;
+  display: -ms-inline-flexbox;
+  display: inline-flex;
+  -webkit-flex-direction: column;
+  -ms-flex-direction: column;
+  flex-direction: column;
+  -webkit-align-items: stretch;
+  -ms-flex-align: stretch;
+  align-items: stretch;
+  margin-right: 10px;
+  vertical-align: top;
+  background-color: #EEEEEE;
+  border-radius: 3px;
+  cursor: move;
+}
+
+.scrum-stage .scrum-stage-header, .scrum-stage .sort-header-placeholder {
+  -webkit-flex: 0 0 auto;
+  -ms-flex: 0 0 auto;
+  flex: 0 0 auto;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-flex-direction: row;
+  -ms-flex-direction: row;
+  flex-direction: row;
+  -webkit-align-items: center;
+  -ms-flex-align: center;
+  align-items: center;
+  padding: 14px 18px;
+  font-size: 15px;
+  font-weight: bold;
+  z-index: 1;
+  transition: box-shadow 100ms ease;
+}
+
+.scrum-stage .stage-menu-toggler {
+  position: absolute;
+  right: 15px;
+}
+
+.stage-menu-toggler .menu-toggler-title:hover{
+  color: #57a3f3;
+}
+
+
+.scrum-stage .stage-menu-toggler .ivu-select-dropdown{
+  border-radius: 3px;
+}
+
+.stage-menu-toggler li{
+  line-height: 30px;
+  padding: 5px 15px;
+}
+
+.popover .ivu-select-dropdown {
+  margin-top: 0;
+  padding-top: 0;
+}
+.popover .popover-header {
+  padding: 5px 10px;
+  margin: 0 15px;
+  border-bottom: 1px solid rgba(0,0,0,.07);
+}
+
+.popover .popover-title{
+  padding: 0;
+  font-size: 15px;
+  font-weight: 700;
+  line-height: 30px;
+  text-align: center;
+  background: none;
+  border: 0 none;
+  border-radius: 0;
+  -webkit-border-radius: 0;
+  -moz-border-radius: 0;
+}
+
+.scrum-stage .scrum-stage-wrap {
+  position: relative;
+  height: 100%;
+  -webkit-flex: 1 1 auto;
+  -ms-flex: 1 1 auto;
+  flex: 1 1 auto;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-flex-direction: column;
+  -ms-flex-direction: column;
+  flex-direction: column;
+}
+
+.scrum-stage .scrum-stage-content {
+  -webkit-flex: 1 1 0;
+  -ms-flex: 1 1 0;
+  flex: 1 1 0;
+  overflow: auto;
+  overflow-x: visible;
+  -webkit-overflow-scrolling: touch;
+}
+
+.scrum-stage .scrum-stage-content > ul {
+  /*margin-bottom: 8px;*/
+}
+
+.scrum-stage .scrum-stage-tasks {
+  transition: opacity 0.08s ease-out;
+  opacity: 1;
+}
+
+.scrum-stage .task.task-card {
+  margin: 0 8px 8px;
+}
+
+.task.task-card {
+  padding: 0;
+  background-color: white;
+  border-radius: 3px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+}
+
+.task {
+  position: relative;
+  white-space: normal;
+}
+
+.task {
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-flex-direction: row;
+  -ms-flex-direction: row;
+  flex-direction: row;
+  -webkit-align-items: flex-start;
+  -ms-flex-align: start;
+  align-items: flex-start;
+}
+
+.task.task-card .task-priority {
+  border-bottom-left-radius: 3px;
+  border-top-left-radius: 3px;
+}
+
+.task .task-priority.bg-priority-0 {
+  opacity: 0;
+}
+
+.task .task-priority {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 6px;
+  cursor: pointer;
+  transition: width 218ms ease-in, opacity 218ms ease-in;
+}
+
+.bg-priority-0 {
+  background-color: #A6A6A6;
+}
+
+.task.task-card .task-content-set {
+  padding: 12px 0;
+  margin-left: 0;
+  -webkit-flex-direction: column;
+  -ms-flex-direction: column;
+  flex-direction: column;
+  -webkit-align-items: stretch;
+  -ms-flex-align: stretch;
+  align-items: stretch;
+}
+
+.task .task-content-set {
+  overflow: hidden;
+  margin: 0 0 0 12px;
+  line-height: 20px;
+  cursor: pointer;
+}
+
+.task-content-input {
+  width: 100%;
+}
+
+.task .task-content-set {
+  -webkit-flex: 1 1 auto;
+  -ms-flex: 1 1 auto;
+  flex: 1 1 auto;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-align-items: flex-start;
+  -ms-flex-align: start;
+  align-items: flex-start;
+}
+
+.task.task-card .task-content-wrapper {
+  overflow: visible;
+}
+
+.task .task-content-set .task-content-wrapper {
+  overflow: hidden;
+  min-height: 24px;
+}
+
+.task .task-content-set .task-content-wrapper {
+  -webkit-flex: 1 1 auto;
+  -ms-flex: 1 1 auto;
+  flex: 1 1 auto;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-flex-direction: row;
+  -ms-flex-direction: row;
+  flex-direction: row;
+  -webkit-align-items: flex-start;
+  -ms-flex-align: start;
+  align-items: flex-start;
+}
+
+.task .task-content-set .task-content-wrapper .task-content {
+  margin: 2px 12px 0 0;
+  padding: 0;
+  border: none;
+  background: none;
+  cursor: pointer;
+  word-wrap: break-word;
+  overflow: hidden;
+  transition: color 218ms ease;
+}
+
+.task .task-content-set .task-content-wrapper .task-content {
+  -webkit-flex: 1 1 auto;
+  -ms-flex: 1 1 auto;
+  flex: 1 1 auto;
+}
+
+.scrum-stage .task.task-card .avatar {
+  opacity: 1;
+  margin: 0 14px 0 0;
+  transition: -webkit-transform 218ms ease-in-out, opacity 100ms;
+}
+
+.task .avatar {
+  margin-right: 12px;
+}
+
+.task .avatar {
+  -webkit-flex: 0 0 auto;
+  -ms-flex: 0 0 auto;
+  flex: 0 0 auto;
+}
+
+.task.task-card .task-info-wrapper {
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  /*-webkit-flex-direction: column;*/
+  /*-ms-flex-direction: column;*/
+  /*flex-direction: column;*/
+  padding-right: 14px;
+}
+
+.task.task-card .task-info-wrapper .task-infos {
+  -webkit-flex: 1 1 auto;
+  -ms-flex: 1 1 auto;
+  flex: 1 1 auto;
+  overflow: hidden;
+}
+
+.task.task-card .task-infos {
+  margin-top: 4px;
+  line-height: 20px;
+  font-size: 0;
+}
+
+.task.task-card .task-infos .label, .task.task-card .task-infos .icon-wrapper, .task.task-card .task-infos .tag {
+  display: -webkit-inline-flex;
+  display: -ms-inline-flexbox;
+  display: inline-flex;
+  -webkit-align-items: center;
+  -ms-flex-align: center;
+  align-items: center;
+  height: 20px;
+  font-size: 12px;
+  vertical-align: middle;
+  margin: 2px 6px 0 0;
+  //padding: 0 4px;
+  max-width: 100%;
+}
+
+.task.task-card .task-infos .icon-wrapper {
+  font-size: 14px;
+  width: 20px;
+  margin: 2px 1px 0 0;
+}
+
+.task.task-card .task-infos .label {
+  padding-left: 6px;
+}
+
+.label-important, .badge-important {
+  color: #FFFFFF;
+  background-color: #FF4F3E;
+}
+
+.task.task-card .task-infos .label > span, .task.task-card .task-infos .icon-wrapper, .task.task-card .task-infos .tag {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.task.task-card .task-infos .tag {
+  position: relative;
+  padding-left: 15px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.task.task-card .task-infos .text {
+  width: 50px;
+  font-size: 12px;
+  //color: #19be6b;
+}
+.tag-color-disc-blue{
+  background-color: #2d8cf0;
+}
+.tag.tag-color-blue:before {
+  content: ' ';
+  position: absolute;
+  top: 7px;
+  left: 4px;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: #2d8cf0;
+}
+.tag-color-disc-orange{
+  background-color: #ff9900;
+}
+.tag.tag-color-orange:before {
+  content: ' ';
+  position: absolute;
+  top: 7px;
+  left: 4px;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: #ff9900;
+}
+.tag-color-disc-red{
+  background-color: #ed3f14;
+}
+.tag.tag-color-red:before {
+  content: ' ';
+  position: absolute;
+  top: 7px;
+  left: 4px;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: #ed3f14;
+}
+.tag-color-disc-green{
+  background-color: #19be6b;
+}
+.tag.tag-color-green:before {
+  content: ' ';
+  position: absolute;
+  top: 7px;
+  left: 4px;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: #19be6b;
+}
+.tag-color-disc-brown{
+  background-color: #2fbdb3;
+}
+.tag.tag-color-brown:before {
+  content: ' ';
+  position: absolute;
+  top: 7px;
+  left: 4px;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: #2fbdb3;
+}
+.tag-color-disc-purple{
+  background-color: #797ec9;
+}
+.tag.tag-color-purple:before {
+  content: ' ';
+  position: absolute;
+  top: 7px;
+  left: 4px;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: #797ec9;
+}
+.scrum-stage .task-creator-handler-wrap .task-creator-handler {
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-align-items: center;
+  -ms-flex-align: center;
+  align-items: center;
+  margin: 0 8px 8px;
+  padding: 14px 15px;
+  border-radius: 3px;
+  font-size: 15px;
+}
+
+.scrum-stage .task-creator-handler-wrap .task-creator-handler:hover {
+  background-color: #E5E5E5;
+}
+
+.link-add-handler {
+  color: #2d8cf0 !important;
+  transition: color 218ms ease;
+}
+
+.link-add-handler .ivu-icon {
+  margin-right: 10px;
+}
+
+.img-24 {
+  display: inline-block;
+  width: 24px;
+  height: 24px;
+  background-color: #eee;
+  background-size: 24px 24px;
+}
+
+.img-circle {
+  border-radius: 50%;
+}
+
+.task.task-card.done .check-box, .task.task-card.done .task-content-set {
+  opacity: 0.64;
+  filter: alpha(opacity=64);
+}
+
+.task.task-card .check-box {
+  margin: 14px 12px 0 8px;
+}
+
+.task .check-box {
+  width: 20px;
+  height: 20px;
+  margin-top: 2px;
+  border: solid 2px #A6A6A6;
+  cursor: pointer;
+  border-radius: 3px;
+}
+.children-task-list .task .check-box {
+  width: 15px;
+  height: 15px;
+  margin-top: 6px;
+}
+
+.task .check-box {
+  -webkit-flex: 0 0 auto;
+  -ms-flex: 0 0 auto;
+  flex: 0 0 auto;
+}
+
+.task .check-box:hover {
+  border-color: #808080;
+}
+
+.task.done {
+  background-color: #F7F7F7;
+}
+.children-task-list .task.done {
+  background-color: inherit;
+}
+
+.task.done .task-content {
+  color: #A6A6A6;
+}
+
+.task.done .check-box .ivu-icon.ivu-icon-md-checkmark {
+  //font-weight: bold;
+  visibility: visible;
+}
+
+.task .check-box .ivu-icon.ivu-icon-md-checkmark {
+  visibility: hidden;
+  color: #A6A6A6;
+  font-size: 15px;
+  -webkit-transform: translate(2px, 0);
+  transform: translate(2px, 0);
+  top: 17px;
+  left: 9px;
+  position: absolute;
+}
+.ivu-modal .task .check-box .ivu-icon.ivu-icon-md-checkmark {
+  top: 10px;
+  left: 5.8px;
+}
+.children-task-list .task .check-box .ivu-icon.ivu-icon-md-checkmark {
+  font-size: 12px;
+  -webkit-transform: translate(1px, -4px);
+  transform: translate(1px, -4px);
+  top: 17px;
+}
+
+.scrum-stage .task-creator-wrap {
+  margin: 0 8px 8px;
+  box-shadow: 0 0.5px 2px rgba(0, 0, 0, 0.1);
+}
+
+.scrum-stage .task-creator-wrap .submit-set .middle-btn {
+  width: 50%;
+}
+
+.task-info .card {
+  border: 0 none;
+  background-color: #FFFFFF;
+  border-radius: 2px;
+  box-shadow: rgba(0, 0, 0, 0.0470588) 0 2px 3px 0;
+}
+
+.task-info .card {
+  background-color: #fff;
+  border: 0 none;
+  border-radius: 2px;
+  -webkit-box-shadow: rgba(0, 0, 0, .0470588) 0 2px 3px 0;
+  box-shadow: rgba(0, 0, 0, .0470588) 0 2px 3px 0;
+  -webkit-border-radius: 2px;
+  -moz-border-radius: 2px;
+}
+
+.fade.in {
+  opacity: 1;
+}
+
+.task-creator {
+  position: relative;
+  padding: 10px;
+}
+
+.task-creator-wrap .executor-handler{
+  display: flex;
+  align-items: center;
+}
+.task-creator-wrap .executor-handler .avatar{
+  margin-right: 8px;
+}
+.task-creator-wrap .handler-wrap .ivu-dropdown{
+  padding-top: 15px;
+}
+.task-creator-wrap .ivu-select-dropdown{
+  position: absolute !important;
+  width: 238px;
+  left: 0 !important;
+}
+
+.fade {
+  opacity: 0;
+  -webkit-transition: opacity .15s linear;
+  -o-transition: opacity .15s linear;
+  transition: opacity .15s linear;
+}
+
+input.form-control, textarea.form-control {
+  background-color: #FFFFFF;
+  border: 1px solid #D9D9D9;
+  border-radius: 3px;
+  line-height: 20px;
+}
+
+.task-creator .handler-wrap {
+  position: relative;
+  height: 54px;
+  border-bottom: 1px solid #EEEEEE;
+}
+
+.task-creator .handler-wrap > a {
+  width: 100%;
+  display: inline-block;
+  padding: 15px 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.task-creator .handler-wrap .creator-handler-text.name {
+  font-weight: bold;
+  margin-right: 4px;
+}
+
+.task-creator .handler-wrap .creator-handler-text {
+  line-height: 24px;
+}
+
+.task-creator .handler-wrap > a > .icon, .task-creator .handler-wrap > a > .avatar {
+  display: inline-block;
+  line-height: 24px;
+  float: left;
+  margin-right: 8px;
+}
+
+.involve-view {
+  padding: 12px 0 5px;
+  position: relative;
+}
+
+.involve-view .involve-header {
+  margin-bottom: -3px;
+  color: #808080;
+  font-size: 13px;
+  font-weight: bold;
+}
+
+.involve-view .involve-members {
+  margin: 10px 0 -5px -10px;
+}
+
+.involve-view .involve-members > li {
+  position: relative;
+  float: left;
+  margin: 0 0 10px 10px;
+  cursor: pointer;
+}
+
+.involve-view .involve-members > li > .avatar {
+  display: block;
+  width: 24px;
+  height: 24px;
+  transition: -webkit-transform 2110ms ease-in-out;
+}
+
+.avatar {
+  background-size: cover !important;
+  background-repeat: no-repeat !important;
+  background-position: center !important;
+}
+
+.involve-view .involve-members > li {
+  position: relative;
+  float: left;
+  margin: 0 0 10px 10px;
+  cursor: pointer;
+}
+
+.involve-view .add-involvement-handler {
+  display: block;
+  font-size: 24px;
+  color: #A6A6A6;
+}
+
+.add-member {
+  color: #3da8f5;
+  display: block;
+  width: 24px;
+  height: 24px;
+  line-height: 26px;
+  text-align: center;
+}
+
+.task-creator .handler-wrap > a {
+  width: 100%;
+  display: inline-block;
+  padding: 15px 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.task-creator .handler-wrap .creator-handler-text {
+  line-height: 24px;
+}
+
+.task-creator .handler-wrap > a {
+  width: 100%;
+  display: inline-block;
+  padding: 15px 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.task-info .menu-toggler-title,.task-info .footer-item {
+  color: #808080;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.task-creator .tags-wrap, .task-creator .involve-wrap {
+  border-bottom: 1px solid #EEEEEE;
+}
+
+.task-creator .submit-set {
+  position: relative;
+  margin-top: 10px;
+}
+
+.scrum-stage.fixed-creator .scrum-stage-wrap.hidden-creator .task-creator-handler-wrap {
+  position: absolute;
+  bottom: 0;
+  height: 54px;
+}
+
+.task-creator-handler-wrap {
+  /*box-shadow: 0 -3px 2px -2px rgba(0, 0, 0, 0.1);*/
+}
+
+.task-creator-handler-wrap {
+  width: 100%;
+  background-color: #EEEEEE;
+  transition: box-shadow 218ms ease;
+  /*bottom: 0;*/
+  /*position: absolute;*/
+}
+
+.scrum-stage-wrap.hidden-creator.ui-sortable {
+  padding-bottom: 54px;
+}
+
+.hidden-creator-bottom {
+  padding-bottom: 0 !important;
+}
+
+/*.task-datepicker .ivu-select-dropdown{*/
+/*left: 18px !important;*/
+/*top: 360px !important;*/
+/*}*/
+.detail-content .wangEditor-container {
+  min-height: 200px;
+}
+
+.activities-timeline .activities-list-wrap {
+  -webkit-flex: 1 0 auto;
+  -ms-flex: 1 0 auto;
+  flex: 1 0 auto;
+}
+
+.activities-timeline > div, .activities-timeline > ul {
+  margin-right: -1px;
+  margin-left: -1px;
+  overflow: hidden;
+  background-color: #FFFFFF;
+}
+
+.activities-list {
+  padding-bottom: 0;
+}
+
+.activities-timeline .activities-list {
+  position: relative;
+}
+
+.activity:first-child {
+  margin-top: 12px;
+}
+
+.activity {
+  position: relative;
+  overflow: hidden;
+  margin: 15px;
+  padding-left: 15px;
+}
+
+.activity .activity-body-coyness {
+  font-size: 12px;
+  margin: 0 0 0 25px;
+  padding-left: 10px;
+}
+
+.activity .activity-body-coyness .activity-content {
+  cursor: pointer;
+}
+
+.activity .activity-content {
+  color: #383838;
+}
+
+.readable > *:last-child {
+  margin-bottom: 0;
+}
+
+.activity .activity-body-coyness .activity-content.overflow .activity-description {
+  display: block;
+}
+
+.activity .activity-body-coyness .activity-content .activity-description {
+  display: none;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 12px;
+  border-left: 5px solid #EEEEEE;
+}
+
+.activity .activity-content > blockquote {
+  margin: 5px 0 0 0;
+  padding: 0 0 0 10px;
+}
+
+.readable blockquote {
+  font-size: 14px;
+  border-left: 6px solid #ddd;
+  padding: 5px 0 5px 10px;
+}
+
+blockquote {
+  font-size: 12px;
+}
+
+blockquote {
+  padding: 10px 20px;
+  margin: 0 0 20px;
+  font-size: 17.5px;
+  border-left: 5px solid #eee;
+}
+
+.activity .activity-body-coyness .activity-content.overflow .activity-content-detail {
+  display: none;
+}
+
+li.activity.creator i {
+  margin-top: 0;
+}
+
+.activities-timeline.early-hidden .activity-early-wrap, .activities-timeline.early-shown .activity-early-wrap, .activities-timeline.early-loading .activity-early-wrap {
+  display: block;
+}
+
+.activities-timeline .activity-early-wrap {
+  display: none;
+}
+
+.activities-timeline .activity-early-handler {
+  display: block;
+  padding: 0 35px 0;
+  font-size: 14px;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+.link-add-handler {
+  color: #3da8f5 !important;
+  transition: color 218ms ease;
+}
+
+.task.task-card.ui-sortable-handle.dragging, .scrum-stage-tasks-done .task.task-card.ui-sortable-handle.dragging {
+  cursor: move;
+}
+/*紧急程度一般*/
+.task.task-card.ui-sortable-handle:hover, .scrum-stage-tasks-done .task.task-card.ui-sortable-handle:hover {
+  border-left: 3px solid #a6a6a6;
+}
+
+.task.task-card.ui-sortable-handle.warning {
+  border-left: 3px solid #ff9900;
+}
+
+.task.task-card.ui-sortable-handle.error {
+  border-left: 3px solid #ed3f14;
+}
+
+.task.task-card.ui-sortable-handle.warning:hover {
+  border-left: 3px solid #ff9900;
+}
+
+.task.task-card.ui-sortable-handle.error:hover {
+  border-left: 3px solid #ed3f14;
+}
+
+.task.task-card.ui-sortable-handle {
+  border-left: 3px solid #fff;
+  -webkit-transition-property: border-left;
+  -webkit-transition-duration: 0.5s;
+  -webkit-transition-timing-function: ease;
+}
+
+.scrum-stage-tasks-done .task.task-card.ui-sortable-handle {
+  border-left: 3px solid #f7f7f7;
+}
+
+.scrum-stage-tasks-done .task.task-card.ui-sortable-handle.warning {
+  border-left: 3px solid #ff9900;
+}
+
+.scrum-stage-tasks-done .task.task-card.ui-sortable-handle.error {
+  border-left: 3px solid #ed3f14;
+}
+
+.scrum-stage-tasks-done .task.task-card.ui-sortable-handle.warning:hover {
+  border-left: 3px solid #ff9900;
+}
+
+.scrum-stage-tasks-done .task.task-card.ui-sortable-handle.error:hover {
+  border-left: 3px solid #ed3f14;
+}
+
+.activities-list .ivu-icon {
+  font-size: 18px;
+  padding-left: 3px;
+}
+
+.detail-content .ivu-upload-list {
+  clear: both;
+}
+
+ .project-nav-footer {
+   position: absolute;
+   right: 0;
+   top: 60px;
+   display: flex;
+   height: 50px;
+   align-items: center;
+   z-index: 998;
+ }
+
+.project-nav-footer .footer-item {
+  font-size: 15px;
+  position: relative;
+  padding: 15px 10px;
+  margin: 0 5px;
+  float: right;
+  display: inline-block;
+  text-align: center;
+}
+
+.project-nav-footer .footer-item.active {
+  color: #2D8cF0;
+}
+.project-nav-footer .footer-item:hover {
+  color: #2D8cF0;
+}
+
+.project-nav-footer :not(:first-child):after {
+  position: absolute;
+  content: '';
+  right: -5px;
+  top: 16px;
+  bottom: 16px;
+  width: 1px;
+  background-color: #A6A6A6;
+}
+
+
+ .menu-modal .ivu-modal-mask {
+   overflow: hidden;
+   background-color: inherit;
+   width:0;
+ }
+ .menu-modal .ivu-modal-wrap {
+   //width:0;
+   z-index: 1;
+ }
+.menu-modal .ivu-modal {
+  position: fixed;
+  top: 111px;
+  right: 0;
+  height: 100%;
+  box-shadow: -3px 0 3px rgba(0, 0, 0, 0.1);
+}
+
+.menu-modal .ivu-modal-header {
+  text-align: center;
+}
+
+.menu-modal .ivu-modal-content {
+  height: 100%;
+  background-color: #F7F7F7;
+}
+
+.menu-modal .ivu-modal-body {
+  padding: 0;
+}
+
+.menu-modal .ivu-modal-footer {
+  display: none;
+}
+
+.menu-modal .ivu-modal-content .project-menus {
+  position: relative;
+  padding-bottom: 1px;
+}
+
+.menu-modal .ivu-modal-content .project-menus:after {
+  position: absolute;
+  left: 14px;
+  right: 16px;
+  bottom: 0;
+  content: ' ';
+  height: 1px;
+  background-color: rgba(0, 0, 0, 0.06);
+}
+
+.project-menus .list > li {
+  position: relative;
+  line-height: 30px;
+}
+
+.project-menus .list > li:first-child > a {
+  margin-top: 5px;
+}
+
+.project-menus .list > li:first-child > a {
+  margin-top: 5px;
+}
+
+.project-menus .list > li > a {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  padding: 5px 15px;
+  text-decoration: none;
+  color: #808080;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.project-menus .list > li > a .ivu-icon {
+  color: #808080;
+  font-size: 16px;
+  width: 35px;
+  text-align: center;
+}
+
+.project-menus .activities-panel-menu-list > li > a {
+  color: #383838;
+  font-weight: 600;
+}
+
+.project-menus .activities-panel-menu-list > li:hover a {
+  background-color: #EEEEEE;
+}
+
+.activity-card-datas.activity-card:first-child {
+  margin-top: 5px;
+}
+
+.activity-card:first-child {
+  margin-top: 0;
+}
+.activity-card-datas {
+  margin-top: 5px;
+  margin-bottom: 15px;
+  padding: 0 15px;
+}
+.activity-card {
+  position: relative;
+  line-height: 20px;
+  padding: 10px 15px 0;
+  margin: 9px auto 0;
+}
+.activity-card .activity-card-header {
+  position: relative;
+  margin-bottom: 10px;
+  display: inline-block;
+  vertical-align: middle;
+  float: left;
+  margin-right: 10px;
+}
+.activity-card-datas .activity-card-header {
+  display: block;
+  float: none;
+  margin-bottom: 0;
+  font-weight: 600;
+  line-height: 35px;
+}
+.activity-card .activity-card-header .ivu-icon {
+  color: #808080;
+  font-size: 16px;
+  width: 35px;
+  text-align: center;
+}
+.activity-card .activity-card-title {
+  margin-right: 6px;
+}
+.activity-card .activity-card-header .activity-card-title {
+  z-index: 1;
+  display: inline-block;
+  margin-bottom: 8px;
+}
+.activity-card-datas .activity-card-header .activity-card-title {
+  line-height: 24px;
+  margin-bottom: 0;
+}
+.activity-card-datas .data-statistics{
+  padding-bottom: 10px;
+}
+
+.activity-card-datas .data-statistics > div {
+  display: inline-block;
+  vertical-align: middle;
+  cursor: pointer;
+  width: 130px;
+  margin-left: 29px;
+  padding-left: 5px;
+  padding-top: 5px;
+  padding-bottom: 13px;
+  border-radius: 2px;
+  font-size: 14px;
+}
+.activity-card-datas .data-statistics > div:hover {
+  background-color: #EEEEEE;
+}
+.activity-card-datas .data-statistics .activity-link-today {
+  margin-left: 0;
+}
+.activity-card-datas .data-statistics .unassignedtasks-number {
+  color: #19be6b;
+  font-size: 24px;
+  display: inline-block;
+  margin-top: 5px;
+}
+.activity-card-datas .data-statistics .todayDatas-number {
+  color: #ff9900;
+  font-size: 24px;
+  display: inline-block;
+  margin-top: 5px;
+}
+.activity-card-datas .data-statistics::after {
+  position: absolute;
+  left: 49px;
+  right: 15px;
+  bottom: 1px;
+  content: ' ';
+  height: 1px;
+  background-color: rgba(0, 0, 0, 0.06);
+}
+
+.activity-panel-card-table{
+  position: relative;
+  display: flex;
+}
+.activity-card-table.activity-card {
+  width:100%;
+  margin: 10px 15px;
+  padding: 0 0 15px;
+}
+.activity-panel-card-table .activity-card-table .activity-card-header{
+  width: 100%;
+}
+.activity-card-table .activity-card-title{
+  padding-left: 34px;
+}
+.activity-card-table .activity-card-body {
+  display: block;
+  margin-left: 34px;
+  margin-right: 0;
+  min-height: 100px;
+  background-color: #FFFFFF;
+}
+.activity-card-table::after {
+  position: absolute;
+  left: 34px;
+  right: 1px;
+  bottom: 0;
+  content: ' ';
+  height: 1px;
+  background-color: rgba(0, 0, 0, 0.06);
+}
+
+.activity-panel-activities-list .activity-panel-activities-title {
+  position: relative;
+  line-height: 30px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  padding-top: 5px;
+}
+
+.activity-panel-activities-list .activity-panel-activities-title .project-activies-title {
+  color: #383838;
+  padding: 5px 15px;
+  font-weight: 600;
+}
+.project-activies-title .ivu-icon{
+  color: #808080;
+  font-size: 16px;
+  width: 35px;
+  text-align: center;
+}
+.activity-panel-activities-wrap {
+  margin-top: -5px;
+}
+.activity-card.activity-task{
+  padding-top: 25px;
+  padding-left: 20px;
+}
+.work {
+  position: relative;
+}
+.activity-card .activity-content {
+  overflow: hidden;
+  padding-bottom: 5px;
+  color: #383838;
+}
+.activity-card .activity-content .activity-card-title {
+  display: inline-block;
+  vertical-align: middle;
+  margin-bottom: 5px;
+}
+
+.activity-card.activity-task .activity-card-title {
+  width: 100%;
+}
+.activity-card .activity-card-title {
+  margin-right: 6px;
+}
+.activity-card .activity-card-body:empty {
+  display: none;
+}
+.activity-card .activity-card-footer {
+  margin-bottom: 5px;
+  display: inline-block;
+  vertical-align: bottom;
+}
+.react-time-stamp {
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+}
+.activity-card .activity-card-footer time {
+  color: #808080;
+  font-size: 12px;
+}
+.activity-card .activity-card-footer:after {
+  clear: both;
+}
+.activity-panel-activities .activity-panel-activities-body .activity-content::after {
+  position: absolute;
+  left: 48px;
+  right: 16px;
+  bottom: -5px;
+  content: ' ';
+  height: 1px;
+  background-color: rgba(0, 0, 0, 0.06);
+}
+
+.menu-modal .user-content{
+  padding: 15px;
+}
+.user-menu-modal .menu-user-list img{
+  width: 36px;
+  height: 36px;
+}
+.user-menu-modal .project-menus .list > li {
+  line-height: 10px;
+}
+.user-menu-modal .user-info {
+  width: 100%;
+  padding-left: 10px;
+  padding-bottom: 10px;
+}
+.user-menu-modal .user-item {
+  line-height: 30px;
+}
+.user-menu-modal .ivu-modal-content .project-menus:after{
+  background-color: inherit;
+}
+.task-type-move{
+  cursor: move;
+  //border: 1px solid rgb(61, 168, 245);
+  box-shadow: 0 1px 5px 1px #c0c0c0;
+  //background: red;
+  //transform: rotate(2deg) !important;
+}
+.task-move{
+  //transform: rotate(2deg);
+
+}
