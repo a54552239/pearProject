@@ -55,11 +55,11 @@ export const showWarConfirm = (options = {}, callback = function () {
 
 
 export const getApiUrl = (api) => {
-    // return '/public/?service=' + api
     if (process.env.NODE_ENV === 'production') {
         return PROD_URL + '/?s=' + api
     } else {
-        return '/api?service=' + api
+        return '/api?s=' + api
+        // return DEV_URL + '/?s=' + api
     }
 };
 
