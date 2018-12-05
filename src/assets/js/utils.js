@@ -2,18 +2,9 @@ import {Message, Modal} from 'iview'
 import config from '../../assets/js/config'
 import $ from 'jquery'
 
-const NODE_ENV = config.NODE_ENV;
-const WEB_URL = config.WEB_URL;
 const DEV_URL = config.DEV_URL;
 const PROD_URL = config.PROD_URL;
 
-export const getWebUrl = () => {
-    if (process.env.NODE_ENV === 'production') {
-        return WEB_URL
-    } else {
-        return WEB_URL
-    }
-};
 export const showImg = (url) => {
     let url_prefix = '';
     if (process.env.NODE_ENV === 'production') {

@@ -1,6 +1,7 @@
 // see http://vuejs-templates.github.io/webpack for documentation.
 var path = require('path')
-
+config = require('../src/assets/js/config')
+const DEV_URL = config.DEV_URL;
 module.exports = {
     build: {
         env: require('./prod.env'),
@@ -29,8 +30,7 @@ module.exports = {
         assetsPublicPath: '/',
         proxyTable: {
             '/api': {
-                // target: 'http://dev.phalapi.com/',
-                target: 'http://127.0.0.1/ApiForProjectManage/public/',
+                target: `${DEV_URL}/`,
                 changeOrigin: true,
                 secure: false,
                 pathRewrite: {
