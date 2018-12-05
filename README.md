@@ -83,6 +83,9 @@
     3. 将APP_URL的值修改为网站地址
     4. 进入后端目录  ./config/app.php
     5. 将Qiniu需改改为对应的值
+12. 跨域支持
+    1. 进入后端目录 ./config/app.php
+    2. 修改cors下的whitelist（域名白名单），添加支持跨域的站点
      
 
         
