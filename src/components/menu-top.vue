@@ -64,7 +64,7 @@
                             <div slot="content">
                                 <Tabs>
                                     <TabPane :label="showNoticeText" name="notify">
-                                        <div v-if="notify_no_read_list.length > 0">
+                                        <div v-if="notify_no_read_list">
                                             <div v-for="(item,index) in notify_no_read_list" class="vs-list-item">
                                                 <div class="vs-list-item-meta">
                                                     <div class="vs-list-item-meta-avatar">

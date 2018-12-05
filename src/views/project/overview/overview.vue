@@ -400,6 +400,7 @@
                     {
                         title: '名称',
                         key: 'name',
+                        // minWidth: 100,
                         render: (h, params) => {
                             return h('router-link', {
                                 attrs: {
@@ -418,12 +419,12 @@
                     {
                         title: '截止',
                         key: 'end',
-                        width: 120,
+                        // width: 120,
                     },
                     {
                         title: '进度',
                         key: 'schedule',
-                        width: 100,
+                        // width: 100,
                         render: (h, params) => {
                             return h('span', {
                                 style: {
@@ -435,7 +436,7 @@
                     {
                         title: '业务',
                         key: 'business_info',
-                        width: 160,
+                        // width: 160,
                         render: (h, params) => {
                             return h('span', {
                                 style: {
@@ -468,12 +469,12 @@
                     {
                         title: '截止',
                         key: 'end',
-                        width: 120,
+                        // width: 120,
                     },
                     {
                         title: '进度',
                         key: 'schedule',
-                        width: 100,
+                        // width: 100,
                         render: (h, params) => {
                             return h('span', {
                                 style: {
@@ -485,7 +486,7 @@
                     {
                         title: '业务',
                         key: 'business_info',
-                        width: 160,
+                        // width: 160,
                         render: (h, params) => {
                             return h('span', {
                                 style: {
@@ -500,6 +501,7 @@
                     {
                         title: '名称',
                         key: 'name',
+                        // minWidth: 100,
                         render: (h, params) => {
                             return h('router-link', {
                                 attrs: {
@@ -518,12 +520,12 @@
                     {
                         title: '截止',
                         key: 'end',
-                        width: 120,
+                        // width: 120,
                     },
                     {
                         title: '进度',
                         key: 'schedule',
-                        width: 100,
+                        // width: 100,
                         render: (h, params) => {
                             return h('span', {
                                 style: {
@@ -535,7 +537,7 @@
                     {
                         title: '业务',
                         key: 'business_info',
-                        width: 160,
+                        // width: 160,
                         render: (h, params) => {
                             return h('span', {
                                 style: {
@@ -550,7 +552,6 @@
                     {
                         title: '内容',
                         key: 'name',
-                        // width: 300,
                         render: (h, params) => {
                             return h('router-link', {
                                 attrs: {

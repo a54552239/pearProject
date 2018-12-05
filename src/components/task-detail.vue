@@ -1935,7 +1935,7 @@
     .task-detail-icon {
         position: absolute;
         font-size: 18px;
-        top: -1px;
+        top: -4px;
         right: -8px;
     }
 
