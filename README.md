@@ -24,6 +24,7 @@
 需要环境：php 5.6或者以上版本，mysql 5.6
 ```
 - 可以直接下载[phpstudy](http://phpstudy.php.cn/phpstudy/PhpStudy20180211.zip)部署环境
+- 接口文档：站点地址/public/docs.php
 1. 下载后端接口，解压到网站目录
  ![1](https://static.vilson.xyz/help/图片1.png)
  2. 安装依赖
