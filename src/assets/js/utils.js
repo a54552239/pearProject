@@ -15,8 +15,6 @@ export const showImg = (url) => {
     return url_prefix + '/public/static' + url;
 };
 
-
-
 /**
  * 判断客户端返回状态
  * @param res
