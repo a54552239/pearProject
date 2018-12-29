@@ -101,7 +101,7 @@ export async function getFullGroupOne(id) {
 }
 
 export async function removeGroupUser(group_id, ids) {
-    return $http.post('System_AuthGroup.removeGroupUser', {group_id: group_id, id: id});
+    return $http.post('System_AuthGroup.removeGroupUser', {group_id: group_id, ids: ids});
 }
 
 export async function getGroupUserList(id, page_size, page_num, keyword) {
