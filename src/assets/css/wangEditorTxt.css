@@ -1,0 +1,72 @@
+.wangEditor-txt {
+  width: 100%;
+  text-align: left;
+  padding: 15px;
+  padding-top: 0;
+  margin-top: 5px;
+  overflow-y: auto;
+}
+.wangEditor-txt p,
+.wangEditor-txt h1,
+.wangEditor-txt h2,
+.wangEditor-txt h3,
+.wangEditor-txt h4,
+.wangEditor-txt h5 {
+  margin: 10px 0;
+  line-height: 1.8;
+}
+.wangEditor-txt p *,
+.wangEditor-txt h1 *,
+.wangEditor-txt h2 *,
+.wangEditor-txt h3 *,
+.wangEditor-txt h4 *,
+.wangEditor-txt h5 * {
+  line-height: 1.8;
+}
+.wangEditor-txt ul,
+.wangEditor-txt ol {
+  padding-left: 20px;
+}
+.wangEditor-txt img {
+  cursor: pointer;
+}
+.wangEditor-txt img.clicked {
+  box-shadow: 1px 1px 10px #999;
+}
+.wangEditor-txt table.clicked {
+  box-shadow: 1px 1px 10px #999;
+}
+.wangEditor-txt pre code {
+  line-height: 1.5;
+}
+.wangEditor-txt:focus {
+  outline: none;
+}
+.wangEditor-txt blockquote {
+  display: block;
+  border-left: 8px solid #d0e5f2;
+  padding: 5px 10px;
+  margin: 10px 0;
+  line-height: 1.4;
+  font-size: 100%;
+  background-color: #f1f1f1;
+}
+.wangEditor-txt table {
+  border: none;
+  border-collapse: collapse;
+}
+.wangEditor-txt table td,
+.wangEditor-txt table th {
+  border: 1px solid #999;
+  padding: 3px 5px;
+  min-width: 50px;
+  height: 20px;
+}
+.wangEditor-txt pre {
+  border: 1px solid #ccc;
+  background-color: #f8f8f8;
+  padding: 10px;
+  margin: 5px 0px;
+  font-size: 0.8em;
+  border-radius: 3px;
+}

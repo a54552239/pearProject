@@ -1,13 +1,12 @@
-/**
- * Created by vilson on 2017/5/8.
- */
-import {Message,Notice} from 'iview'
+import {message, notification} from 'ant-design-vue'
 import Axios from "axios"
 import * as utils from './utils'
-import $store from '../../store';
-import $router from '../../router';
-import $notice from './notice';
-
+import {getStore} from './storage'
+import $store from '../../store/index';
+import $router from '../../router/index';
+import {notice} from './notice';
+import config from "../../config/config";
+const HOME_PAGE = config.HOME_PAGE;
 const $http = Axios.create();
 // Before request
 $http.interceptors.request.use(
@@ -15,15 +14,17 @@ $http.interceptors.request.use(
         config.url = utils.getApiUrl(config.url);
         if (config.method === 'post') {
             const querystring = require('querystring');
-            config.data = querystring.stringify(config.data)
+            config.data = querystring.stringify(config.data);
         }
-        let token = utils.getStore('token');
+        let token = getStore('token');
         if (token) {
             config.headers.Authorization = token;
             config.headers.Token = token;
         }
-
-
+        let organization = getStore('currentOrganization',true);
+        if (organization) {
+            config.headers.organizationCode = organization.code;
+        }
         return config;
     },
     error => {
@@ -34,38 +35,68 @@ $http.interceptors.request.use(
 $http.interceptors.response.use(
     response => {
         response = response.data;
-        let data = response.data;
-        if (response.ret < 300) {
-            response.msg !== '' && $notice(response.msg);
-            return response;
-        } else if (response.ret === 499 || response.ret === 401) {
-            // $notice('登录超时，请重新登录');
-            $router.replace('/login?redirect=' + $router.currentRoute.fullPath);
+        if (response.code == 200) {
+            response.msg !== '' && notice(response.msg, 'message', 'success');
+            return Promise.resolve(response);
+        }
+        else if (response.code === 401) {
+            // notice('登录超时，请重新登录');
+            $router.replace('/member/login?redirect=' + $router.currentRoute.fullPath);
             $store.dispatch('SET_LOGOUT');
             return new Promise(() => {
             });
-        } else if (response.ret < 500) {
-            $notice({
-                title: '请求错误 ' + response.ret,
+        }  else if (response.code === 403) {
+            // $router.replace('/403');
+            //无权限操作资源
+            notice({
+                title: response.msg !== '' ? response.msg : '无权限操作资源，访问被拒绝',
+            }, 'notice', 'error', 5);
+            return Promise.reject(response.msg);
+            // return new Promise(() => {});
+        } else if (response.code === 4031) {
+            // $router.replace('/403');
+            //无权限操作资源
+            notice({
+                title: response.msg !== '' ? response.msg : '无权限操作资源，访问被拒绝',
+            }, 'notice', 'error', 5);
+            $router.replace(HOME_PAGE);
+            return Promise.reject(response.msg);
+        } else if (response.code <= 400) {
+            response.msg !== '' && notice(response.msg);
+            return Promise.resolve(response);
+        } else if (response.code == 404) {
+            //资源不存在
+            notice({
+                title: response.msg !== '' ? response.msg : '资源不存在',
+            }, 'notice', 'warning', 5);
+            $router.replace(HOME_PAGE);
+            return new Promise(() => {
+            });
+        } else if (response.code < 500) {
+            notice({
+                title: '请求错误 ' + response.code,
                 desc: response.msg
             }, 'notice', 'warning', 5);
             // $router.back();
-            return new Promise(() => {
-            });
+            return Promise.reject(response);
         } else {
-            $notice({
-                title: '请求错误 ' + response.ret,
+            notice({
+                title: '请求错误 ' + response.code,
                 desc: '路径：' + self.url + '，' +
-                response.msg || '未知错误，请联系管理员或稍后重试' +
-                '。'
+                    response.msg || '未知错误，请联系管理员或稍后重试' +
+                    '。'
             }, 'notice', 'warning', 5);
             return new Promise(() => {
             });
         }
     },
     error => {
-        Message.destroy();
-        $notice(response.data.msg);
+        console.log(error);
+        message.destroy();
+        notice({
+            title: '未知错误，请稍后重试',
+            desc: ' ' + error
+        }, 'notice', 'error', 5);
         return Promise.reject(error);
     }
 );

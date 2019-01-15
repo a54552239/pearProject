@@ -1,35 +1,32 @@
 export default {
-    SET_LOGGED(state, {token, user_info}) {
+    SET_LOGGED(state, {token, userInfo}) {
         state.logged = true;
-        state.user_info = user_info;
+        state.userInfo = userInfo;
+    },
+    SET_USER(state, data) {
+        state.userInfo = data;
     },
     SET_LOGOUT(state) {
         state.logged = false;
-        state.user_info = null;
+        state.userInfo = null;
     },
-    SET_PAGE_LOADING(state, status) {
-        state.page_loading = status
+    setTheme(state, theme) {
+        state.theme = theme
     },
-    SET_LIST_RELOAD(state, reload) {
-        state.list_reload = reload
+    pageLoading(state, status) {
+        state.pageLoading = status
     },
-    SET_MENU_SLIDE(state, status) {
-        state.show_menu_slide = status
+    windowLoading(state, status) {
+        state.windowLoading = status
     },
-    UPDATE_ONLINE_USER(state, data) {
-        state.online_user = data;
+    setSystem(state,data) {
+        state.system = data;
     },
-    UPDATE_NOTIFY_NO_READ_LIST(state, data) {
-        state.notify_no_read_list = data;
+    setOrganizationList(state, data) {
+        state.organizationList = data;
     },
-    UPDATE_NOTIFY_NO_READ_COUNT(state, num) {
-        state.notify_no_read_count = num;
-    },
-    SET_SYSTEM_INFO(state, data) {
-        state.system_info = data;
-    },
-    SET_LAST_PATH(state, path) {
-        state.last_path = path;
+    setCurrentOrganization(state, data) {
+        state.currentOrganization = data;
     },
     catchSocketAction(state, data) {
         state.socketAction = data;

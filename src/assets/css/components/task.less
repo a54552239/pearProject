@@ -1,40 +1,50 @@
-.task-info .wrapper-content {
-  background: #f1f1f1;
-  padding: 0;
-  position: fixed;
-  height: 100%;
+.project-space-task {
 }
 
-.task-info .layout-content {
-  padding: 100px 10px 20px 0;
+.project-space-task .wrapper-main {
+  margin: 0;
+  padding: 0;
+  background: inherit;
+}
+
+.project-space-task .wrapper-content {
+  background: #f1f1f1;
+  position: fixed;
+  height: 100%;
+  padding: 0 0 63px;
+}
+
+.project-space-task .layout-content {
+  padding: 60px 10px 0 0;
   height: 100%;
   margin-left: 0;
   margin-right: 0;
+  background: #fff;
 }
 
-.task-info .manage-contents {
+.project-space-task .manage-contents {
   padding-left: 32px;
   padding-right: 32px;
 }
 
-.task-info .manage-contents h4 {
+.project-space-task .manage-contents h4 {
   display: block;
   border-bottom: 1px solid #e5e5e5;
   padding-bottom: 12px;
 }
 
 
- .task-info .board-scrum-stages {
-   position: relative;
-   padding: 0 10px 10px 10px;
-   white-space: nowrap;
-   overflow-x: auto;
-   overflow-y: hidden;
-   -webkit-overflow-scrolling: touch;
-   height: 100%;
-   -webkit-transform: translate3d(0, 0, 0);
-   transform: translate3d(0, 0, 0);
- }
+.project-space-task .board-scrum-stages {
+  position: relative;
+  padding: 0 10px 10px 10px;
+  white-space: nowrap;
+  overflow-x: auto;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
+  height: 100%;
+  -webkit-transform: translate3d(0, 0, 0);
+  transform: translate3d(0, 0, 0);
+}
 
 .scrum-stage {
   position: relative;
@@ -53,7 +63,20 @@
   vertical-align: top;
   background-color: #EEEEEE;
   border-radius: 3px;
-  cursor: move;
+
+  .sortable-chosen {
+    cursor: pointer;
+    //display: none
+  }
+
+  &.stage-ghost {
+    background: #e5e5e5;
+
+    div {
+      display: none;
+    }
+
+  }
 }
 
 .scrum-stage .scrum-stage-header, .scrum-stage .sort-header-placeholder {
@@ -76,36 +99,42 @@
   transition: box-shadow 100ms ease;
 }
 
+.scrum-stage-header.ui-sortable-handle {
+  cursor: pointer;
+}
+
 .scrum-stage .stage-menu-toggler {
   position: absolute;
   right: 15px;
 }
 
-.stage-menu-toggler .menu-toggler-title:hover{
+.stage-menu-toggler .menu-toggler-title:hover {
   color: #57a3f3;
 }
 
 
-.scrum-stage .stage-menu-toggler .ivu-select-dropdown{
+.scrum-stage .stage-menu-toggler .ivu-select-dropdown {
   border-radius: 3px;
 }
 
-.stage-menu-toggler li{
+.stage-menu-toggler li {
   line-height: 30px;
   padding: 5px 15px;
 }
 
-.popover .ivu-select-dropdown {
+.task-popover-content .ivu-select-dropdown {
   margin-top: 0;
   padding-top: 0;
 }
-.popover .popover-header {
+
+.task-popover-content .popover-header {
+  text-align: center;
   padding: 5px 10px;
-  margin: 0 15px;
-  border-bottom: 1px solid rgba(0,0,0,.07);
+  background: #fff;
+  border-bottom: 1px solid rgba(0, 0, 0, .07);
 }
 
-.popover .popover-title{
+.task-popover-content .popover-title {
   padding: 0;
   font-size: 15px;
   font-weight: 700;
@@ -148,6 +177,9 @@
 .scrum-stage .scrum-stage-tasks {
   transition: opacity 0.08s ease-out;
   opacity: 1;
+  min-height: 5px;
+  padding: 0 5px;
+  position: relative;
 }
 
 .scrum-stage .task.task-card {
@@ -160,6 +192,30 @@
   border-radius: 3px;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
   cursor: pointer;
+  min-height: 52px;
+
+  &.task-ghost {
+    border-left: 3px solid #e5e5e5 !important;
+    background: #e5e5e5;
+
+    * {
+      visibility: hidden;
+      //display: none;
+    }
+  }
+}
+
+.task-drag {
+  //transform:rotate(7deg);
+  //top: 0px !important;
+  cursor: pointer;
+  background: red;
+}
+
+.sortable-fallback {
+  background: red;
+  cursor: pointer;
+
 }
 
 .task {
@@ -333,8 +389,12 @@
 
 .task.task-card .task-infos .icon-wrapper {
   font-size: 14px;
-  width: 20px;
-  margin: 2px 1px 0 0;
+  //width: 20px;
+  margin: 2px 10px 0 0;
+
+  span {
+    margin-left: 3px;
+  }
 }
 
 .task.task-card .task-infos .label {
@@ -351,6 +411,7 @@
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+
 .task.task-card .task-infos .tag {
   position: relative;
   padding-left: 15px;
@@ -358,14 +419,17 @@
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+
 .task.task-card .task-infos .text {
   width: 50px;
   font-size: 12px;
   //color: #19be6b;
 }
-.tag-color-disc-blue{
+
+.tag-color-disc-blue {
   background-color: #2d8cf0;
 }
+
 .tag.tag-color-blue:before {
   content: ' ';
   position: absolute;
@@ -376,9 +440,11 @@
   border-radius: 50%;
   background-color: #2d8cf0;
 }
-.tag-color-disc-orange{
+
+.tag-color-disc-orange {
   background-color: #ff9900;
 }
+
 .tag.tag-color-orange:before {
   content: ' ';
   position: absolute;
@@ -389,9 +455,11 @@
   border-radius: 50%;
   background-color: #ff9900;
 }
-.tag-color-disc-red{
+
+.tag-color-disc-red {
   background-color: #ed3f14;
 }
+
 .tag.tag-color-red:before {
   content: ' ';
   position: absolute;
@@ -402,9 +470,11 @@
   border-radius: 50%;
   background-color: #ed3f14;
 }
-.tag-color-disc-green{
+
+.tag-color-disc-green {
   background-color: #19be6b;
 }
+
 .tag.tag-color-green:before {
   content: ' ';
   position: absolute;
@@ -415,9 +485,11 @@
   border-radius: 50%;
   background-color: #19be6b;
 }
-.tag-color-disc-brown{
+
+.tag-color-disc-brown {
   background-color: #2fbdb3;
 }
+
 .tag.tag-color-brown:before {
   content: ' ';
   position: absolute;
@@ -428,9 +500,11 @@
   border-radius: 50%;
   background-color: #2fbdb3;
 }
-.tag-color-disc-purple{
+
+.tag-color-disc-purple {
   background-color: #797ec9;
 }
+
 .tag.tag-color-purple:before {
   content: ' ';
   position: absolute;
@@ -441,6 +515,27 @@
   border-radius: 50%;
   background-color: #797ec9;
 }
+
+.task-info-footer {
+  display: flex;
+  flex-direction: row-reverse;
+  margin-bottom: -12px;
+
+  .task-id-number {
+    display: inline-block;
+    padding: 0 4px;
+    color: gray;
+    font-size: 12px;
+    line-height: 20px;
+    background-color: #f5f5f5;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    margin-top: 4px;
+    border-radius: 4px 0 4px 0;
+  }
+}
+
 .scrum-stage .task-creator-handler-wrap .task-creator-handler {
   display: -webkit-flex;
   display: -ms-flexbox;
@@ -448,9 +543,8 @@
   -webkit-align-items: center;
   -ms-flex-align: center;
   align-items: center;
-  margin: 0 8px 8px;
   padding: 14px 15px;
-  border-radius: 3px;
+  //border-radius: 3px;
   font-size: 15px;
 }
 
@@ -463,8 +557,8 @@
   transition: color 218ms ease;
 }
 
-.link-add-handler .ivu-icon {
-  margin-right: 10px;
+.link-add-handler {
+  //margin-right: 10px;
 }
 
 .img-24 {
@@ -473,6 +567,14 @@
   height: 24px;
   background-color: #eee;
   background-size: 24px 24px;
+}
+
+.img-32 {
+  display: inline-block;
+  width: 32px;
+  height: 32px;
+  background-color: #eee;
+  background-size: 32px 32px;
 }
 
 .img-circle {
@@ -496,6 +598,12 @@
   cursor: pointer;
   border-radius: 3px;
 }
+
+.task .check-box.disabled {
+  border-color: #ccc !important;
+  background-color: #f5f5f5;
+}
+
 .children-task-list .task .check-box {
   width: 15px;
   height: 15px;
@@ -515,34 +623,38 @@
 .task.done {
   background-color: #F7F7F7;
 }
+
 .children-task-list .task.done {
   background-color: inherit;
 }
 
 .task.done .task-content {
   color: #A6A6A6;
+  text-decoration: line-through;
 }
 
-.task.done .check-box .ivu-icon.ivu-icon-md-checkmark {
+.task.done .check-box .anticon-check {
   //font-weight: bold;
   visibility: visible;
 }
 
-.task .check-box .ivu-icon.ivu-icon-md-checkmark {
+.task .check-box .anticon-check {
   visibility: hidden;
   color: #A6A6A6;
-  font-size: 15px;
+  font-size: 12px;
   -webkit-transform: translate(2px, 0);
   transform: translate(2px, 0);
-  top: 17px;
-  left: 9px;
+  top: 18px;
+  left: 10px;
   position: absolute;
 }
-.ivu-modal .task .check-box .ivu-icon.ivu-icon-md-checkmark {
+
+.ivu-modal .task .check-box .anticon-check {
   top: 10px;
   left: 5.8px;
 }
-.children-task-list .task .check-box .ivu-icon.ivu-icon-md-checkmark {
+
+.children-task-list .task .check-box .anticon-check {
   font-size: 12px;
   -webkit-transform: translate(1px, -4px);
   transform: translate(1px, -4px);
@@ -558,14 +670,14 @@
   width: 50%;
 }
 
-.task-info .card {
+.project-space-task .card {
   border: 0 none;
   background-color: #FFFFFF;
   border-radius: 2px;
   box-shadow: rgba(0, 0, 0, 0.0470588) 0 2px 3px 0;
 }
 
-.task-info .card {
+.project-space-task .card {
   background-color: #fff;
   border: 0 none;
   border-radius: 2px;
@@ -584,17 +696,34 @@
   padding: 10px;
 }
 
-.task-creator-wrap .executor-handler{
+.task-creator-wrap .executor-handler {
   display: flex;
   align-items: center;
 }
-.task-creator-wrap .executor-handler .avatar{
+
+.task-creator-wrap .executor-handler .avatar {
   margin-right: 8px;
 }
-.task-creator-wrap .handler-wrap .ivu-dropdown{
-  padding-top: 15px;
+
+.executor-handler-menu {
+  .ant-dropdown-menu-item {
+    position: relative;
+    line-height: 32px;
+
+    .anticon-check {
+      position: absolute;
+      float: right;
+      top: 16px;
+      right: 12px;
+      font-size: 12px;
+    }
+
+  }
+
+  //padding-top: 15px;
 }
-.task-creator-wrap .ivu-select-dropdown{
+
+.task-creator-wrap .ivu-select-dropdown {
   position: absolute !important;
   width: 238px;
   left: 0 !important;
@@ -623,7 +752,7 @@ input.form-control, textarea.form-control {
 .task-creator .handler-wrap > a {
   width: 100%;
   display: inline-block;
-  padding: 15px 0;
+  //padding: 15px 0;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -706,7 +835,8 @@ input.form-control, textarea.form-control {
 .task-creator .handler-wrap > a {
   width: 100%;
   display: inline-block;
-  padding: 15px 0;
+  padding: 6px 0;
+  margin: 6px 0;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -716,16 +846,7 @@ input.form-control, textarea.form-control {
   line-height: 24px;
 }
 
-.task-creator .handler-wrap > a {
-  width: 100%;
-  display: inline-block;
-  padding: 15px 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.task-info .menu-toggler-title,.task-info .footer-item {
+.project-space-task .menu-toggler-title, .project-space-task .footer-item {
   color: #808080;
   text-decoration: none;
   cursor: pointer;
@@ -740,10 +861,11 @@ input.form-control, textarea.form-control {
   margin-top: 10px;
 }
 
-.scrum-stage.fixed-creator .scrum-stage-wrap.hidden-creator .task-creator-handler-wrap {
-  position: absolute;
-  bottom: 0;
-  height: 54px;
+.scrum-stage.fixed-creator .task-creator-handler-wrap {
+  position: fixed;
+  bottom: 10px;
+  height: 50px;
+  width: 295px;
 }
 
 .task-creator-handler-wrap {
@@ -758,12 +880,34 @@ input.form-control, textarea.form-control {
   /*position: absolute;*/
 }
 
-.scrum-stage-wrap.hidden-creator.ui-sortable {
-  padding-bottom: 54px;
+.scrum-stage-wrap.ui-sortable {
+  padding-bottom: 50px;
 }
 
 .hidden-creator-bottom {
   padding-bottom: 0 !important;
+}
+
+.create-stage {
+  height: auto;
+  cursor: default;
+
+  .create-stage-footer {
+    text-align: right;
+    padding-top: 10px;
+
+    .cancel-text {
+      margin-right: 24px;
+      font-size: 14px;
+    }
+  }
+
+  .ant-input {
+    padding-top: 12px;
+    padding-bottom: 12px;
+    height: 40px;
+    line-height: 40px;
+  }
 }
 
 /*.task-datepicker .ivu-select-dropdown{*/
@@ -890,9 +1034,14 @@ li.activity.creator i {
   transition: color 218ms ease;
 }
 
+.scrum-stage-tasks-done {
+  padding: 0 5px;
+}
+
 .task.task-card.ui-sortable-handle.dragging, .scrum-stage-tasks-done .task.task-card.ui-sortable-handle.dragging {
   cursor: move;
 }
+
 /*紧急程度一般*/
 .task.task-card.ui-sortable-handle:hover, .scrum-stage-tasks-done .task.task-card.ui-sortable-handle:hover {
   border-left: 3px solid #a6a6a6;
@@ -941,7 +1090,7 @@ li.activity.creator i {
   border-left: 3px solid #ed3f14;
 }
 
-.activities-list .ivu-icon {
+.activities-list {
   font-size: 18px;
   padding-left: 3px;
 }
@@ -950,15 +1099,15 @@ li.activity.creator i {
   clear: both;
 }
 
- .project-nav-footer {
-   position: absolute;
-   right: 0;
-   top: 60px;
-   display: flex;
-   height: 50px;
-   align-items: center;
-   z-index: 998;
- }
+.project-nav-footer {
+  position: absolute;
+  right: 0;
+  top: 0;
+  display: flex;
+  height: 50px;
+  align-items: center;
+  z-index: 998;
+}
 
 .project-nav-footer .footer-item {
   font-size: 15px;
@@ -973,6 +1122,7 @@ li.activity.creator i {
 .project-nav-footer .footer-item.active {
   color: #2D8cF0;
 }
+
 .project-nav-footer .footer-item:hover {
   color: #2D8cF0;
 }
@@ -988,15 +1138,17 @@ li.activity.creator i {
 }
 
 
- .menu-modal .ivu-modal-mask {
-   overflow: hidden;
-   background-color: inherit;
-   width:0;
- }
- .menu-modal .ivu-modal-wrap {
-   //width:0;
-   z-index: 1;
- }
+.menu-modal .ivu-modal-mask {
+  overflow: hidden;
+  background-color: inherit;
+  width: 0;
+}
+
+.menu-modal .ivu-modal-wrap {
+  //width:0;
+  z-index: 1;
+}
+
 .menu-modal .ivu-modal {
   position: fixed;
   top: 111px;
@@ -1062,7 +1214,7 @@ li.activity.creator i {
   white-space: nowrap;
 }
 
-.project-menus .list > li > a .ivu-icon {
+.project-menus .list > li > a {
   color: #808080;
   font-size: 16px;
   width: 35px;
@@ -1085,17 +1237,20 @@ li.activity.creator i {
 .activity-card:first-child {
   margin-top: 0;
 }
+
 .activity-card-datas {
   margin-top: 5px;
   margin-bottom: 15px;
   padding: 0 15px;
 }
+
 .activity-card {
   position: relative;
   line-height: 20px;
   padding: 10px 15px 0;
   margin: 9px auto 0;
 }
+
 .activity-card .activity-card-header {
   position: relative;
   margin-bottom: 10px;
@@ -1104,6 +1259,7 @@ li.activity.creator i {
   float: left;
   margin-right: 10px;
 }
+
 .activity-card-datas .activity-card-header {
   display: block;
   float: none;
@@ -1111,25 +1267,30 @@ li.activity.creator i {
   font-weight: 600;
   line-height: 35px;
 }
-.activity-card .activity-card-header .ivu-icon {
+
+.activity-card .activity-card-header {
   color: #808080;
   font-size: 16px;
   width: 35px;
   text-align: center;
 }
+
 .activity-card .activity-card-title {
   margin-right: 6px;
 }
+
 .activity-card .activity-card-header .activity-card-title {
   z-index: 1;
   display: inline-block;
   margin-bottom: 8px;
 }
+
 .activity-card-datas .activity-card-header .activity-card-title {
   line-height: 24px;
   margin-bottom: 0;
 }
-.activity-card-datas .data-statistics{
+
+.activity-card-datas .data-statistics {
   padding-bottom: 10px;
 }
 
@@ -1145,24 +1306,29 @@ li.activity.creator i {
   border-radius: 2px;
   font-size: 14px;
 }
+
 .activity-card-datas .data-statistics > div:hover {
   background-color: #EEEEEE;
 }
+
 .activity-card-datas .data-statistics .activity-link-today {
   margin-left: 0;
 }
+
 .activity-card-datas .data-statistics .unassignedtasks-number {
   color: #19be6b;
   font-size: 24px;
   display: inline-block;
   margin-top: 5px;
 }
+
 .activity-card-datas .data-statistics .todayDatas-number {
   color: #ff9900;
   font-size: 24px;
   display: inline-block;
   margin-top: 5px;
 }
+
 .activity-card-datas .data-statistics::after {
   position: absolute;
   left: 49px;
@@ -1173,21 +1339,25 @@ li.activity.creator i {
   background-color: rgba(0, 0, 0, 0.06);
 }
 
-.activity-panel-card-table{
+.activity-panel-card-table {
   position: relative;
   display: flex;
 }
+
 .activity-card-table.activity-card {
-  width:100%;
+  width: 100%;
   margin: 10px 15px;
   padding: 0 0 15px;
 }
-.activity-panel-card-table .activity-card-table .activity-card-header{
+
+.activity-panel-card-table .activity-card-table .activity-card-header {
   width: 100%;
 }
-.activity-card-table .activity-card-title{
+
+.activity-card-table .activity-card-title {
   padding-left: 34px;
 }
+
 .activity-card-table .activity-card-body {
   display: block;
   margin-left: 34px;
@@ -1195,6 +1365,7 @@ li.activity.creator i {
   min-height: 100px;
   background-color: #FFFFFF;
 }
+
 .activity-card-table::after {
   position: absolute;
   left: 34px;
@@ -1219,27 +1390,33 @@ li.activity.creator i {
   padding: 5px 15px;
   font-weight: 600;
 }
-.project-activies-title .ivu-icon{
+
+.project-activies-title {
   color: #808080;
   font-size: 16px;
   width: 35px;
   text-align: center;
 }
+
 .activity-panel-activities-wrap {
   margin-top: -5px;
 }
-.activity-card.activity-task{
+
+.activity-card.activity-task {
   padding-top: 25px;
   padding-left: 20px;
 }
+
 .work {
   position: relative;
 }
+
 .activity-card .activity-content {
   overflow: hidden;
   padding-bottom: 5px;
   color: #383838;
 }
+
 .activity-card .activity-content .activity-card-title {
   display: inline-block;
   vertical-align: middle;
@@ -1249,29 +1426,36 @@ li.activity.creator i {
 .activity-card.activity-task .activity-card-title {
   width: 100%;
 }
+
 .activity-card .activity-card-title {
   margin-right: 6px;
 }
+
 .activity-card .activity-card-body:empty {
   display: none;
 }
+
 .activity-card .activity-card-footer {
   margin-bottom: 5px;
   display: inline-block;
   vertical-align: bottom;
 }
+
 .react-time-stamp {
   display: -webkit-flex;
   display: -ms-flexbox;
   display: flex;
 }
+
 .activity-card .activity-card-footer time {
   color: #808080;
   font-size: 12px;
 }
+
 .activity-card .activity-card-footer:after {
   clear: both;
 }
+
 .activity-panel-activities .activity-panel-activities-body .activity-content::after {
   position: absolute;
   left: 48px;
@@ -1282,35 +1466,42 @@ li.activity.creator i {
   background-color: rgba(0, 0, 0, 0.06);
 }
 
-.menu-modal .user-content{
+.menu-modal .user-content {
   padding: 15px;
 }
-.user-menu-modal .menu-user-list img{
+
+.user-menu-modal .menu-user-list img {
   width: 36px;
   height: 36px;
 }
+
 .user-menu-modal .project-menus .list > li {
   line-height: 10px;
 }
+
 .user-menu-modal .user-info {
   width: 100%;
   padding-left: 10px;
   padding-bottom: 10px;
 }
+
 .user-menu-modal .user-item {
   line-height: 30px;
 }
-.user-menu-modal .ivu-modal-content .project-menus:after{
+
+.user-menu-modal .ivu-modal-content .project-menus:after {
   background-color: inherit;
 }
-.task-type-move{
+
+.task-type-move {
   cursor: move;
   //border: 1px solid rgb(61, 168, 245);
   box-shadow: 0 1px 5px 1px #c0c0c0;
   //background: red;
   //transform: rotate(2deg) !important;
 }
-.task-move{
+
+.task-move {
   //transform: rotate(2deg);
 
 }

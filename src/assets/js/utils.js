@@ -1,19 +1,8 @@
-import {Message, Modal} from 'iview'
-import config from '../../assets/js/config'
+import {notice} from './notice';
+import config from '../../config/config'
 import $ from 'jquery'
 
-const DEV_URL = config.DEV_URL;
 const PROD_URL = config.PROD_URL;
-
-export const showImg = (url) => {
-    let url_prefix = '';
-    if (process.env.NODE_ENV === 'production') {
-        url_prefix = PROD_URL
-    } else {
-        url_prefix = DEV_URL
-    }
-    return url_prefix + '/public/static' + url;
-};
 
 /**
  * 判断客户端返回状态
@@ -21,17 +10,44 @@ export const showImg = (url) => {
  * @param show_msg
  * @returns {boolean}
  */
-export const showBack = (res, show_msg = false) => {
-    const ret = res.ret;
+export const checkResponse = (res, show_msg = false) => {
+    const code = res.code;
     const msg = res.msg;
-    if (ret !== 200) {
+    if (code !== 200) {
         if (show_msg) {
-            Message.warning(msg);
+            notice(msg);
         }
         return false
     } else {
         return true
     }
+};
+/**
+ * 创建路由对象
+ * @returns {boolean}
+ * @param data
+ */
+export const createRoute = (data) => {
+    let path = data.url;
+    if (data.params) {
+        path += '/' + data.params;
+    }
+    let filePath = data.url;
+    if (data.file_path) {
+        filePath = data.file_path;
+    }
+    return {
+        name: data.id,
+        path: path,
+        component: resolve => require(['@/views/' + filePath], resolve),
+        meta: {model: data.pid, info: data},
+    };
+};
+
+export const getBase64 = (img, callback) => {
+    const reader = new FileReader();
+    reader.addEventListener('load', () => callback(reader.result));
+    reader.readAsDataURL(img);
 };
 
 /**
@@ -54,50 +70,10 @@ export const showWarConfirm = (options = {}, callback = function () {
 
 export const getApiUrl = (api) => {
     if (process.env.NODE_ENV === 'production') {
-        return PROD_URL + '/?s=' + api
+        return PROD_URL + '/' + api
     } else {
-        return '/api?s=' + api
-        // return DEV_URL + '/?s=' + api
+        return '/api/' + api
     }
-};
-
-/**
- * 获取完整的api请求地址
- */
-export const getFullUrl = (api) => {
-    let baseUrl = '';
-    if (process.env.NODE_ENV === 'development') {
-        baseUrl = DEV_URL
-    } else {
-        baseUrl = PROD_URL
-    }
-    return baseUrl + getApiUrl(api)
-};
-export const getYiYan = (callback, type) => {
-    if (type == undefined) {
-        type = 'f';
-    }
-    let api = 'https://v1.hitokoto.cn/?c=' + type + '&encode=json';
-    $.get({
-        url: api,
-        success: function (data) {
-            callback(data)
-        }
-    })
-};
-
-
-/**
- * 获取完整的api请求地址
- */
-export const getDirectUrl = (api) => {
-    let baseUrl = '';
-    if (process.env.NODE_ENV === 'development') {
-        baseUrl = DEV_URL
-    } else {
-        baseUrl = PROD_URL
-    }
-    return baseUrl + '/?s=' + api
 };
 
 /**
@@ -114,100 +90,15 @@ export const getUploadUrl = (api) => {
 };
 
 
-/**
- * 存储localStorage
- * @param name
- * @param content
- * @param duration Storage有效时间，单位：小时
- * @param set_time 是否设置时间
- * @returns {boolean}
- */
-export const setStore = (name, content, set_time = false, duration = 0) => {
-    if (!name) return false;
-    if (typeof content !== 'string') {
-        content = JSON.stringify(content)
-    }
-    if (set_time) {
-        let date = new Date;
-        if (duration > 0) {
-            content += '&' + (date.getTime() + duration * 3600 * 1e3)
-        } else {
-            content += '&0'
-        }
-        content += '&' + (date.getTime())
-    }
-    window.localStorage.setItem(name, content)
-};
-
-/**
- * 获取localStorage
- * @param name
- * @param parse // 是否json格式化
- * @returns {boolean}
- */
-export const getStore = (name, parse = false) => {
-    if (!name) return false;
-    if (parse) {
-        return JSON.parse(window.localStorage.getItem(name))
-    }
-    return window.localStorage.getItem(name)
-};
-
-/**
- * 删除localStorage
- */
-export const removeStore = name => {
-    if (!name) return false;
-    window.localStorage.removeItem(name)
-};
-
-/**
- * 生成cookie
- * @param name cookie名称
- * @param value cookie值
- * @param duration cookie有效时间，单位：小时
- */
-export const addCookie = (name, value, duration) => {
-    let n = name + '=' + escape(value) + '; path=/';
-    if (duration > 0) {
-        let date = new Date;
-        date.setTime(date.getTime() + duration * 3600 * 1e3);
-        n = n + ';expires=' + date.toGMTString()
-    }
-    document.cookie = n
-};
-
-/**
- * 获取cookie
- * @param name cookie名称
- * @returns {null}
- */
-export const getCookie = (name) => {
-    let t = document.cookie;
-    let a = t.split('; ');
-    for (let n = 0; n < a.length; n++) {
-        let r = a[n].split('=');
-        if (r[0] === name) {
-            return unescape(r[1])
-        }
-    }
-    return null
-};
-
-/**
- * 移除cookie
- * @param name cookie名称
- */
-export const delCookie = (name) => {
-    let t = new Date;
-    t.setTime(t.getTime() - 1);
-    let a = getCookie(name);
-    if (a !== null) document.cookie = name + '=' + a + '; path=/;expires=' + t.toGMTString()
-};
-
 export const format_date = (data, show = true) => {
     //格式化时间
-    let now = new Date(data * 1000);
+    let now = null;
+    if (isNaN(data)) {
+        now = new Date(data * 1000);
+
+    } else {
+        now = new Date(data);
+    }
     let year = now.getFullYear();
     let month = now.getMonth() + 1;
     let date = now.getDate();
@@ -299,6 +190,13 @@ export const convert = (num) => {
     }
     return result
 };
+
+export function timeFix() {
+    const time = new Date();
+    const hour = time.getHours();
+    return hour < 9 ? '早上好' : (hour <= 11 ? '上午好' : (hour <= 13 ? '中午好' : (hour < 20 ? '下午好' : '晚上好')))
+}
+
 /**
  * 获取推送消息
  * 如：1->A
@@ -320,8 +218,7 @@ export const snail = (arr) => {
     for (var a in obj) {
         if (typeof (obj[a]) == "object") {
             return snail(obj[a], value); //递归遍历
-        }
-        else {
+        } else {
             if (a === 'path') {
                 if (obj[a] === value) {
                     console.log(a + "=" + obj[a]);
@@ -382,5 +279,34 @@ export const hasScrolled = (el, direction = "vertical") => {
         return el.scrollHeight > el.clientHeight;
     } else if (direction === "horizontal") {
         return el.scrollWidth > el.clientWidth;
+    }
+};
+
+//实现一个能遍历多维数组的方法 那么就在原型里面添加方法
+// 原型的一个作用就是留给我们扩展对象的属性和方法的
+//我们为数组添加一个each方法能遍历多维数组 传入一个回掉函数
+Array.prototype.each = function (fn) {
+    try {  //核心业务逻辑
+        this.i || (this.i = 0); //定义一个计数器，如果存在就是原来 如果不存在初始化成0
+        //当数组有长度并且传过来的是一个函数的时候我们就对数组执行回调
+        if (this.length > 0 && fn.constructor === Function) {
+            while (this.i < this.length) {    //进行遍历
+                var e = this[this.i]; //取到当前元素
+                //如果取到的e元素是个数组，那就递归 一直到是一个元素的时候再执行回调
+                if (e && e.constructor === Array) {
+                    e.each(fn);
+                } else {
+                    //进入这里说明 e元素是单个元素
+                    //我们为e元素绑定方法，相当于e调用了fn方法
+                    //fn.apply(e,[e]); 或者
+                    fn.call(e, e);
+                }
+                this.i++;
+            }
+        }
+        this.i = null;    //进行垃圾回收 删除引用标记
+    } catch (ex) {
+        console.log(ex);
+        //do something
     }
 };
