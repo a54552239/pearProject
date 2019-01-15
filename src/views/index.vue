@@ -46,11 +46,11 @@
                             collapsible
                             v-model="collapsed"
                     >
-                        <a-icon
+                       <!-- <a-icon
                         class="trigger"
                         :type="collapsed ? 'menu-unfold' : 'menu-fold'"
                         @click="()=> collapsed = !collapsed"
-                        />
+                        />-->
                         <a-menu :theme="theme"
                                 v-for="menu in menus"
                                 :key="menu.id.toString()"
