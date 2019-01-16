@@ -8,7 +8,7 @@ const HOST = '127.0.0.1';
 const PORT = '8045';
 const DEV_URL = 'http://easyproject.net/index.php';
 module.exports = {
-    publicPath: process.env.NODE_ENV === 'production' ? 'https://static.vilson.xyz/easyproject/' : '/',
+    publicPath: process.env.NODE_ENV === 'production' ? './' : '/',
     productionSourceMap: false,
     css: {
         loaderOptions: {
