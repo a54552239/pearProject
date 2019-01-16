@@ -61,7 +61,7 @@ Composer
     2. 安装依赖：cnpm install
         1.如果接口端口不是默认端口，需修改./vue.config.js，将DEV_URL的值改为接口的访问地址
     3. 启动项目：npm run serve
-    4. 根据提示信息进行安装
+    4. 根据提示填写数据库信息进行安装
         ![1](https://static.vilson.xyz/help/pearproject/3.png)
 6. 打包项目（有必要的话）
     1. 修改./src/config/config.js，修改PRO_URL地址
