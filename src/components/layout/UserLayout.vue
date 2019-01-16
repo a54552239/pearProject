@@ -10,10 +10,11 @@
                         </a>
                     </a-badge>
                 </div>
-                <div class="desc">欢迎登录Pear Project项目管理系统</div>
+                <div class="desc">{{desc}}</div>
             </div>
 
             <router-view />
+            <slot></slot>
 
             <div class="footer">
               <!--  <div class="links">
@@ -33,6 +34,14 @@
 
     export default {
         name: 'UserLayout',
+        props:{
+            desc:{
+                type: [String],
+                default(){
+                    return '欢迎登录Pear Project项目管理系统';
+                }
+            }
+        }
     }
 </script>
 

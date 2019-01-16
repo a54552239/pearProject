@@ -32,6 +32,9 @@ Vue.use(VueClipboards);
 import uploader from 'vue-simple-uploader'
 Vue.use(uploader);
 
+// import Form from 'ant-design-vue';
+// Vue.use(Form);
+// Vue.prototype.$form = Form;
 Vue.prototype.$message = message;
 Vue.prototype.$notification = notification;
 Vue.prototype.$notice = notice;

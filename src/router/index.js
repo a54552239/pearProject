@@ -70,6 +70,12 @@ const router = new Router({
             ]
         },
         {
+            name: 'install',
+            path: '/install',
+            component: resolve => require(['@/views/error/install'], resolve),
+            meta: {model: 'error'},
+        },
+        {
             name: '404',
             path: '/404',
             component: resolve => require(['@/views/error/404'], resolve),
@@ -107,7 +113,7 @@ router.beforeEach((to, from, next) => {
         next({path: HOME_PAGE});
         return false;
     }
-    if (!store.state.logged && to.meta.model !== 'Login') {
+    if (!store.state.logged && to.meta.model !== 'Login' && to.meta.model !== 'error') {
         next({
             name: 'login',
             query: {redirect: to.fullPath}

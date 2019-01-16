@@ -91,10 +91,11 @@ $http.interceptors.response.use(
         }
     },
     error => {
-        console.log(error);
+        const response = error.response.data;
+        console.log(error.response);
         message.destroy();
         notice({
-            title: '未知错误，请稍后重试',
+            title: response.msg ? response.msg : '未知错误，请稍后重试',
             desc: ' ' + error
         }, 'notice', 'error', 5);
         return Promise.reject(error);

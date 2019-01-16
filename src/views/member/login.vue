@@ -3,8 +3,8 @@
         <a-form
                 class="user-layout-login"
                 ref="formLogin"
-                :autoFormCreate="(form)=>{this.form = form}"
                 id="formLogin"
+                :form="form"
         >
             <a-tabs
                     :activeKey="customActiveKey"
@@ -12,30 +12,35 @@
                     @change="handleTabClick"
             >
                 <a-tab-pane key="tab1" tab="账号密码登陆">
-                    <a-form-item
-                            fieldDecoratorId="account"
-                            :fieldDecoratorOptions="{rules: [{ required: true, message: '请输入帐户名或邮箱地址' }, { validator: this.handleUsernameOrEmail }], validateTrigger: 'change'}"
-                    >
-                        <a-input size="large" type="text" placeholder="帐户名或邮箱地址 / 123456">
+                    <a-form-item>
+                        <a-input size="large" type="text" placeholder="帐户名或邮箱地址 / 123456"
+                                 v-decorator="[
+                                'account',
+                                {rules: [{ required: true, message: '请输入帐户名或邮箱地址' },{ validator: this.handleUsernameOrEmail }], validateTrigger: 'blur'}
+                            ]">
                             <a-icon slot="prefix" type="user" :style="{ color: 'rgba(0,0,0,.25)' }"/>
                         </a-input>
                     </a-form-item>
 
                     <a-form-item
-                            fieldDecoratorId="password"
-                            :fieldDecoratorOptions="{rules: [{ required: true, message: '请输入密码' }], validateTrigger: 'blur'}"
                     >
-                        <a-input size="large" type="password" autocomplete="false" placeholder="密码 / 123456">
+                        <a-input size="large" type="password" autocomplete="false" placeholder="密码 / 123456"
+                                 v-decorator="[
+                                'password',
+                                {rules: [{ required: true, message: '请输入密码' }], validateTrigger: 'blur'}
+                            ]">
                             <a-icon slot="prefix" type="lock" :style="{ color: 'rgba(0,0,0,.25)' }"/>
                         </a-input>
                     </a-form-item>
                 </a-tab-pane>
                 <a-tab-pane key="tab2" tab="手机号登陆">
                     <a-form-item
-                            fieldDecoratorId="mobile"
-                            :fieldDecoratorOptions="{rules: [{ required: true, pattern: /^1[34578]\d{9}$/, message: '请输入正确的手机号' }], validateTrigger: 'change'}"
                     >
-                        <a-input size="large" type="text" placeholder="手机号">
+                        <a-input size="large" type="text" placeholder="手机号"
+                                 v-decorator="[
+                                'mobile',
+                                {rules: [{ required: true, pattern: /^1[34578]\d{9}$/, message: '请输入正确的手机号' },{ validator: this.handleUsernameOrEmail }], validateTrigger: 'change'}
+                            ]">
                             <a-icon slot="prefix" type="mobile" :style="{ color: 'rgba(0,0,0,.25)' }"/>
                         </a-input>
                     </a-form-item>
@@ -43,10 +48,12 @@
                     <a-row :gutter="16">
                         <a-col class="gutter-row" :span="16">
                             <a-form-item
-                                    fieldDecoratorId="captcha"
-                                    :fieldDecoratorOptions="{rules: [{ required: true, message: '请输入验证码' }], validateTrigger: 'blur'}"
                             >
-                                <a-input size="large" type="text" placeholder="验证码">
+                                <a-input size="large" type="text" placeholder="验证码"
+                                         v-decorator="[
+                                'captcha',
+                                {rules: [{ required: true, message: '请输入验证码' }], validateTrigger: 'blur'}
+                            ]">
                                     <a-icon slot="prefix" type="mail" :style="{ color: 'rgba(0,0,0,.25)' }"/>
                                 </a-input>
                             </a-form-item>
@@ -112,6 +119,7 @@
     import config from "@/config/config";
     import {checkResponse, createRoute, timeFix} from '@/assets/js/utils'
     import {getStore} from '@/assets/js/storage'
+    import {checkInstall} from "../../api/common/common";
 
     export default {
         components: {},
@@ -123,7 +131,7 @@
                 loginType: 0,
                 requiredTwoStepCaptcha: false,
                 stepCaptchaVisible: false,
-                form: null,
+                form: this.$form.createForm(this),
                 state: {
                     time: 60,
                     smsSendBtn: false
@@ -143,12 +151,21 @@
             })
         },
         created() {
-            info().then(res => {
-                this.$store.dispatch('setSystem', res.data);
-            });
+            this.checkInstall();
         },
         methods: {
             ...mapActions(['Login', 'Logout']),
+            checkInstall() {
+                checkInstall().then(res => {
+                    if (!checkResponse(res)) {
+                        this.$router.push({name: 'install'});
+                        return false;
+                    }
+                    info().then(res => {
+                        this.$store.dispatch('setSystem', res.data);
+                    });
+                });
+            },
             // handler
             handleUsernameOrEmail(rule, value, callback) {
                 const regex = /^([a-zA-Z0-9_-])+@([a-zA-Z0-9_-])+((\.[a-zA-Z0-9_-]{2,3}){1,2})$/;

@@ -33,7 +33,7 @@
                 >
                     <a-input placeholder='组织名称'/>
                 </a-form-item>
-                <a-form-item
+               <!-- <a-form-item
                         label='所在区域'
                         :labelCol="{ span: 3 }"
                         :wrapperCol="{ span: 21 }"
@@ -43,7 +43,7 @@
                 >
                     <a-cascader :fieldNames="{ label: 'Name', value: 'ID', children: 'children' }" :options="options"
                                 placeholder="选择所在省市"/>
-                </a-form-item>
+                </a-form-item>-->
 
                 <a-form-item
                         label='详细地址'
@@ -89,7 +89,6 @@
         }
     }];
 
-    let map;
     export default {
         mixins: [pagination],
         data() {
@@ -127,9 +126,9 @@
                     app.loading = false;
                     app.$store.dispatch('setOrganizationList', res.data.list);
                 });
-                areasData().then(res => {
-                    app.options = res.data;
-                });
+                // areasData().then(res => {
+                //     app.options = res.data;
+                // });
             },
             rowClick(record, action) {
                 let app = this;
