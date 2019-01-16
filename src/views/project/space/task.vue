@@ -769,7 +769,6 @@
                                         return false;
                                     }
                                     app.$set(app.taskStages[stageIndex], 'tasks', []);
-                                    // app.taskStages[stageIndex] = [];
                                 });
                                 return Promise.resolve();
                             }

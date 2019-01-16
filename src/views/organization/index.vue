@@ -1,9 +1,9 @@
 <template>
     <div class="house-index">
         <wrapper-content>
-            <div class="action">
+           <!-- <div class="action">
                 <a-button type="primary" icon="plus" @click="rowClick(null,'new')">添加</a-button>
-            </div>
+            </div>-->
             <a-table :columns="columns" :dataSource="dataSource" :loading="loading" rowKey="id" :pagination="pagination"
                      @change="pageChange">
                 <template slot="action" slot-scope="text,record,index">

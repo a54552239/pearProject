@@ -47,7 +47,7 @@
                 <a-input size="large" placeholder="11 位手机号">
                     <a-select slot="addonBefore" size="large" defaultValue="+86">
                         <a-select-option value="+86">+86</a-select-option>
-                        <a-select-option value="+87">+87</a-select-option>
+                        <!--<a-select-option value="+87">+87</a-select-option>-->
                     </a-select>
                 </a-input>
             </a-form-item>
@@ -200,10 +200,12 @@
             handleSubmit() {
                 this.form.validateFields((err, values) => {
                     if (!err) {
+                        this.registerBtn = true;
                         let params = this.form.getFieldsValue();
                         params.password = md5(params.password);
                         params.password2 = md5(params.password2);
                         register(params).then(res => {
+                            this.registerBtn = false;
                             if (!checkResponse(res)) {
                                 return false;
                             }

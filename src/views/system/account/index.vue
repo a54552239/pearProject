@@ -12,13 +12,15 @@
                     <span v-else>已禁用</span>
                 </template>
                 <template slot="action" slot-scope="text,record,index">
-                    <a @click="rowClick(record,'edit')">编辑</a>
-                    <a-divider type="vertical"/>
-                    <a @click="auth(record)">授权</a>
-                    <a-divider type="vertical"/>
-                    <a @click="rowClick(record,'status')"><span v-if="record.status">禁用</span><span v-else>启用</span></a>
-                    <a-divider type="vertical"/>
-                    <a @click="rowClick(record,'del')">删除</a>
+                    <template v-if="!record.is_owner">
+                        <a @click="rowClick(record,'edit')">编辑</a>
+                        <a-divider type="vertical"/>
+                        <a @click="auth(record)">授权</a>
+                        <a-divider type="vertical"/>
+                        <a @click="rowClick(record,'status')"><span v-if="record.status">禁用</span><span v-else>启用</span></a>
+                        <a-divider type="vertical"/>
+                        <a @click="rowClick(record,'del')">删除</a>
+                    </template>
                 </template>
             </a-table>
         </wrapper-content>
