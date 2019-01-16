@@ -68,3 +68,9 @@ Composer
     2. 修改./vue.config.js，将publicPath 值改为‘/’。如果有CDN的话改为CDN地址
     3. 运行cmd，输入 npm run build
     4. 运行dist目录下的index.html，或者将dist目录下的文件部署到服务器上
+### 鼓励一下 ###
+<img src="https://static.vilson.xyz/pay/wechat.png" alt="Sample"  width="150" height="150">
+
+<img src="https://static.vilson.xyz/pay/alipay2.png" alt="Sample"  width="150" height="150">
+
+
