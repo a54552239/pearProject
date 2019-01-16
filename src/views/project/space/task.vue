@@ -21,9 +21,11 @@
             <section class="nav-body">
                 <ul class="nav-wrapper nav nav-underscore pull-left">
                     <li class="actives"><a class="app" data-app="tasks">任务</a></li>
-                    <li class=""><a class="app" data-app="works" @click="$router.push('/project/space/files/' + project.code)">
+                    <li class=""><a class="app" data-app="works"
+                                    @click="$router.push('/project/space/files/' + project.code)">
                         文件</a>
-                    <li class=""><a class="app" data-app="build" @click="$router.push('/project/space/overview/' + project.code)">
+                    <li class=""><a class="app" data-app="build"
+                                    @click="$router.push('/project/space/overview/' + project.code)">
                         概览</a>
                     </li>
                     <li class=""><a class="app" data-app="build" @click="$router.push('/project/build/' + project_id)">
@@ -87,9 +89,9 @@
                                         <a-icon size="14" type="clock-circle"></a-icon>
                                         设置本列所有任务截止时间 *
                                     </a-menu-item>
-                                    <a-menu-item :key="'delTask_' + stage.code + '_' + index">
+                                    <a-menu-item :key="'recycleBatch_' + stage.code + '_' + index">
                                         <a-icon size="14" type="delete"></a-icon>
-                                        删除本列所有任务 *
+                                        本列所有任务移到回收站
                                     </a-menu-item>
                                     <a-menu-item :key="'delStage_' + stage.code + '_' + index">
                                         <a-icon size="14" type="delete"></a-icon>
@@ -185,7 +187,8 @@
                                     <div class="task-creator-wrap card" :id="'card' + index"
                                          v-show="stage.showTaskCard">
                                         <form class="task-creator">
-                                            <a-input :ref="`inputTaskName${index}`" v-model="task.name" class="task-content-input" type="textarea"
+                                            <a-input :ref="`inputTaskName${index}`" v-model="task.name"
+                                                     class="task-content-input" type="textarea"
                                                      :rows="3"
                                                      placeholder="任务内容" @keyup.enter="createTask(stage.code,index)"/>
                                             <div class="handler-wrap">
@@ -280,7 +283,8 @@
                             </a>
                             <div v-show="showCreateStage">
                                 <div>
-                                    <a-input ref="inputStageName" v-model="stageName" placeholder="新建任务列表..." @keyup.enter="creteStage"
+                                    <a-input ref="inputStageName" v-model="stageName" placeholder="新建任务列表..."
+                                             @keyup.enter="creteStage"
                                              auto-focus></a-input>
                                 </div>
                                 <div class="submit-set create-stage-footer">
@@ -360,7 +364,7 @@
                 >
                     <a-list-item class="member-list-item" slot="renderItem" slot-scope="item,index">
                    <span slot="actions" v-if="!item.is_owner">
-                         <a class="muted" @click="removeMember(item,index)"><a-icon type="user-delete" /> 移除</a>
+                         <a class="muted" @click="removeMember(item,index)"><a-icon type="user-delete"/> 移除</a>
                        <!-- <a-button size="small" type="dashed" icon="user-add"
                                   v-if="!item.is_owner"
                         >操作</a-button>-->
@@ -467,7 +471,7 @@
     import {list as getTaskStages, sort, tasks as getTasks} from "../../../api/taskStages";
     import {read as getProject} from "../../../api/project";
     import {inviteMember, list as getProjectMembers, removeMember} from "../../../api/projectMember";
-    import {save as createTask, taskDone, sort as sortTask} from "../../../api/task";
+    import {save as createTask, taskDone, sort as sortTask, recycleBatch} from "../../../api/task";
     import {save as createState, edit as editStage, del as delStage} from "../../../api/taskStages";
     import {checkResponse} from "../../../assets/js/utils";
     import {formatTaskTime} from "../../../assets/js/dateTime";
@@ -750,8 +754,26 @@
                         });
                         this.stageModal.modalStatus = true;
                         break;
-                    case 'delTask':
-                        this.del_type_task_modal = true;
+                    case 'recycleBatch':
+                        //您确定要把列表下的所有任务移到回收站吗？
+                        this.$confirm({
+                            title: '移到回收站',
+                            content: `您确定要把列表下的所有任务移到回收站吗？`,
+                            okText: '移到回收站',
+                            okType: 'danger',
+                            cancelText: `再想想`,
+                            onOk() {
+                                recycleBatch({stageCode: stageCode}).then(res => {
+                                    const result = checkResponse(res);
+                                    if (!result) {
+                                        return false;
+                                    }
+                                    app.$set(app.taskStages[stageIndex], 'tasks', []);
+                                    // app.taskStages[stageIndex] = [];
+                                });
+                                return Promise.resolve();
+                            }
+                        });
                         break;
                     case 'setEndTime':
                         this.set_type_endTime_modal = true;
@@ -763,7 +785,7 @@
                         if (this.taskStages[stageIndex].tasks.length > 0) {
                             this.$warning({
                                 title: '删除列表',
-                                content: `请先清空此列表上的任务，然后再删除这个列表.`,
+                                content: `请先清空此列表上的任务，然后再删除这个列表`,
                                 okText: '确定',
                             });
                             return false;
@@ -876,7 +898,7 @@
                     this.configDraw.visible = !this.configDraw.visible;
                 }
             },
-            removeMember(member,index) {
+            removeMember(member, index) {
                 let app = this;
                 this.$confirm({
                     title: `您确定要将「${member.name}」从项目中移除吗？`,

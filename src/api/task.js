@@ -50,6 +50,9 @@ export function taskDone(code, done) {
 export function recycle(code) {
     return $http.post('project/task/recycle', {taskCode: code});
 }
+export function recycleBatch(data) {
+    return $http.post('project/task/recycleBatch', data);
+}
 
 export function recovery(code) {
     return $http.post('project/task/recovery', {taskCode: code});
