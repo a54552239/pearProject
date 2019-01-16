@@ -346,7 +346,7 @@
                 </a-input>
             </div>
             <div class="member-list">
-                <div cla ss="member-list-item ant-list-item header-action">
+                <div class="member-list-item ant-list-item header-action">
                     <div class="ant-list-item-meta" @click="showInviteMember = true">
                         <div class="ant-list-item-meta-avatar">
                             <a-avatar icon="plus"></a-avatar>

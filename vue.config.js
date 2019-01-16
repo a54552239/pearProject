@@ -6,7 +6,7 @@ function resolve(dir) {
 
 const HOST = '127.0.0.1';
 const PORT = '8045';
-const DEV_URL = 'http://easyproject.net/index.php';
+const DEV_URL = 'http://127.0.0.1/pearProjectApi/index.php';
 module.exports = {
     publicPath: process.env.NODE_ENV === 'production' ? './' : '/',
     productionSourceMap: false,
