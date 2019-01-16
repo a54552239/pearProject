@@ -35,6 +35,7 @@
 
 ![1](https://static.vilson.xyz/overview/12.png)
 
+![1](https://static.vilson.xyz/overview/13.png)
 ### 安装步骤 ###
 ```
 PHP >= 7.0.0 (推荐PHP7.2版本)
