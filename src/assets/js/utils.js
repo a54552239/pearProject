@@ -1,8 +1,8 @@
 import {notice} from './notice';
 import config from '../../config/config'
-import $ from 'jquery'
 
 const PROD_URL = config.PROD_URL;
+const crossDomain = config.crossDomain;
 
 /**
  * 判断客户端返回状态
@@ -69,10 +69,13 @@ export const showWarConfirm = (options = {}, callback = function () {
 
 
 export const getApiUrl = (api) => {
+    if (crossDomain) {
+        return PROD_URL + '/' + api; //开启跨域直接返回
+    }
     if (process.env.NODE_ENV === 'production') {
-        return PROD_URL + '/' + api
+        return PROD_URL + '/' + api;
     } else {
-        return '/api/' + api
+        return '/api/' + api;
     }
 };
 

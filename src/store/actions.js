@@ -2,7 +2,7 @@ import {getStore, setStore, removeStore} from '@/assets/js/storage'
 
 export default {
     SET_LOGGED({commit, state}, data) {
-        setStore('token', data.token, true, data.duration);
+        setStore('token', data.token);
         setStore('userInfo', data.userInfo);
         commit('SET_LOGGED', data);
     },

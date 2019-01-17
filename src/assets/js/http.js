@@ -7,7 +7,10 @@ import $router from '../../router/index';
 import {notice} from './notice';
 import config from "../../config/config";
 const HOME_PAGE = config.HOME_PAGE;
-const $http = Axios.create();
+const $http = Axios.create({
+    withCredentials: true,
+    crossDomain: true
+});
 // Before request
 $http.interceptors.request.use(
     config => {
@@ -18,8 +21,8 @@ $http.interceptors.request.use(
         }
         let token = getStore('token');
         if (token) {
-            config.headers.Authorization = token;
-            config.headers.Token = token;
+            config.headers.authorization = token;
+            config.headers.token = token;
         }
         let organization = getStore('currentOrganization',true);
         if (organization) {
@@ -62,7 +65,9 @@ $http.interceptors.response.use(
             $router.replace(HOME_PAGE);
             return Promise.reject(response.msg);
         } else if (response.code <= 400) {
-            response.msg !== '' && notice(response.msg);
+            response.msg !== '' &&  notice({
+                title: response.msg,
+            }, 'notice', 'error', 5);
             return Promise.resolve(response);
         } else if (response.code == 404) {
             //资源不存在
