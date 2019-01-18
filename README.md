@@ -56,10 +56,10 @@ Composer
     2. 安装npm淘宝镜像
         1. 运行cmd
         2. 输入：npm install -g cnpm --registry=https://registry.npm.taobao.org
-5. 安装前端依赖
+5. 前端部署
     1. 进入前端项目目录，运行cmd命令行
     2. 安装依赖：cnpm install
-        1.如果接口端口不是默认端口，需修改./vue.config.js，将DEV_URL的值改为接口的访问地址
+        1.如果接口端口不是默认端口，需修改./src/config.js，将PROD_URL的值改为接口的访问地址
     3. 启动项目：npm run serve
     4. 根据提示填写数据库信息进行安装
         ![1](https://static.vilson.xyz/help/pearproject/3.png)
@@ -68,6 +68,11 @@ Composer
     2. 修改./vue.config.js，将publicPath 值改为‘/’。如果有CDN的话改为CDN地址
     3. 运行cmd，输入 npm run build
     4. 运行dist目录下的index.html，或者将dist目录下的文件部署到服务器上
+7. 跨域支持
+    1. 默认开启跨域，如需关闭，须进行以下操作
+        1. 修改./src/config.js，将crossDomain 值改为‘false’
+        2. 修改./vue.config.js，将DEV_URL的值改为接口的访问地址
+        3. 重启启动项目
 ### 鼓励一下 ###
 <img src="https://static.vilson.xyz/pay/wechat.png" alt="Sample"  width="150" height="150">
 

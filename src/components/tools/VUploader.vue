@@ -41,7 +41,8 @@
                                                 <div class="item-info">
                                                     <div class="file-item">
                                                         <div class="file-icon">
-                                                            <a-avatar icon="link" shape="square" :src="file.file.fileUrl"/>
+                                                            <a-avatar icon="link" shape="square"
+                                                                      :src="file.file.fileUrl"/>
                                                         </div>
                                                         <div class="file-info">
                                                             <div class="file-content">
@@ -88,7 +89,7 @@
 </template>
 
 <script>
-    import {getApiUrl} from "../../assets/js/utils";
+    import {checkResponse, getApiUrl} from "../../assets/js/utils";
     import {mapState} from 'vuex'
     import {getStore} from "../../assets/js/storage";
     import {notice} from "../../assets/js/notice";
@@ -116,6 +117,15 @@
                     testChunks: false,
                     query: function () {
                         return getStore('tempData', true);//query暂时无法动态响应
+                    },
+                    headers: function () {
+                        let token = getStore('token');
+                        let organization = getStore('currentOrganization', true);
+                        return {
+                            authorization: token,
+                            token: token,
+                            organizationcode: organization.code,
+                        };
                     },
                 },
                 attrs: {
@@ -178,6 +188,10 @@
             },
             fileSuccess(rootFile, file, message, chunk) { //一个文件上传成功
                 const response = JSON.parse(message);
+                if (!checkResponse(response)) {
+                    notice({title: response.msg}, 'notice', 'error');
+                    return false;
+                }
                 rootFile.projectName = response.data.projectName;
                 rootFile.fileUrl = response.data.url;
                 console.log('file success', rootFile);
