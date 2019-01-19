@@ -235,7 +235,7 @@
                         okType: 'danger',
                         cancelText: '放弃',
                         onOk() {
-                            del(record.id).then(() => {
+                            del(record.code).then(() => {
                                 app.init();
                             });
                             return Promise.resolve();

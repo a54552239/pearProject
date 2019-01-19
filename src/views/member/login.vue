@@ -11,7 +11,7 @@
                     :tabBarStyle="{ textAlign: 'center', borderBottom: 'unset' }"
                     @change="handleTabClick"
             >
-                <a-tab-pane key="tab1" tab="账号密码登陆">
+                <a-tab-pane key="tab1" tab="账号密码登录">
                     <a-form-item>
                         <a-input size="large" type="text" placeholder="帐户名或邮箱地址 / 123456"
                                  v-decorator="[
@@ -33,7 +33,7 @@
                         </a-input>
                     </a-form-item>
                 </a-tab-pane>
-                <a-tab-pane key="tab2" tab="手机号登陆">
+                <a-tab-pane key="tab2" tab="手机号登录">
                     <a-form-item
                     >
                         <a-input size="large" type="text" placeholder="手机号"
@@ -72,7 +72,7 @@
             </a-tabs>
 
             <a-form-item>
-                <a-checkbox v-model="formLogin.rememberMe">自动登陆</a-checkbox>
+                <a-checkbox v-model="formLogin.rememberMe">自动登录</a-checkbox>
                 <a
                         class="forge-password"
                         style="float: right;"
@@ -94,7 +94,7 @@
             </a-form-item>
 
             <div class="user-login-other">
-                <span>其他登陆方式</span>
+                <span>其他登录方式</span>
                 <a>
                     <a-icon class="item-icon" type="alipay-circle"></a-icon>
                 </a>
@@ -188,7 +188,7 @@
                     remember_me: app.formLogin.rememberMe
                 };
 
-                // 使用账户密码登陆
+                // 使用账户密码登录
                 if (app.customActiveKey === 'tab1') {
                     app.form.validateFields(['account', 'password'], {force: true}, (err, values) => {
                         if (!err) {
@@ -197,7 +197,7 @@
                             loginParams.password = md5(values.password)
                         }
                     })
-                    // 使用手机号登陆
+                    // 使用手机号登录
                 } else {
                     app.form.validateFields(['mobile', 'captcha'], {force: true}, (err, values) => {
                         if (!err) {

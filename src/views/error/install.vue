@@ -59,7 +59,7 @@
                             :wrapperCol="{ span: 18}"
                             label="密码"
                     >
-                        <a-input size="large" type="text" placeholder="MySQL 密码"
+                        <a-input size="large" type="password" placeholder="MySQL 密码"
                                  v-decorator="[
                                 'mysqlPassword',
                             ]"
