@@ -92,6 +92,20 @@
                         </a-input>
                     </a-form-item>
                     <a-form-item
+                            label="清除数据"
+                            :labelCol="{ span: 6 }"
+                            :wrapperCol="{ span: 18}"
+                    >
+                        <a-checkbox
+                                v-decorator="[
+                                'initData',
+                                {initialValue: false}
+                            ]"
+                        >
+                            勾选后将清除预置数据
+                        </a-checkbox>
+                    </a-form-item>
+                    <a-form-item
                             :labelCol="{ span: 6 }"
                             :wrapperCol="{ span: 18, offset: 6}"
                             style="margin-top:24px">
