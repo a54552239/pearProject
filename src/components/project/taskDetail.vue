@@ -1028,10 +1028,7 @@
                     cancelText: `再想想`,
                     onOk() {
                         del(app.code).then((res) => {
-                            const result = checkResponse(res);
-                            if (!result) {
-                                return false;
-                            }
+                           ``
                             app.detailClose();
                         });
                         return Promise.resolve();
