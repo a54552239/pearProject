@@ -13,15 +13,15 @@
                 <div class="desc">{{desc}}</div>
             </div>
 
-            <router-view />
+            <router-view/>
             <slot></slot>
 
             <div class="footer">
-              <!--  <div class="links">
-                    <a href="_self">帮助</a>
-                    <a href="_self">隐私</a>
-                    <a href="_self">条款</a>
-                </div>-->
+                <!--  <div class="links">
+                      <a href="_self">帮助</a>
+                      <a href="_self">隐私</a>
+                      <a href="_self">条款</a>
+                  </div>-->
                 <div class="copyright">
                     Copyright &copy; 2019 Pear Project
                 </div>
@@ -34,10 +34,10 @@
 
     export default {
         name: 'UserLayout',
-        props:{
-            desc:{
+        props: {
+            desc: {
                 type: [String],
-                default(){
+                default() {
                     return '欢迎登录Pear Project项目管理系统';
                 }
             }
@@ -48,6 +48,7 @@
 <style lang="less">
     .userLayout {
         height: 100%;
+        overflow: auto;
 
         &.mobile {
             .container {
@@ -92,11 +93,11 @@
                         vertical-align: top;
                         margin-right: 12px;
                         border-style: none;
-                        transform:rotate(-25deg);
-                        -ms-transform:rotate(-25deg);   /* IE 9 */
-                        -moz-transform:rotate(-25deg);   /* Firefox */
-                        -webkit-transform:rotate(-25deg); /* Safari 和 Chrome */
-                        -o-transform:rotate(-25deg);
+                        transform: rotate(-25deg);
+                        -ms-transform: rotate(-25deg); /* IE 9 */
+                        -moz-transform: rotate(-25deg); /* Firefox */
+                        -webkit-transform: rotate(-25deg); /* Safari 和 Chrome */
+                        -o-transform: rotate(-25deg);
                     }
 
                     .title {
