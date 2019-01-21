@@ -37,7 +37,6 @@
     import {_joinByInviteLink as joinOrganation} from "../../api/user";
 
     export default {
-        components: {},
         data() {
             return {
                 loading: false,
