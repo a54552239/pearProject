@@ -1,25 +1,31 @@
 <template>
     <div class="inviteFromLink" style="height: 100%;">
         <div class="content">
-            <a-card :title="`来自 ${inviteLink.member.name} 的邀请`">
-                <div class="header">
+            <a-spin :spinning="loading">
+                <a-card v-if="inviteLink" :title="`来自 ${inviteLink.member.name} 的邀请`">
+                    <div class="header">
                     <span>
-                        {{inviteLink.member.name}} 邀请你<span v-if="inviteLink.invite_type == 'project'">加入项目 {{inviteLink.sourceDetail.name}}</span>
+                        {{inviteLink.member.name}} 邀请你
+                        <span v-if="inviteLink.invite_type == 'project'">加入项目「{{inviteLink.sourceDetail.name}}」</span>
+                        <span v-if="inviteLink.invite_type == 'organization'">加入组织「{{inviteLink.sourceDetail.name}}」</span>
+
                     </span>
-                </div>
-                <div class="member-info">
-                    <div class="avatar">
-                        <a-avatar size="large" :src="userInfo.avatar"></a-avatar>
                     </div>
-                    <div class="info">
-                        <p>{{userInfo.name}}</p>
-                        <p class="muted">{{userInfo.email}}</p>
+                    <div class="member-info">
+                        <div class="avatar">
+                            <a-avatar size="large" :src="inviteLink.member.avatar"></a-avatar>
+                        </div>
+                        <div class="info">
+                            <p>{{inviteLink.member.name}}</p>
+                            <p class="muted">{{inviteLink.member.email}}</p>
+                        </div>
                     </div>
-                </div>
-                <a-button type="primary" block size="large" class="middle-btn" @click="acceptInvite">
-                    <span v-if="inviteLink.invite_type == 'project'">加入项目</span>
-                </a-button>
-            </a-card>
+                    <a-button type="primary" block size="large" class="middle-btn" @click="acceptInvite">
+                        <span v-if="inviteLink.invite_type == 'project'">加入项目</span>
+                        <span v-if="inviteLink.invite_type == 'organization'">加入组织</span>
+                    </a-button>
+                </a-card>
+            </a-spin>
         </div>
     </div>
 </template>
@@ -28,13 +34,14 @@
     import {checkResponse} from "@/assets/js/utils";
     import {inviteInfo} from "../../api/common/common";
     import {_joinByInviteLink} from "../../api/projectMember";
+    import {_joinByInviteLink as joinOrganation} from "../../api/user";
 
     export default {
         components: {},
         data() {
             return {
                 loading: false,
-                inviteLink: {},
+                inviteLink: undefined,
             }
         },
         computed: {
@@ -47,8 +54,10 @@
         },
         methods: {
             getInviteInfo() {
+                this.loading = true;
                 inviteInfo(this.$route.params.code).then(res => {
                     this.inviteLink = res.data;
+                    this.loading = false;
                 });
             },
             acceptInvite() {
@@ -60,6 +69,15 @@
                         }
                         this.$router.replace({name: 'task', params: {code: this.inviteLink.source_code}})
                     });
+                } else if (this.inviteLink.invite_type == 'organization') {
+                    joinOrganation(this.$route.params.code).then(res => {
+                        const result = checkResponse(res);
+                        if (!result) {
+                            return false;
+                        }
+                        this.$notice({title: '你已成功加入组织', msg: '重新登录后可选择进入该组织'}, 'notice', 'success');
+                        this.$router.replace('/')
+                    });
                 }
             }
         }
@@ -68,7 +86,7 @@
 <style lang="less">
     .inviteFromLink {
         .content {
-            width: 400px;
+            width: 600px;
             margin: 50px auto;
 
             .header {

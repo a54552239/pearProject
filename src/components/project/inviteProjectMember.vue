@@ -54,7 +54,7 @@
                 :footer="null"
         >
             <div class="header">
-                <p>链接有效日期：2019年1月20日17:18</p>
+                <p>链接有效日期：{{linkInfo.overTime}}</p>
                 <a-input-search
                         size="large"
                         v-model="linkInfo.link"
