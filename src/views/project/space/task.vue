@@ -570,7 +570,7 @@
                 }
             },
             inviteMemberDraw: {
-                handler(newVal, oldVal) {
+                handler(newVal) {
                     if (newVal.visible) {
                         this.slideMenuKey = 'member';
                     } else {
