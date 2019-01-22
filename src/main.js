@@ -19,6 +19,8 @@ import 'moment/locale/zh-cn';
 
 import common from "./mixins/common";
 
+import '@/utils/filter' // global filter
+
 
 moment.locale('zh-cn');
 
