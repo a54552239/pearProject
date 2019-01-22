@@ -12,7 +12,7 @@ export const showMsgNotification = (title, msg, $opt = {}) => {
     onclose: $opt.onclose,
   };
   let Notification = window.Notification || window.mozNotification || window.webkitNotification;
-  console.log(Notification.permission)
+  console.log(Notification.permission);
   if (Notification && Notification.permission === "granted") {
     let instance = new Notification(title, options);
     instance.onclick = function () {
@@ -85,4 +85,4 @@ export const showMsgNotification = (title, msg, $opt = {}) => {
   } else {
     return false;
   }
-}
+};

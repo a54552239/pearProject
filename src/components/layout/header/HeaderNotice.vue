@@ -9,7 +9,7 @@
                         <template v-if="total && totalSum['notice']">
                             <a-list>
                                 <template v-for="item in list['notice']">
-                                    <a-list-item>
+                                    <a-list-item :key="item.id">
                                         <a-list-item-meta :description="item.create_time">
                                              <span slot="title">
                                                     <p v-html="item.title"></p>
@@ -38,23 +38,21 @@
                         <template v-if="total && totalSum['message']">
                             <a-list>
                                 <template v-for="item in list['message']">
-                                    <a-list-item>
+                                    <a-list-item :key="item.id">
                                         <a-list-item-meta :description="item.create_time">
                                              <span slot="title">
                                                     <p>{{item.title}}</p>
                                                     <p class="ant-list-item-meta-description" v-html="item.content"></p>
                                              </span>
-                                            <a-avatar style="background-color: white" slot="avatar" v-if="item.from"
-                                                      :src="item.from.avatar"/>
-                                            <a-avatar style="background-color: white" slot="avatar" v-else
-                                                      src="https://gw.alipayobjects.com/zos/rmsportal/OKJXDXrmkNshAMvwtvhu.png"/>
+                                            <a-avatar slot="avatar"
+                                                      :src="item.avatar"/>
                                         </a-list-item-meta>
                                     </a-list-item>
                                 </template>
                             </a-list>
                             <div class="footer-action">
                                 <a class="item muted" @click="setRead('message')">清空消息</a>
-                                <a class="item muted" @click="()=>{$router.push('/notify/message')}">查看更多</a>
+                                <a class="item muted" @click="routerLink('/notify/notice')">查看更多</a>
                             </div>
                         </template>
                         <template v-else>
@@ -70,7 +68,7 @@
                         <template v-if="total && totalSum['task']">
                             <a-list>
                                 <template v-for="item in list['task']">
-                                    <a-list-item>
+                                    <a-list-item :key="item.id">
                                         <a-list-item-meta :description="item.content">
                                              <span slot="title">
                                                     <p>{{item.title}}</p>
@@ -106,6 +104,7 @@
     import {mapState} from 'vuex'
     import {noReads} from "../../../api/notify";
     import {notice} from "../../../assets/js/notice";
+    import {showMsgNotification} from "../../../assets/js/notify";
 
     export default {
         name: 'HeaderNotice',
@@ -127,19 +126,12 @@
             socketAction(val) {
                 if (val.action === 'notice') {
                     this.fetchNotice();
-                } else if (val.action === 'booking-create' || val.action === 'booking-checkout' || val.action === 'booking-cancel' || val.action === 'booking-allocating') {
-                    console.log(val.data.organizationCode);
-                    console.log(this.currentOrganization.code);
-                    if (val.data.data.organizationCode != this.currentOrganization.code) {
-                        return false;
-                    }
-                    if (val.action === 'booking-create') {
-                        autoPlay('order2');
-                    }else{
-                        autoPlay('qianzou');
-                    }
+                } else if (val.action === 'task') {
                     this.fetchNotice();
-                    notice(val, 'notice', 'info', 100, 'bottomLeft')
+                    const permission = showMsgNotification(val.title, val.msg, {icon: val.data.notify.avatar});
+                    if (permission === false) {
+                        notice(val, 'notice', 'info', 10);
+                    }
                 }
             }
         },
@@ -166,34 +158,42 @@
 <style lang="less">
     .header-notice-content {
         width: 300px;
+
         .ant-tabs-bar {
             text-align: center;
             margin-bottom: 5px;
         }
+
         .ant-list-item-meta-title {
             p {
                 margin-bottom: 8px;
             }
         }
+
         .ant-list-item-meta-description {
             font-size: 12px;
         }
+
         .ant-list-item:hover {
             /*background: #e6f7ff;*/
             cursor: pointer;
         }
+
         .notFound {
             text-align: center;
             padding: 73px 0 88px 0;
             color: rgba(0, 0, 0, 0.45);
             height: 275px;
+
             img {
                 margin-bottom: 16px;
             }
         }
+
         .footer-action {
             border-top: 1px solid #e8e8e8;
             padding: 12px 0 0 0;
+
             .item {
                 width: 49%;
                 display: inline-block;

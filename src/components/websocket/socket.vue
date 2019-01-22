@@ -50,13 +50,18 @@
 
             },
             websocketOnMessage(e) { //数据接收
-                const data = eval("(" + e.data + ")");
-                this.$store.commit('catchSocketAction', data);
+                const data = JSON.parse(e.data);
+                if (data.action != 'ping') {
+                    console.log(data);
+                    this.$store.commit('catchSocketAction', data);
+                }
                 if (data.action === 'connect') {
                     data.data.client_id && setStore('client_id', data.data.client_id);
                     const userInfo = getStore('userInfo',true);
-                    const uid = userInfo ? userInfo.id : 0;
-                    bindClientId(data.data.client_id, uid);
+                    const uid = userInfo ? userInfo.code : '';
+                    if (uid) {
+                        bindClientId(data.data.client_id, uid);
+                    }
                 }
             },
             websocketSend(agentData) {//数据发送
