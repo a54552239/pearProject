@@ -121,7 +121,7 @@
                                                  :id="task.code"
                                                  :key="task.code"
                                                  :class="showTaskPri(task.pri)"
-                                                 v-if="!task.done"
+                                                 v-if="!task.done && task.canRead"
                                                  @click.stop="taskDetail(task.code,index)"
                                             >
                                                 <div class="task-priority bg-priority-0"></div>
@@ -228,7 +228,7 @@
                                         <template v-for="(task,taskIndex) in stage.tasks">
                                             <li class="task done task-card ui-sortable-handle"
                                                 :key="task.code"
-                                                v-if="task.done"
+                                                v-if="task.done && task.canRead"
                                                 @click.stop="taskDetail(task.code,index)"
                                             >
                                                 <div class="task-priority bg-priority-0"></div>
@@ -259,6 +259,10 @@
                                                 </div>
                                             </li>
                                         </template>
+                                        <li class="task muted" style="margin: 0 10px 8px;" v-show="stage.canNotReadCount">
+                                            <span><a-icon type="lock"></a-icon>
+                                                有 {{stage.canNotReadCount}} 个任务被隐藏（因为设置了仅参与者可见）</span>
+                                        </li>
                                     </ul>
                                     <!--添加任务按钮-->
                                     <div class="task-creator-handler-wrap" @click.stop="showTaskCard(index)"
@@ -629,6 +633,13 @@
                     if (this.taskStages) {
                         this.taskStages.forEach((v) => {
                             getTasks({stageCode: v.code}).then((res) => {
+                                let canNotReadCount = 0;
+                                res.data.forEach((task) => {
+                                    if (!task.canRead) {
+                                        canNotReadCount++;
+                                    }
+                                });
+                                v.canNotReadCount = canNotReadCount;
                                 v.tasksLoading = false;
                                 v.tasks = res.data;
                             })

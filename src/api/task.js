@@ -7,6 +7,7 @@ export function list(data) {
 export function selfList(data) {
     return $http.post('project/task/selfList', data);
 }
+
 export function taskSources(data) {
     return $http.post('project/task/taskSources', data);
 }
@@ -47,9 +48,14 @@ export function taskDone(code, done) {
     return $http.post('project/task/taskDone', {taskCode: code, done: done});
 }
 
+export function setPrivate(code, isPrivate) {
+    return $http.post('project/task/setPrivate', {taskCode: code, private: isPrivate});
+}
+
 export function recycle(code) {
     return $http.post('project/task/recycle', {taskCode: code});
 }
+
 export function recycleBatch(data) {
     return $http.post('project/task/recycleBatch', data);
 }

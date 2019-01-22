@@ -60,7 +60,7 @@
                                             <span>以新标签页打开</span>
                                     </a-menu-item>
                                      <a-menu-divider/>
-                                    <a-menu-item key="lock">
+                                    <a-menu-item key="private">
                                            <a-icon :type="task.private ? 'lock' : 'unlock'"/>
                                             <span>隐私模式</span>
                                             <a class="menu-action text-primary">
@@ -496,7 +496,9 @@
                                                         <a-list-item :key="index"
                                                                      v-for="(item, index) in taskSourceList">
                                                             <a-list-item-meta>
-                                                                <a-avatar size="small" slot="avatar"  shape="square" icon="link" :src="item.sourceDetail.file_url" />
+                                                                <a-avatar size="small" slot="avatar" shape="square"
+                                                                          icon="link"
+                                                                          :src="item.sourceDetail.file_url"/>
                                                                 <div slot="title">
                                                                     <span>{{ item.title }}</span>
                                                                 </div>
@@ -679,7 +681,7 @@
     import {notice} from "@/assets/js/notice";
     import {relativelyTaskTime, relativelyTime} from "@/assets/js/dateTime";
     import {checkResponse} from "../../assets/js/utils";
-    import {taskSources} from "../../api/task";
+    import {setPrivate, taskSources} from "../../api/task";
 
     export default {
         name: "task-detail",
@@ -970,17 +972,23 @@
                         this.task.stared ? this.task.stared = 0 : this.task.stared = 1;
                         star(app.code, this.task.stared);
                         return true;
-                        break;
                     case 'open':
                         window.open(window.location.href + '&full-screen');
                         break;
-                    case 'lock':
-                        this.task.private ? this.task.private = 0 : this.task.private = 1;
+
+                    case 'private':
+                        setPrivate(app.code, Number(!this.task.private)).then(res => {
+                            const result = checkResponse(res);
+                            if (!result) {
+                                return false;
+                            }
+                            this.task.private = Number(!this.task.private);
+                        });
                         return true;
                 }
                 this.visibleTaskMenu = false;
             },
-            editTitle(){
+            editTitle() {
                 this.showEditName = true;
                 this.$nextTick(() => {
                     this.$refs.inputTitle.focus();
@@ -1028,7 +1036,7 @@
                     cancelText: `再想想`,
                     onOk() {
                         del(app.code).then((res) => {
-                           ``
+                            ``
                             app.detailClose();
                         });
                         return Promise.resolve();
