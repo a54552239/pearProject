@@ -597,12 +597,6 @@
                     this.getProjectMembers();
                 }
             },
-            // task: {
-            //     handler(newVal, oldVal) {
-            //         newVal.name = newVal.name.replace(/ +/g, "");
-            //     },
-            //     deep: true
-            // }
         },
         created() {
             this.defaultExecutor = this.userInfo;
