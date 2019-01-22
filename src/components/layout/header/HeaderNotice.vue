@@ -4,35 +4,6 @@
             <a-spin class="header-notice-content" :spinning="loadding">
                 <a-tabs :tabBarGutter="25">
                     <a-tab-pane key="1">
-                        <span slot="tab">通知<span
-                                v-if="total && totalSum['notice']">({{totalSum['notice']}})</span></span>
-                        <template v-if="total && totalSum['notice']">
-                            <a-list>
-                                <template v-for="item in list['notice']">
-                                    <a-list-item :key="item.id">
-                                        <a-list-item-meta :description="item.create_time">
-                                             <span slot="title">
-                                                    <p v-html="item.title"></p>
-                                             </span>
-                                            <a-avatar style="background-color: white" slot="avatar"
-                                                      src="https://gw.alipayobjects.com/zos/rmsportal/ThXAXghbEsBCCSDihZxY.png"/>
-                                        </a-list-item-meta>
-                                    </a-list-item>
-                                </template>
-                            </a-list>
-                            <div class="footer-action">
-                                <a class="item muted" @click="setRead('notice')">清空通知</a>
-                                <a class="item muted" @click="()=>{$router.push('/notify/notice')}">查看更多</a>
-                            </div>
-                        </template>
-                        <template v-else>
-                            <div class="notFound">
-                                <img src="../../../assets/image/notify/bell.svg" alt="not found">
-                                <div>你已查看所有通知</div>
-                            </div>
-                        </template>
-                    </a-tab-pane>
-                    <a-tab-pane key="2">
                         <span slot="tab">消息<span
                                 v-if="total && totalSum['message']">({{totalSum['message']}})</span></span>
                         <template v-if="total && totalSum['message']">
@@ -59,6 +30,35 @@
                             <div class="notFound">
                                 <img src="../../../assets/image/notify/laba.svg" alt="not found">
                                 <div>你已读完所有消息</div>
+                            </div>
+                        </template>
+                    </a-tab-pane>
+                    <a-tab-pane key="2">
+                        <span slot="tab">通知<span
+                                v-if="total && totalSum['notice']">({{totalSum['notice']}})</span></span>
+                        <template v-if="total && totalSum['notice']">
+                            <a-list>
+                                <template v-for="item in list['notice']">
+                                    <a-list-item :key="item.id">
+                                        <a-list-item-meta :description="item.create_time">
+                                             <span slot="title">
+                                                    <p v-html="item.title"></p>
+                                             </span>
+                                            <a-avatar style="background-color: white" slot="avatar"
+                                                      src="https://gw.alipayobjects.com/zos/rmsportal/ThXAXghbEsBCCSDihZxY.png"/>
+                                        </a-list-item-meta>
+                                    </a-list-item>
+                                </template>
+                            </a-list>
+                            <div class="footer-action">
+                                <a class="item muted" @click="setRead('notice')">清空通知</a>
+                                <a class="item muted" @click="()=>{$router.push('/notify/notice')}">查看更多</a>
+                            </div>
+                        </template>
+                        <template v-else>
+                            <div class="notFound">
+                                <img src="../../../assets/image/notify/bell.svg" alt="not found">
+                                <div>你已查看所有通知</div>
                             </div>
                         </template>
                     </a-tab-pane>
