@@ -1,5 +1,10 @@
 <template>
     <div class="members-profile">
+        <a-breadcrumb separator=">" class="breadcrumb">
+            <a-breadcrumb-item><router-link to="/"><a-icon type="home" /> 首页</router-link></a-breadcrumb-item>
+            <a-breadcrumb-item><router-link to="/members"><a-icon type="team" /> 成员</router-link></a-breadcrumb-item>
+            <a-breadcrumb-item>{{member.name}}</a-breadcrumb-item>
+        </a-breadcrumb>
         <div class="header">
             <div class="member-info">
                 <template v-if="member">
@@ -64,9 +69,21 @@
                         </a-col>
                     </a-row>
                 </a-tab-pane>
-                <a-tab-pane class="info-content" tab="最近动态" key="2" forceRender>Content of Tab Pane 2</a-tab-pane>
-                <a-tab-pane class="info-content" tab="任务安排" key="3">Content of Tab Pane 3</a-tab-pane>
-                <a-tab-pane class="info-content" tab="Ta的项目" key="4">Content of Tab Pane 3</a-tab-pane>
+                <a-tab-pane class="info-content" tab="最近动态*" key="2" forceRender>
+                    <p class="action-wrapper">
+                        <span class="title">最近动态</span>
+                    </p>
+                </a-tab-pane>
+                <a-tab-pane class="info-content" tab="任务安排*" key="3">
+                    <p class="action-wrapper">
+                        <span class="title">任务安排</span>
+                    </p>
+                </a-tab-pane>
+                <a-tab-pane class="info-content" tab="Ta的项目*" key="4">
+                    <p class="action-wrapper">
+                        <span class="title">Ta的项目</span>
+                    </p>
+                </a-tab-pane>
             </a-tabs>
         </div>
         <a-modal
@@ -208,9 +225,13 @@
 
 <style lang="less">
     .members-profile {
-        margin: 24px auto;
+        margin: 18px auto;
         width: 800px;
         padding: 0 12px;
+
+        .breadcrumb {
+            margin-bottom: 18px;
+        }
 
         .header {
             background: #FFF;
