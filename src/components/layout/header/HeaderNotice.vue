@@ -1,8 +1,8 @@
 <template>
-    <a-popover class="header-notice" trigger="click" placement="bottomRight">
+    <a-popover overlayClassName="header-notice" trigger="click" placement="bottomRight">
         <template slot="content">
-            <a-spin class="header-notice-content" :spinning="loadding">
-                <a-tabs :tabBarGutter="25">
+            <a-spin :spinning="loadding">
+                <a-tabs class="header-notice-content" :tabBarGutter="25">
                     <a-tab-pane key="1">
                         <span slot="tab">消息<span
                                 v-if="total && totalSum['message']">({{totalSum['message']}})</span></span>
@@ -156,48 +156,69 @@
 </script>
 
 <style lang="less">
-    .header-notice-content {
-        width: 300px;
+    .header-notice {
+        .ant-popover-inner-content {
+            padding: 0;
 
-        .ant-tabs-bar {
-            text-align: center;
-            margin-bottom: 5px;
-        }
+            .ant-tabs-bar {
+                margin-bottom: 0 !important;
+            }
 
-        .ant-list-item-meta-title {
-            p {
-                margin-bottom: 8px;
+            .ant-list {
+                .ant-list-item {
+                    padding: 12px 16px;
+                    transition: all .3s;
+
+                    &:hover {
+                        background: #e6f7ff;
+                    }
+                }
             }
         }
 
-        .ant-list-item-meta-description {
-            font-size: 12px;
-        }
+        .header-notice-content {
+            width: 300px;
 
-        .ant-list-item:hover {
-            /*background: #e6f7ff;*/
-            cursor: pointer;
-        }
-
-        .notFound {
-            text-align: center;
-            padding: 73px 0 88px 0;
-            color: rgba(0, 0, 0, 0.45);
-            height: 275px;
-
-            img {
-                margin-bottom: 16px;
-            }
-        }
-
-        .footer-action {
-            border-top: 1px solid #e8e8e8;
-            padding: 12px 0 0 0;
-
-            .item {
-                width: 49%;
-                display: inline-block;
+            .ant-tabs-bar {
                 text-align: center;
+                margin-bottom: 5px;
+            }
+
+            .ant-list-item-meta-title {
+                p {
+                    margin-bottom: 8px;
+                }
+            }
+
+            .ant-list-item-meta-description {
+                font-size: 12px;
+            }
+
+            .ant-list-item:hover {
+                /*background: #e6f7ff;*/
+                cursor: pointer;
+            }
+
+            .notFound {
+                text-align: center;
+                padding: 73px 0 88px 0;
+                color: rgba(0, 0, 0, 0.45);
+                height: 275px;
+
+                img {
+                    margin-bottom: 16px;
+                }
+            }
+
+            .footer-action {
+                border-top: 1px solid #e8e8e8;
+                padding: 12px 0;
+
+                .item {
+                    width: 49%;
+                    display: inline-block;
+                    text-align: center;
+                }
             }
         }
     }
