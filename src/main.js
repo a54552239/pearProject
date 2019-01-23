@@ -1,46 +1,28 @@
 /* eslint-disable no-console,no-unused-vars */
+// The Vue build version to load with the `import` command
+// (runtime-only or standalone) has been set in webpack.base.conf with an alias.
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-import Antd from "ant-design-vue";
+import iView from 'iview'
+import VueDND from 'awe-dnd'
 import App from './App'
-import store from './store/index'
-import router from './router/index'
-import 'ant-design-vue/dist/antd.css'
+import store from './store'
+import router from './router'
+import 'iview/dist/styles/iview.css'
 import vuescroll from 'vuescroll';
 import 'vuescroll/dist/vuescroll.css';
-import '@/assets/css/theme.less'
+import '@/assets/css/app.less'
 import '@/assets/icon/iconfont'
-import WrapperContent from '@/components/layout/WrapperContent'
-import {message, notification} from 'ant-design-vue'
-import {notice, destroyNotice} from './assets/js/notice'
-
-import moment from 'moment';
-import 'moment/locale/zh-cn';
-
-import common from "./mixins/common";
-
-import '@/utils/filter' // global filter
-
-
-moment.locale('zh-cn');
+import CheckLabel from '@/components/check-label';
 
 Vue.use(VueRouter);
 Vue.use(store);
 
 Vue.config.productionTip = false;
-Vue.use(Antd);
-Vue.component('WrapperContent', WrapperContent);
+Vue.use(iView);
+Vue.use(VueDND);
 
-import VueClipboards from 'vue-clipboards';
-Vue.use(VueClipboards);
-
-import uploader from 'vue-simple-uploader'
-Vue.use(uploader);
-
-Vue.prototype.$message = message;
-Vue.prototype.$notification = notification;
-Vue.prototype.$notice = notice;
-Vue.prototype.$destroyNotice = destroyNotice;
+Vue.component('CheckLabel', CheckLabel);
 
 Vue.use(vuescroll);
 Vue.prototype.$vuescrollConfig = {
@@ -48,18 +30,14 @@ Vue.prototype.$vuescrollConfig = {
         mode: 'native'
     },
     scrollPanel: {
-        scrollingX: true,
+        scrollingX: false,
     },
     bar: {
         delayTime: 500,
-        onlyShowBarOnScroll: false,
+        onlyShowBarOnScroll: true,
         background: "#cecece",
-        keepShow: false
     }
 };
-
-Vue.mixin(common);
-
 
 new Vue({
     el: '#app',

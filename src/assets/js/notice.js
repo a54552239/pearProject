@@ -1,45 +1,36 @@
-import {message,notification} from 'ant-design-vue'
+import {Message,Notice} from 'iview'
 
-export const notice = (content, type = 'message', action = 'warning', duration = 3, placement = 'bottomLeft') => {
-    destroyNotice();
+export default (content, type = 'message', action = 'warning', duration = 2) => {
     let config = {};
     config.duration = duration;
     if (type === 'message') {
+        config.content = content;
         switch (action) {
             case 'info':
-                return message.info(content, duration);
+                return Message.info(config);
             case 'success':
-                return message.success(content, duration);
+                return Message.success(config);
             case 'error':
-                return message.error(content, duration);
+                return Message.success(config);
             case 'loading':
-                return message.loading(content, duration);
+                return Message.loading(config);
             default:
-                return message.warning(content, duration);
+                return Message.warning(config);
         }
     } else {
-        config.message = content.title;
-        config.description = content.msg || '';
-        config.placement = placement;
+        config.title = content.title;
+        config.desc = content.desc || '';
         switch (action) {
             case 'open':
-                return notification.open(config);
+                return Notice.open(config);
             case 'info':
-                return notification.info(config);
+                return Notice.info(config);
             case 'success':
-                return notification.success(config);
+                return Notice.success(config);
             case 'error':
-                return notification.error(config);
+                return Notice.success(config);
             default:
-                return notification.warning(config);
+                return Notice.warning(config);
         }
     }
-};
-export const destroyNotice = (type = '') => {
-    if (!type) {
-        message.destroy();
-        notification.destroy();
-    }else{
-        type === 'message' ? message.destroy() : notification.destroy();
-    }
-};
+}
