@@ -11,7 +11,7 @@
                             <ve-histogram
                                     :data="projectData.chartData"
                                     :settings="projectData.chartSettings"
-                                    :extend="projectData.chartExtend"
+                                    :extend="chartExtend"
                                     :legend-visible="false"
                                     height="55px"></ve-histogram>
                         </div>
@@ -24,7 +24,14 @@
                             <a-icon type="info-circle-o"/>
                         </a-tooltip>
                         <div>
-                            数据图
+                            <div class="chart-wrapper">
+                                <ve-line
+                                        :data="taskData.chartData"
+                                        :settings="taskData.chartSettings"
+                                        :extend="chartExtend"
+                                        :legend-visible="false"
+                                        height="55px"></ve-line>
+                            </div>
                         </div>
                         <template slot="footer">今日任务<span> {{ '8' | NumberFormat }}</span></template>
                     </chart-card>
@@ -81,23 +88,37 @@
                             </div>
                             <a-range-picker :style="{width: '256px'}"/>
                         </div>
-                        <a-tab-pane loading="true" tab="销售额" key="1">
+                        <a-tab-pane forceRender tab="项目数" key="1">
                             <a-row>
                                 <a-col :xl="16" :lg="12" :md="12" :sm="24" :xs="24">
-                                    销售额排行图表
+                                    <div class="chart-wrappers-single">
+                                        <ve-histogram
+                                                :data="projectTotalData.chartData"
+                                                :settings="projectTotalData.chartSettings"
+                                                :extend="projectTotalData.chartExtend"
+                                                :legend-visible="false"
+                                                height="300px"></ve-histogram>
+                                    </div>
                                 </a-col>
                                 <a-col :xl="8" :lg="12" :md="12" :sm="24" :xs="24">
-                                    <rank-list title="门店销售排行榜" :list="rankList"/>
+                                    <rank-list title="项目数排行榜" :list="rankList"/>
                                 </a-col>
                             </a-row>
                         </a-tab-pane>
-                        <a-tab-pane tab="访问量" key="2">
+                        <a-tab-pane forceRender tab="任务数" key="2">
                             <a-row>
                                 <a-col :xl="16" :lg="12" :md="12" :sm="24" :xs="24">
-                                    销售额趋势图表
+                                    <div class="chart-wrappers-single">
+                                        <ve-histogram
+                                                :data="projectTotalData.chartData"
+                                                :settings="projectTotalData.chartSettings"
+                                                :extend="projectTotalData.chartExtend"
+                                                :legend-visible="false"
+                                                height="300px"></ve-histogram>
+                                    </div>
                                 </a-col>
                                 <a-col :xl="8" :lg="12" :md="12" :sm="24" :xs="24">
-                                    <rank-list title="门店销售排行榜" :list="rankList"/>
+                                    <rank-list title="任务数排行榜" :list="rankList"/>
                                 </a-col>
                             </a-row>
                         </a-tab-pane>
@@ -152,6 +173,7 @@
 <script>
     import {mapState} from 'vuex'
     import moment from "moment";
+    import VeLine from 'v-charts/lib/line.common'
     import VeHistogram from 'v-charts/lib/histogram.common'
     import ChartCard from '@/components/chart/ChartCard'
     import Trend from '@/components/Trend'
@@ -162,12 +184,27 @@
     const rankList = [];
     for (let i = 0; i < 7; i++) {
         rankList.push({
-            name: '白鹭岛 ' + (i + 1) + ' 号店',
+            name: 'XX公司 ' + (i + 1) + ' 号员工',
             total: 1234.56 - i * 100
+        })
+    }
+    const taskList = [];
+    for (let i = 1; i < 20; i++) {
+        taskList.push({
+            "日期": `1月${i}日`,
+            "任务": (Math.random() * 10 + 1).toFixed(0)
+        })
+    }
+    const projectList = [];
+    for (let i = 1; i < 13; i++) {
+        projectList.push({
+            "日期": `${i}月`,
+            "数量": (Math.random() * 10 + 1).toFixed(0)
         })
     }
     export default {
         components: {
+            VeLine,
             VeHistogram,
             ChartCard,
             MiniProgress,
@@ -179,23 +216,66 @@
             return {
                 loading: false,
                 rankList,
+                chartExtend: {
+                    grid: {
+                        left: '-25',
+                        right: '0',
+                        top: '10',
+                        bottom: '-15'
+                    },
+                    series: {
+                        barWidth: 15,
+                    },
+                    xAxis: {
+                        show: false,
+                    },
+                    yAxis: {
+                        show: false,
+                    },
+                    tooltip: {
+                        backgroundColor: '#fff',
+                        textStyle: {
+                            color: '#333'
+                        },
+                        borderWidth: 1,
+                        borderColor: '#e8e8e8',
+                    },
+                    axisPointer: {
+                        lineStyle: {
+                            width: 0
+                        }
+                    }
+                },
                 projectData: {
                     chartData: {
-                        columns: ['日期', '访问用户'],
-                        rows: [
-                            {'日期': '1/1', '访问用户': 1393},
-                            {'日期': '1/2', '访问用户': 3530},
-                            {'日期': '1/3', '访问用户': 2923},
-                            {'日期': '1/4', '访问用户': 1723},
-                            {'日期': '1/5', '访问用户': 3792},
-                            {'日期': '1/5', '访问用户': 3792},
-                            {'日期': '1/5', '访问用户': 3792},
-                            {'日期': '1/5', '访问用户': 3792},
-                            {'日期': '1/5', '访问用户': 3792},
-                            {'日期': '1/5', '访问用户': 3792},
-                            {'日期': '1/5', '访问用户': 3792},
-                            {'日期': '1/6', '访问用户': 4593}
-                        ]
+                        columns: ['日期', '数量'],
+                        rows: projectList
+                    },
+                    chartSettings: {
+                        itemStyle: {
+                            color: '#1890ff'
+                        },
+                    },
+                },
+                taskData: {
+                    chartData: {
+                        columns: ['日期', '任务'],
+                        rows: taskList
+                    },
+                    chartSettings: {
+                        area: true,
+                        itemStyle: {
+                            color: '#b68eec'
+                        },
+                        areaStyle: {
+                            color: '#b68eec'
+                        }
+                    },
+                },
+                projectTotalData: {
+                    chartData: {
+                        columns: ['日期', '数量'],
+                        rows: projectList
                     },
                     chartSettings: {
                         itemStyle: {
@@ -204,35 +284,16 @@
                     },
                     chartExtend: {
                         grid: {
-                            left: '-35',
+                            left: '30',
                             right: '0',
-                            top: '10',
-                            bottom: '-20'
+                            top: '15',
+                            bottom: '0'
                         },
                         series: {
-                            barWidth: 15,
+                            barWidth: 45,
                         },
-                        xAxis: {
-                            show: false,
-                        },
-                        yAxis: {
-                            show: false,
-                        },
-                        tooltip: {
-                            backgroundColor: '#fff',
-                            textStyle: {
-                                color: '#333'
-                            },
-                            borderWidth: 1,
-                            borderColor: '#e8e8e8',
-                        },
-                        axisPointer: {
-                            lineStyle: {
-                                width: 0
-                            }
-                        }
                     }
-                }
+                },
             }
         },
         computed: {
@@ -274,8 +335,14 @@
 
             .chart-wrapper {
                 position: absolute;
-                bottom: -5px;
+                bottom: -10px;
                 width: 100%;
+            }
+            .chart-wrappers-single{
+                /*width: 500px;*/
+                div{
+                    width: auto !important;
+                }
             }
         }
     }

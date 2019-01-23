@@ -23,7 +23,9 @@
                             :trigger="['click']"
                             v-model="showCreateDepartment"
                     >
-                        <a><a-icon :style="{fontSize: '14px'}" type="plus-circle"/> 创建部门</a>
+                        <a>
+                            <a-icon :style="{fontSize: '14px'}" type="plus-circle"/>
+                            创建部门</a>
                         <div slot="overlay">
                             <create-department
                                     v-if="showCreateDepartment"
@@ -31,7 +33,9 @@
                             ></create-department>
                         </div>
                     </a-dropdown>
-                    <a><a-icon type="bars"/> 部门排序*</a>
+                    <a>
+                        <a-icon type="bars"/>
+                        部门排序*</a>
                 </div>
                 <div class="content-item department">
                     <a-spin :spinning="departmentLoading">
@@ -103,46 +107,50 @@
                 </div>
             </div>
             <div class="members-content">
-                <a-list :loading="loading">
-                    <div v-if="showLoadingMore" slot="loadMore"
-                         :style="{ textAlign: 'center', marginTop: '12px', height: '32px', lineHeight: '32px' }">
-                        <a-spin v-if="loadingMore"/>
-                        <a-button v-else @click="onLoadMore">加载更多</a-button>
-                    </div>
-                    <a-list-item :key="index" v-for="(item, index) in members">
-                        <a-list-item-meta>
-                            <a-avatar slot="avatar" :src="item.avatar"/>
-                            <div slot="title">
-                                <span>{{ item.name }}</span>
-                                <a-tag class="m-l-sm" v-if="item.is_owner">拥有者</a-tag>
-                            </div>
-                            <div slot="description">
-                                <!--<a-tooltip :mouseEnterDelay="0.3" :title="item.create_time">-->
-                                <span>{{item.email}}
+                <vue-scroll ref="contentscroll">
+                    <a-list class="member-list" :loading="loading">
+                        <div v-if="showLoadingMore" slot="loadMore"
+                             :style="{ textAlign: 'center', marginTop: '12px', height: '32px', lineHeight: '32px' }">
+                            <a-spin v-if="loadingMore"/>
+                            <a-button v-else @click="onLoadMore">加载更多</a-button>
+                        </div>
+                        <a-list-item :key="index" v-for="(item, index) in members">
+                            <a-list-item-meta>
+                                <a-avatar slot="avatar" :src="item.avatar"/>
+                                <div slot="title">
+                                    <router-link :to="`/members/profile/${item.code}`" class="text-default">{{ item.name }}</router-link>
+                                    <a-tag class="m-l-sm" v-if="item.is_owner">拥有者</a-tag>
+                                </div>
+                                <div slot="description">
+                                    <!--<a-tooltip :mouseEnterDelay="0.3" :title="item.create_time">-->
+                                    <span>{{item.email}}
                                     <span v-if="item.departments"> - {{ item.departments }}</span>
                                 </span>
-                                <!--</a-tooltip>-->
-                            </div>
-                        </a-list-item-meta>
-                        <template v-if="!item.is_owner">
-                            <a class="muted" slot="actions" v-if="item.status == 0" @click="resumeAccount(item,index)">
-                                <a-tooltip title="启用账号">
-                                    <a-icon type="check-circle"/>
-                                </a-tooltip>
-                            </a>
-                            <a class="muted" slot="actions" v-if="item.status == 1" @click="forbidAccount(item,index)">
-                                <a-tooltip title="停用账号">
-                                    <a-icon type="stop"/>
-                                </a-tooltip>
-                            </a>
-                            <a class="muted" slot="actions" @click="deleteAccount(item,index)">
-                                <a-tooltip :title="`从${actionTitle}内移除`">
-                                    <a-icon type="user-delete"/>
-                                </a-tooltip>
-                            </a>
-                        </template>
-                    </a-list-item>
-                </a-list>
+                                    <!--</a-tooltip>-->
+                                </div>
+                            </a-list-item-meta>
+                            <template v-if="!item.is_owner">
+                                <a class="muted" slot="actions" v-if="item.status == 0"
+                                   @click="resumeAccount(item,index)">
+                                    <a-tooltip title="启用账号">
+                                        <a-icon type="check-circle"/>
+                                    </a-tooltip>
+                                </a>
+                                <a class="muted" slot="actions" v-if="item.status == 1"
+                                   @click="forbidAccount(item,index)">
+                                    <a-tooltip title="停用账号">
+                                        <a-icon type="stop"/>
+                                    </a-tooltip>
+                                </a>
+                                <a class="muted" slot="actions" @click="deleteAccount(item,index)">
+                                    <a-tooltip :title="`从${actionTitle}内移除`">
+                                        <a-icon type="user-delete"/>
+                                    </a-tooltip>
+                                </a>
+                            </template>
+                        </a-list-item>
+                    </a-list>
+                </vue-scroll>
             </div>
 
         </div>
@@ -430,9 +438,11 @@
 
 <style lang="less">
     .members-index {
-        margin: 24px;
+        margin: 24px auto;
         display: flex;
         flex-direction: row;
+        width: 1100px;
+        padding: 0 12px;
 
         .layout-item {
             background: #FFF;
@@ -523,9 +533,10 @@
         }
 
         .right {
-            padding: 24px 24px 12px 0;
+            padding: 24px 12px 12px 0;
 
             .header {
+                padding-right: 12px;
                 display: flex;
                 justify-content: space-between;
                 border-bottom: 1px solid #e8e8e8;
@@ -539,6 +550,13 @@
                     a {
                         margin-left: 12px;
                     }
+                }
+            }
+
+            .members-content {
+                height: 75vh;
+                .member-list{
+                    margin-right: 12px;
                 }
             }
         }

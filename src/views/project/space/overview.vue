@@ -277,7 +277,7 @@
 
         .layout-content {
             padding: 12px;
-            width: 1000px;
+            width: 1100px;
             margin: 12px auto auto;
             background: initial;
             display: flex;
@@ -296,7 +296,7 @@
             }
 
             .content-left {
-                width: 630px;
+                width: 730px;
 
                 .log-list {
                     background: #fff;

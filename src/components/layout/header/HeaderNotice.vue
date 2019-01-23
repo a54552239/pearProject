@@ -1,7 +1,7 @@
 <template>
-    <a-popover overlayClassName="header-notice" trigger="click" placement="bottomRight">
+    <a-popover v-model="showNotice" overlayClassName="header-notice" trigger="click" placement="bottomRight">
         <template slot="content">
-            <a-spin :spinning="loadding">
+            <a-spin :spinning="loading">
                 <a-tabs class="header-notice-content" :tabBarGutter="25">
                     <a-tab-pane key="1">
                         <span slot="tab">消息<span
@@ -23,7 +23,7 @@
                             </a-list>
                             <div class="footer-action">
                                 <a class="item muted" @click="setRead('message')">清空消息</a>
-                                <a class="item muted" @click="routerLink('/notify/notice')">查看更多</a>
+                                <a class="item muted" @click="showMore('1')">查看更多</a>
                             </div>
                         </template>
                         <template v-else>
@@ -110,7 +110,8 @@
         name: 'HeaderNotice',
         data() {
             return {
-                loadding: false,
+                showNotice: false,
+                loading: false,
                 total: 0,
                 totalSum: 0,
                 list: []
@@ -150,6 +151,13 @@
             setRead(type) {
                 this.total -= this.list[type].length;
                 this.list[type] = [];
+            },
+            showMore(key) {
+                switch (key) {
+                    default:
+                        this.showNotice = false;
+                        this.$router.push('/notify/notice');
+                }
             }
         }
     }

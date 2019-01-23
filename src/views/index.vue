@@ -39,7 +39,7 @@
                         </div>
                     </div>
                 </a-layout-header>
-                <a-layout style="margin-top: 65px;">
+                <a-layout style="padding-top: 65px;">
                     <a-sider
                             mode="inline"
                             breakpoint="md"
@@ -89,7 +89,7 @@
                     <a-layout
                             class="main-content"
                             :style="collapsed ? { paddingLeft: '80px'} : { paddingLeft: '256px'}">
-                        <vue-scroll ref="contentscroll">
+                        <!--<vue-scroll ref="contentscroll">-->
                             <a-layout-content>
                                 <transition name="router-fade" mode="out-in">
                                     <a-spin :spinning="pageLoading">
@@ -102,7 +102,7 @@
                                     <span @click="footerClick">  Copyright © 2018 Pear Project技术部出品 </span>
                                 </template>
                             </a-footer>-->
-                        </vue-scroll>
+                        <!--</vue-scroll>-->
                     </a-layout>
                 </a-layout>
             </a-layout>

@@ -30,7 +30,7 @@ export function resume(accountCode) {
 
 export function doAccount(data) {
     let url = 'project/account/add';
-    if (data.id) {
+    if (data.code) {
         url = 'project/account/edit';
     }
     return $http.post(url, data);
@@ -46,6 +46,14 @@ export function del(accountCode) {
 
 export function info($id) {
     return $http.post('project/index/info', {id: $id});
+}
+
+export function read(code) {
+    return $http.post('project/account/read', {code: code});
+}
+
+export function editAccount(data) {
+    return $http.post('project/account/edit', data);
 }
 
 export function editPersonal(data) {
