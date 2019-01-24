@@ -185,7 +185,7 @@
         }
 
         .header-notice-content {
-            width: 300px;
+            width: 340px;
 
             .ant-tabs-bar {
                 text-align: center;
