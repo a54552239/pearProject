@@ -125,8 +125,14 @@
                                                  @click.stop="taskDetail(task.code,index)"
                                             >
                                                 <div class="task-priority bg-priority-0"></div>
-                                                <a class="check-box"
-                                                   @click.stop="taskDone(task.code,index,taskIndex,1)"></a>
+                                                <a-tooltip placement="top">
+                                                    <template slot="title">
+                                                        <span v-if="task.hasUnDone" style="font-size: 12px;">子任务尚未全部完成，无法完成父任务</span>
+                                                    </template>
+                                                    <a class="check-box"
+                                                       :class="{'disabled': task.hasUnDone}"
+                                                       @click.stop="taskDone(task.code,index,taskIndex,1)"></a>
+                                                </a-tooltip>
                                                 <div class="task-content-set open-detail">
                                                     <div class="task-content-wrapper">
                                                         <div class="task-content"> {{ task.name }}</div>
@@ -259,7 +265,8 @@
                                                 </div>
                                             </li>
                                         </template>
-                                        <li class="task muted" style="margin: 0 10px 8px;" v-show="stage.canNotReadCount">
+                                        <li class="task muted" style="margin: 0 10px 8px;"
+                                            v-show="stage.canNotReadCount">
                                             <span><a-icon type="lock"></a-icon>
                                                 有 {{stage.canNotReadCount}} 个任务被隐藏（因为设置了仅参与者可见）</span>
                                         </li>
@@ -727,12 +734,16 @@
                 });
             },
             taskDone(taskCode, stageIndex, taskIndex, done) {
+                let task = this.taskStages[stageIndex].tasks[taskIndex];
+                if (task.hasUnDone) {
+                    return false;
+                }
                 taskDone(taskCode, done).then((res) => {
                     const result = checkResponse(res);
                     if (!result) {
                         return false;
                     }
-                    this.taskStages[stageIndex].tasks[taskIndex].done = done;
+                    task.done = done;
                 });
             },
             showInputStrageName() {

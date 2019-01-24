@@ -68,6 +68,7 @@
         .ant-tree-child-tree-open {
             .ant-tree-child-tree-open li {
                 display: inline;
+                white-space: initial;
             }
         }
     }
