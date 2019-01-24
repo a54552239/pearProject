@@ -301,7 +301,6 @@
                 })
             },
             changeTaskType(obj) {
-                console.log(obj);
                 this.$nextTick(() => {
                     this.getTasks();
                 })
