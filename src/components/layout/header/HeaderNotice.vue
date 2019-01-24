@@ -64,14 +64,25 @@
                     </a-tab-pane>
                     <a-tab-pane key="3">
                         <span slot="tab">待办<span
-                                v-if="total && totalSum['task']">({{totalSum['task']}})</span></span>
-                        <template v-if="total && totalSum['task']">
+                                v-if="task.total && task.total">({{task.total}})</span></span>
+                        <template v-if="task.total && task.total">
                             <a-list>
-                                <template v-for="item in list['task']">
+                                <template v-for="item in task.list">
                                     <a-list-item :key="item.id">
-                                        <a-list-item-meta :description="item.content">
-                                             <span slot="title">
-                                                    <p>{{item.title}}</p>
+                                        <a-list-item-meta>
+                                            <a-avatar slot="avatar"
+                                                      :src="item.executor.avatar"/>
+                                            <span slot="title">
+                                                    <p>
+                                                        {{item.name}}
+                                                         <a-tag style="position: absolute;right: 0" color="red"
+                                                                v-if="item.end_time">还剩 {{showDiff(item.end_time,new Date())}} 天</a-tag>
+                                                         <a-tag style="position: absolute;right: 0" color="gold" v-else>已耗时 {{showDiff(new Date(),item.create_time)}} 天</a-tag>
+                                                    </p>
+                                             </span>
+                                            <span slot="description">
+                                                    <span>来自项目{{item.projectInfo.name}}</span>
+                                                    <span v-if="item.end_time">，需在{{formatTime(item.end_time)}}前完成</span>
                                              </span>
                                         </a-list-item-meta>
                                     </a-list-item>
@@ -102,9 +113,12 @@
 
 <script>
     import {mapState} from 'vuex'
+    import moment from 'moment';
     import {noReads} from "../../../api/notify";
     import {notice} from "../../../assets/js/notice";
     import {showMsgNotification} from "../../../assets/js/notify";
+    import {selfList} from "../../../api/task";
+    import {relativelyTime} from "../../../assets/js/dateTime";
 
     export default {
         name: 'HeaderNotice',
@@ -113,8 +127,15 @@
                 showNotice: false,
                 loading: false,
                 total: 0,
+                messageTotal: 0,
                 totalSum: 0,
-                list: []
+                list: [],
+                task: {
+                    page: 1,
+                    pageSize: 5,
+                    total: 0,
+                    list: [],
+                }
             }
         },
         computed: {
@@ -138,13 +159,15 @@
         },
         created() {
             this.fetchNotice();
+            this.getTasks();
         },
         methods: {
             fetchNotice() {
                 let app = this;
                 noReads().then(res => {
                     app.list = res.data.list;
-                    app.total = res.data.total;
+                    app.messageTotal = res.data.total;
+                    app.total = app.messageTotal + app.task.total;
                     app.totalSum = res.data.totalSum;
                 });
             },
@@ -158,7 +181,20 @@
                         this.showNotice = false;
                         this.$router.push('/notify/notice');
                 }
-            }
+            },
+            getTasks() {
+                selfList({page: this.task.page, pageSize: this.task.pageSize}).then(res => {
+                    this.task.list = res.data.list;
+                    this.task.total = res.data.total;
+                    this.total = this.messageTotal + this.task.total;
+                })
+            },
+            formatTime(time) {
+                return moment(time).format('YY年MM月DD日 HH:mm');
+            },
+            showDiff(time, time2) {
+                return moment(time).diff(moment(time2), 'days');
+            },
         }
     }
 </script>
@@ -174,7 +210,7 @@
 
             .ant-list {
                 .ant-list-item {
-                    padding: 12px 16px;
+                    padding: 12px 24px;
                     transition: all .3s;
 
                     &:hover {
@@ -195,6 +231,7 @@
             .ant-list-item-meta-title {
                 p {
                     margin-bottom: 8px;
+                    position: relative;
                 }
             }
 
