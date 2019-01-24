@@ -64,7 +64,7 @@
                         </div>
                         <template slot="footer">
                             <trend flag="down" style="margin-right: 16px;">
-                                <span slot="term">同周比</span>
+                                <span slot="term">周同比</span>
                                 12%
                             </trend>
                             <trend flag="up">
