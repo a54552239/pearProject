@@ -40,6 +40,10 @@ export function assignTask(data) {
     return $http.post('project/task/assignTask', data);
 }
 
+export function batchAssignTask(data) {
+    return $http.post('project/task/batchAssignTask', data);
+}
+
 export function read(code) {
     return $http.post('project/task/read', {taskCode: code});
 }

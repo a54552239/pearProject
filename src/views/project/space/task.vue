@@ -83,12 +83,12 @@
                                     </a-menu-item>
                                     <a-menu-item :key="'setExecutor_' + stage.code + '_' + index">
                                         <a-icon size="14" type="user"></a-icon>
-                                        设置本列所有任务执行者 *
+                                        设置本列所有任务执行者
                                     </a-menu-item>
-                                    <a-menu-item :key="'setEndTime_' + stage.code + '_' + index">
+                                    <!--<a-menu-item :key="'setEndTime_' + stage.code + '_' + index">
                                         <a-icon size="14" type="clock-circle"></a-icon>
                                         设置本列所有任务截止时间 *
-                                    </a-menu-item>
+                                    </a-menu-item>-->
                                     <a-menu-item :key="'recycleBatch_' + stage.code + '_' + index">
                                         <a-icon size="14" type="delete"></a-icon>
                                         本列所有任务移到回收站
@@ -464,6 +464,36 @@
         >
             <recycle-bin v-if="recycleModal.modalStatus" :code="code" @update="init"></recycle-bin>
         </a-modal>
+        <a-modal
+                class="invite-project-member"
+                :width="360"
+                v-model="projectMemberModal.modalStatus"
+                :title="projectMemberModal.modalTitle"
+                :footer="null"
+        >
+            <div class="member-list">
+                <a-list
+                        class="project-list"
+                        itemLayout="horizontal"
+                        :loading="loading"
+                        :dataSource="projectMembers"
+                >
+                    <a-list-item slot="renderItem" slot-scope="item">
+                    <span slot="actions">
+                        <a-button size="small" type="dashed" icon="user-add"
+                                  @click="setExecutor(item)"
+                        >设置</a-button>
+                     </span>
+                        <a-list-item-meta
+                                :description="item.email"
+                        >
+                            <span slot="title">{{item.name}}</span>
+                            <a-avatar slot="avatar" icon="user" :src="item.avatar"/>
+                        </a-list-item-meta>
+                    </a-list-item>
+                </a-list>
+            </div>
+        </a-modal>
 
         <invite-project-member v-model="showInviteMember" :project-code="code"
                                v-if="showInviteMember"></invite-project-member>
@@ -482,7 +512,7 @@
     import {list as getTaskStages, sort, tasks as getTasks} from "../../../api/taskStages";
     import {read as getProject} from "../../../api/project";
     import {inviteMember, list as getProjectMembers, removeMember} from "../../../api/projectMember";
-    import {save as createTask, taskDone, sort as sortTask, recycleBatch} from "../../../api/task";
+    import {save as createTask, taskDone, sort as sortTask, recycleBatch, batchAssignTask} from "../../../api/task";
     import {save as createState, edit as editStage, del as delStage} from "../../../api/taskStages";
     import {checkResponse} from "../../../assets/js/utils";
     import {formatTaskTime} from "../../../assets/js/dateTime";
@@ -545,6 +575,14 @@
                 recycleModal: {
                     modalStatus: false,
                     modalTitle: '查看回收站',
+                },
+
+                /*项目成员*/
+                projectMemberModal: {
+                    loading: false,
+                    currentStageIndex: 0,
+                    modalStatus: false,
+                    modalTitle: '设置任务执行者',
                 },
             }
         },
@@ -794,7 +832,8 @@
                         this.set_type_endTime_modal = true;
                         break;
                     case 'setExecutor':
-                        this.set_executor_modal = true;
+                        this.projectMemberModal.currentStageIndex = stageIndex;
+                        this.projectMemberModal.modalStatus = true;
                         break;
                     case 'delStage':
                         if (this.taskStages[stageIndex].tasks.length > 0) {
@@ -852,6 +891,36 @@
                     this.taskStages[this.stageModal.stageIndex].name = stage.name;
                     this.stageModal.modalStatus = false;
                 });
+            },
+            setExecutor(member) {
+                let stage = this.taskStages[this.projectMemberModal.currentStageIndex];
+                let taskCodes = [];
+                stage.tasks.forEach((v) => {
+                    if (v.canRead) {
+                        taskCodes.push(v.code);
+                    }
+                });
+                if (taskCodes) {
+                    batchAssignTask({taskCodes: JSON.stringify(taskCodes), executorCode: member.code}).then(res => {
+                        this.projectMemberModal.modalStatus = false;
+                        if (!checkResponse(res)) {
+                            return false;
+                        }
+                        getTasks({stageCode: stage.code}).then((res) => {
+                            let canNotReadCount = 0;
+                            res.data.forEach((task) => {
+                                if (!task.canRead) {
+                                    canNotReadCount++;
+                                }
+                            });
+                            stage.canNotReadCount = canNotReadCount;
+                            stage.tasksLoading = false;
+                            stage.tasks = res.data;
+                        });
+                    });
+                }else{
+                    this.projectMemberModal.modalStatus = false;
+                }
             },
             showTaskPri(pri) {
                 return {
