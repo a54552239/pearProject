@@ -1,8 +1,18 @@
 <template>
     <div class="members-profile">
         <a-breadcrumb separator=">" class="breadcrumb">
-            <a-breadcrumb-item><router-link to="/"><a-icon type="home" /> 首页</router-link></a-breadcrumb-item>
-            <a-breadcrumb-item><router-link to="/members"><a-icon type="team" /> 成员</router-link></a-breadcrumb-item>
+            <a-breadcrumb-item>
+                <router-link to="/">
+                    <a-icon type="home"/>
+                    首页
+                </router-link>
+            </a-breadcrumb-item>
+            <a-breadcrumb-item>
+                <router-link to="/members">
+                    <a-icon type="team"/>
+                    成员
+                </router-link>
+            </a-breadcrumb-item>
             <a-breadcrumb-item>{{member.name}}</a-breadcrumb-item>
         </a-breadcrumb>
         <div class="header">
@@ -22,7 +32,7 @@
             </div>
         </div>
         <div class="actions">
-            <a-tabs :animated="false" defaultActiveKey="1">
+            <a-tabs :animated="false" defaultActiveKey="1" @change="tabChange">
                 <a-tab-pane class="info-content base-info" tab="详细资料" key="1">
                     <p class="action-wrapper">
                         <span class="title">详细资料</span>
@@ -69,20 +79,68 @@
                         </a-col>
                     </a-row>
                 </a-tab-pane>
-                <a-tab-pane class="info-content" tab="最近动态*" key="2" forceRender>
+                <!--<a-tab-pane class="info-content" tab="最近动态*" key="2" forceRender>
                     <p class="action-wrapper">
                         <span class="title">最近动态</span>
                     </p>
-                </a-tab-pane>
-                <a-tab-pane class="info-content" tab="任务安排*" key="3">
+                </a-tab-pane>-->
+                <a-tab-pane class="info-content" tab="任务安排" key="3">
                     <p class="action-wrapper">
-                        <span class="title">任务安排</span>
+                        <span class="title">
+                            任务安排
+                             <a-dropdown :trigger="['click']">
+                                    <a class="muted m-l-sm" style="font-size: 14px;">
+                                        <span v-if="task.type[0] == 0">未完成的任务 </span>
+                                        <span v-else>全部 </span>
+                                        <a-icon type="down"/>
+                                    </a>
+                                    <a-menu v-model="task.type" @click="changeTaskType" class="field-right-menu"
+                                            slot="overlay"
+                                            selectable>
+                                        <a-menu-item key="0">
+                                            <div class="menu-item-content">
+                                                <span>未完成的任务</span>
+                                            </div>
+                                        </a-menu-item>
+                                        <a-menu-item key="-1">
+                                            <div class="menu-item-content">
+                                                <span>全部</span>
+                                            </div>
+                                        </a-menu-item>
+                                    </a-menu>
+                                </a-dropdown>
+                        </span>
                     </p>
+                    <a-list class="content-wrapper list" :loading="task.loading">
+                        <a-list-item :key="index" v-for="(item, index) in task.list">
+                            <a-list-item-meta @click="showTaskDetail(item)">
+                                <div slot="title">
+                                    <a-icon type="border" v-if="!item.done"/>
+                                    <a-icon type="check-square" v-if="item.done"/>
+                                    <span class="m-l-sm">{{item.name}}</span>
+                                    <span class="muted m-l tips">
+                                        <a-icon type="project"/>
+                                        {{item.projectInfo.name}}
+                                    </span>
+                                </div>
+                            </a-list-item-meta>
+                        </a-list-item>
+                    </a-list>
                 </a-tab-pane>
-                <a-tab-pane class="info-content" tab="Ta的项目*" key="4">
+                <a-tab-pane class="info-content" tab="Ta的项目" key="4">
                     <p class="action-wrapper">
                         <span class="title">Ta的项目</span>
                     </p>
+                    <a-list class="content-wrapper list default-list" :loading="project.loading">
+                        <a-list-item :key="index" v-for="(item, index) in project.list">
+                            <a-list-item-meta @click="routerLink(`/project/space/task/${item.code}`)">
+                                <a-avatar slot="avatar" icon="user" :src="item.cover"/>
+                                <div slot="title">
+                                    <span class="m-l-sm">{{item.name}}</span>
+                                </div>
+                            </a-list-item-meta>
+                        </a-list-item>
+                    </a-list>
                 </a-tab-pane>
             </a-tabs>
         </div>
@@ -148,28 +206,56 @@
                 </a-form-item>
             </a-form>
         </a-modal>
+        <a-modal
+                class="task-detail-modal"
+                width="min-content"
+                :closable="false"
+                v-model="task.modalStatus"
+                title=""
+                :footer="null"
+                @cancel="detailClose"
+        >
+            <task-detail v-if="task.currentTask.code" :taskCode="task.currentTask.code"
+                         @close="detailClose"></task-detail>
+        </a-modal>
     </div>
 </template>
 
 <script>
-    import _ from 'lodash'
-    import inviteDepartmentMember from '../../components/project/inviteDepartmentMember'
-    import createDepartment from '../../components/project/createDepartment'
+    import taskDetail from '@/components/project/taskDetail'
     import pagination from "../../mixins/pagination";
     import {checkResponse} from "../../assets/js/utils";
     import {editAccount, read} from "../../api/user";
+    import {selfList} from "../../api/task";
+    import {selfList as getProjectList} from "../../api/project";
 
     export default {
         name: "memberProfile",
         components: {
-            inviteDepartmentMember,
-            createDepartment,
+            taskDetail
         },
         mixins: [pagination],
         data() {
             return {
                 code: this.$route.params.code,
                 member: {},
+                task: {
+                    page: 1,
+                    pageSize: 1000,
+                    loading: false,
+                    modalStatus: false,
+                    currentTask: {},
+                    type: ['0'],
+                    total: 0,
+                    list: []
+                },
+                project: {
+                    page: 1,
+                    pageSize: 1000,
+                    loading: false,
+                    total: 0,
+                    list: []
+                },
                 form: this.$form.createForm(this),
                 actionInfo: {
                     modalStatus: false,
@@ -187,10 +273,60 @@
             init() {
                 this.getMember();
             },
+            tabChange(key) {
+                switch (key) {
+                    case '3':
+                        this.getTasks();
+                        break;
+                    case '4':
+                        this.getProjectList();
+                }
+            },
             getMember() {
                 read(this.code).then(res => {
                     this.member = res.data;
                 });
+            },
+            getTasks() {
+                this.task.loading = true;
+                selfList({
+                    memberCode: this.member.code,
+                    type: Number(this.task.type[0]),
+                    page: this.task.page,
+                    pageSize: this.task.pageSize
+                }).then(res => {
+                    this.task.loading = false;
+                    this.task.list = res.data.list;
+                    this.task.total = res.data.total;
+                })
+            },
+            changeTaskType(obj) {
+                console.log(obj);
+                this.$nextTick(() => {
+                    this.getTasks();
+                })
+            },
+            showTaskDetail(task) {
+                this.task.currentTask = JSON.parse(JSON.stringify(task));
+                this.task.modalStatus = true;
+            },
+            detailClose() {
+                this.task.modalStatus = false;
+                setTimeout(() => {
+                    this.task.currentTask.code = '';
+                }, 500);
+            },
+            getProjectList() {
+                this.task.loading = true;
+                getProjectList({
+                    memberCode: this.member.code,
+                    page: this.task.page,
+                    pageSize: this.task.pageSize
+                }).then(res => {
+                    this.project.loading = false;
+                    this.project.list = res.data.list;
+                    this.project.total = res.data.total;
+                })
             },
             showEditBaseInfo() {
                 this.actionInfo.modalStatus = true;
@@ -273,6 +409,29 @@
                     padding: 0 36px;
                     background: #FFF;
 
+                    &.list {
+                        padding: 4px 0;
+
+                        .ant-list-item {
+                            padding: 12px;
+                            border-bottom: none;
+
+                            .tips {
+                                font-size: 12px;
+                            }
+
+                            &:hover {
+                                background-color: #f5f5f5;
+                                cursor: pointer;
+                            }
+                        }
+                    }
+
+                    &.default-list {
+                        .ant-list-item-meta {
+                            align-items: center;
+                        }
+                    }
                 }
 
             }
