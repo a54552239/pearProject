@@ -76,8 +76,8 @@
                                                     <p>
                                                         {{item.name}}
                                                          <a-tag style="position: absolute;right: 0" color="red"
-                                                                v-if="item.end_time">还剩 {{showDiff(item.end_time,new Date())}} 天</a-tag>
-                                                         <a-tag style="position: absolute;right: 0" color="gold" v-else>已耗时 {{showDiff(new Date(),item.create_time)}} 天</a-tag>
+                                                                v-if="item.end_time">还剩{{showDiff(item.end_time,new Date())}}</a-tag>
+                                                         <a-tag style="position: absolute;right: 0" color="gold" v-else>已耗时{{showDiff(new Date(),item.create_time)}}</a-tag>
                                                     </p>
                                              </span>
                                             <span slot="description">
@@ -147,9 +147,9 @@
         watch: {
             socketAction(val) {
                 if (val.action === 'notice') {
-                    this.fetchNotice();
+                    this.init();
                 } else if (val.action === 'task') {
-                    this.fetchNotice();
+                    this.init();
                     const permission = showMsgNotification(val.title, val.msg, {icon: val.data.notify.avatar});
                     if (permission === false) {
                         notice(val, 'notice', 'info', 10);
@@ -158,10 +158,13 @@
             }
         },
         created() {
-            this.fetchNotice();
-            this.getTasks();
+            this.init();
         },
         methods: {
+            init() {
+                this.fetchNotice();
+                this.getTasks();
+            },
             fetchNotice() {
                 let app = this;
                 noReads().then(res => {
@@ -193,7 +196,14 @@
                 return moment(time).format('YY年MM月DD日 HH:mm');
             },
             showDiff(time, time2) {
-                return moment(time).diff(moment(time2), 'days');
+                let diff = moment(time).diff(moment(time2), 'days');
+                if (diff <= 0) {
+                    diff = moment(time).diff(moment(time2), 'hours');
+                    diff += '小时'
+                } else {
+                    diff += '天'
+                }
+                return diff;
             },
         }
     }
