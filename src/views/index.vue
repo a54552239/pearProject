@@ -28,6 +28,11 @@
                         </a-menu-item>
                     </a-menu>
                     <div class="right-menu">
+                        <div class="m-r-lg" v-if="config.WS_URI">
+                            <a-badge title="当前在线" :count="online" showZero :numberStyle="{backgroundColor: '#52c41a'} " :offset="[10,0]">
+                                <a-icon type="team"/>
+                            </a-badge>
+                        </div>
                         <div class="action action-organization" v-if="organizationList.length > 1">
                             <header-select></header-select>
                         </div>
@@ -46,11 +51,11 @@
                             collapsible
                             v-model="collapsed"
                     >
-                       <!-- <a-icon
-                        class="trigger"
-                        :type="collapsed ? 'menu-unfold' : 'menu-fold'"
-                        @click="()=> collapsed = !collapsed"
-                        />-->
+                        <!-- <a-icon
+                         class="trigger"
+                         :type="collapsed ? 'menu-unfold' : 'menu-fold'"
+                         @click="()=> collapsed = !collapsed"
+                         />-->
                         <a-menu :theme="theme"
                                 v-for="menu in menus"
                                 :key="menu.id.toString()"
@@ -90,18 +95,18 @@
                             class="main-content"
                             :style="collapsed ? { paddingLeft: '80px'} : { paddingLeft: '256px'}">
                         <!--<vue-scroll ref="contentscroll">-->
-                            <a-layout-content>
-                                <transition name="router-fade" mode="out-in">
-                                    <a-spin :spinning="pageLoading">
-                                        <router-view></router-view>
-                                    </a-spin>
-                                </transition>
-                            </a-layout-content>
-                           <!-- <a-footer style="text-align: center">
-                                <template v-if="system">
-                                    <span @click="footerClick">  Copyright © 2018 Pear Project技术部出品 </span>
-                                </template>
-                            </a-footer>-->
+                        <a-layout-content>
+                            <transition name="router-fade" mode="out-in">
+                                <a-spin :spinning="pageLoading">
+                                    <router-view></router-view>
+                                </a-spin>
+                            </transition>
+                        </a-layout-content>
+                        <!-- <a-footer style="text-align: center">
+                             <template v-if="system">
+                                 <span @click="footerClick">  Copyright © 2018 Pear Project技术部出品 </span>
+                             </template>
+                         </a-footer>-->
                         <!--</vue-scroll>-->
                     </a-layout>
                 </a-layout>
@@ -148,7 +153,8 @@
                 selectedKeys: [],
                 selectedModelKeys: [],
                 breadCrumbInfo: [],
-                config: config
+                config: config,
+                online: 0,
             }
         },
         computed: {
@@ -159,7 +165,8 @@
                 system: state => state.system,
                 pageLoading: state => state.pageLoading,
                 windowLoading: state => state.windowLoading,
-                organizationList: state => state.organizationList
+                organizationList: state => state.organizationList,
+                socketAction: state => state.socketAction,
             }),
             layoutClass() {
                 let className = 'layout-' + this.theme;
@@ -187,6 +194,11 @@
             logged(val) {
                 if (!val) {
                     this.$router.push({name: 'login'})
+                }
+            },
+            socketAction(val) {
+                if (val.action === 'connect' || val.action === 'onClose') {
+                    this.online = val.data.online;
                 }
             }
         },
@@ -226,6 +238,7 @@
                         }
                     });
                 }
+
                 //递归找到当前路由的顶部菜单，然后更新左侧菜单
                 if (meta.model) {
                     getArray(that.menu, meta.model);
@@ -255,7 +268,7 @@
                                     that.selectedKeys.push(v2.id.toString());
                                     if (!that.collapsed) {
                                         that.openKeys.push(v2.pid.toString());
-                                    }else{
+                                    } else {
                                         that.openKeysTemp.push(v2.pid.toString());
 
                                     }
