@@ -3,8 +3,15 @@
         <a-spin class="task-detail-spin" :spinning="loading">
             <div class="task-header" :class="{'disabled': task.deleted}">
                     <span class="head-title" v-if="!task.deleted">
-                        <span v-if="task.parentTask"><span class="muted">属于任务：</span><a class="text-default"
-                                                                                        @click="init(task.pcode)">{{task.parentTask.name}}</a></span>
+                        <span v-if="task.parentTask">
+                            <span class="muted">属于任务：</span>
+                            <!--<a class="text-default" @click="init(task.pcode)">{{task.parentTask.name}}</a>-->
+                             <a-breadcrumb separator=">" class="breadcrumb text-default">
+                                <a-breadcrumb-item v-for="parent in  task.parentTasks" :key="parent.code">
+                                    <a class="text-default" @click="init(parent.code)">{{parent.name}}</a>
+                                </a-breadcrumb-item>
+                            </a-breadcrumb>
+                        </span>
                         <span v-else>{{task.projectName}} · {{task.stageName}}</span>
                     </span>
                 <span class="head-title muted" v-else>
@@ -60,7 +67,7 @@
                                             <span>以新标签页打开</span>
                                     </a-menu-item>
                                      <a-menu-divider/>
-                                    <a-menu-item key="lock">
+                                    <a-menu-item key="private">
                                            <a-icon :type="task.private ? 'lock' : 'unlock'"/>
                                             <span>隐私模式</span>
                                             <a class="menu-action text-primary">
@@ -119,12 +126,19 @@
                                                 <span class="field-name">状态</span>
                                             </div>
                                             <div class="field-right">
-                                                <a-dropdown :trigger="['click']" :disabled="!!task.deleted">
-                                                <span>
-                                                    <!--<a-icon type="check-square"/>-->
-                                                    <a-tag v-if="task.done" color="green">已完成</a-tag>
-                                                    <span v-show="!task.done">未完成</span>
-                                                </span>
+                                                <a-dropdown :trigger="['click']"
+                                                            :disabled="!!task.deleted || !!task.hasUnDone"
+                                                            :class="{'disabled': task.hasUnDone}">
+                                                    <a-tooltip placement="top">
+                                                        <template slot="title">
+                                                            <span v-if="task.hasUnDone" style="font-size: 12px;">子任务尚未全部完成，无法完成父任务</span>
+                                                        </template>
+                                                        <span>
+                                                        <!--<a-icon type="check-square"/>-->
+                                                        <a-tag v-if="task.done" color="green">已完成</a-tag>
+                                                        <span v-show="!task.done">未完成</span>
+                                                    </span>
+                                                    </a-tooltip>
                                                     <a-menu class="field-right-menu" slot="overlay"
                                                             :selectable="false"
                                                             @click="taskDone(task.code,!task.done)">
@@ -351,12 +365,20 @@
                                                                 <div class="list-item task"
                                                                      v-if="childTask.done == done"
                                                                 >
-                                                                    <a class="task-item check-box"
-                                                                       :class="{'disabled': task.deleted}"
-                                                                       @click="()=>{if(task.deleted) return false;taskDone(childTask.code,!childTask.done,index,'child')}">
-                                                                        <a-icon type="check"
-                                                                                v-show="childTask.done"/>
-                                                                    </a>
+                                                                    <a-tooltip placement="top">
+                                                                        <template slot="title">
+                                                                            <span v-if="childTask.parentDone"
+                                                                                  style="font-size: 12px;">父任务已完成，无法重做子任务</span>
+                                                                            <span v-else-if="childTask.hasUnDone"
+                                                                                  style="font-size: 12px;">子任务尚未全部完成，无法完成父任务</span>
+                                                                        </template>
+                                                                        <a class="task-item check-box"
+                                                                           :class="{'disabled': task.deleted || childTask.parentDone || childTask.hasUnDone}"
+                                                                           @click="()=>{if(task.deleted || childTask.parentDone || childTask.hasUnDone) return false;taskDone(childTask.code,!childTask.done,index,'child')}">
+                                                                            <a-icon type="check"
+                                                                                    v-show="childTask.done"/>
+                                                                        </a>
+                                                                    </a-tooltip>
                                                                     <a-tooltip :mouseEnterDelay="0.5">
                                                                         <template slot="title">
                                                                             <span v-if="childTask.executor">{{childTask.executor.name}}</span>
@@ -381,14 +403,14 @@
                                                                         ></a-avatar>
                                                                     </a-tooltip>
                                                                     <div class="task-item task-title"
-                                                                         @click="init(childTask.code)">
+                                                                         @click.stop="init(childTask.code)">
                                                                         <div class="title-text"
                                                                              :class="{'done': childTask.done}"
                                                                         >
                                                                             {{childTask.name}}
                                                                         </div>
                                                                     </div>
-                                                                    <a class="muted" @click="init(childTask.code)">
+                                                                    <a class="muted" @click.stop="init(childTask.code)">
                                                                         <a-icon class="task-item" type="right"/>
                                                                     </a>
                                                                 </div>
@@ -454,12 +476,18 @@
                                                             </div>
                                                         </div>
                                                     </div>
-                                                    <a class="add-handler"
-                                                       v-show="!showChildTask"
-                                                       @click="()=>{if (task.deleted) return false; showChildTask = true}">
-                                                        <a-icon type="plus" style="margin-right: 6px;"/>
-                                                        添加子任务
-                                                    </a>
+                                                    <a-tooltip placement="top">
+                                                        <template slot="title">
+                                                            <span v-if="task.done" style="font-size: 12px;">父任务已完成，无法添加新的子任务</span>
+                                                        </template>
+                                                        <a class="add-handler"
+                                                           :class="{'disabled': task.done}"
+                                                           v-show="!showChildTask"
+                                                           @click="()=>{if (task.deleted || task.done) return false; showChildTask = true}">
+                                                            <a-icon type="plus" style="margin-right: 6px;"/>
+                                                            添加子任务
+                                                        </a>
+                                                    </a-tooltip>
                                                 </div>
                                             </div>
                                         </div>
@@ -496,7 +524,9 @@
                                                         <a-list-item :key="index"
                                                                      v-for="(item, index) in taskSourceList">
                                                             <a-list-item-meta>
-                                                                <a-avatar size="small" slot="avatar"  shape="square" icon="link" :src="item.sourceDetail.file_url" />
+                                                                <a-avatar size="small" slot="avatar" shape="square"
+                                                                          icon="link"
+                                                                          :src="item.sourceDetail.file_url"/>
                                                                 <div slot="title">
                                                                     <span>{{ item.title }}</span>
                                                                 </div>
@@ -679,7 +709,7 @@
     import {notice} from "@/assets/js/notice";
     import {relativelyTaskTime, relativelyTime} from "@/assets/js/dateTime";
     import {checkResponse} from "../../assets/js/utils";
-    import {taskSources} from "../../api/task";
+    import {setPrivate, taskSources} from "../../api/task";
 
     export default {
         name: "task-detail",
@@ -970,17 +1000,23 @@
                         this.task.stared ? this.task.stared = 0 : this.task.stared = 1;
                         star(app.code, this.task.stared);
                         return true;
-                        break;
                     case 'open':
                         window.open(window.location.href + '&full-screen');
                         break;
-                    case 'lock':
-                        this.task.private ? this.task.private = 0 : this.task.private = 1;
+
+                    case 'private':
+                        setPrivate(app.code, Number(!this.task.private)).then(res => {
+                            const result = checkResponse(res);
+                            if (!result) {
+                                return false;
+                            }
+                            this.task.private = Number(!this.task.private);
+                        });
                         return true;
                 }
                 this.visibleTaskMenu = false;
             },
-            editTitle(){
+            editTitle() {
                 this.showEditName = true;
                 this.$nextTick(() => {
                     this.$refs.inputTitle.focus();
@@ -1028,10 +1064,7 @@
                     cancelText: `再想想`,
                     onOk() {
                         del(app.code).then((res) => {
-                            const result = checkResponse(res);
-                            if (!result) {
-                                return false;
-                            }
+                            ``
                             app.detailClose();
                         });
                         return Promise.resolve();
@@ -1086,10 +1119,14 @@
                     if (type == 'self') {
                         //自身完成
                         this.task.done = done;
+                        // this.init();
                     } else {
                         //完成子任务
                         this.childTaskList[index].done = done;
+                        // this.init(this.childTaskList[index].pcode);
                     }
+                    this.getTask();
+                    this.getChildTasks();
                 });
             },
             doEndTime(setEndTime = false, showEndTime = false) {
@@ -1294,6 +1331,18 @@
             .head-title {
                 padding: 0 20px 0 20px;
                 flex: 1 1;
+
+                .breadcrumb {
+                    display: inline;
+
+                    a {
+                        color: inherit;
+                        &:hover {
+                            color: #40a9ff;
+                        }
+
+                    }
+                }
             }
 
             .header-action {

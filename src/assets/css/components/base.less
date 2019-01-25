@@ -15,49 +15,64 @@ body {
   color: rgba(0, 0, 0, 0.45);
   font-weight: 400;
 }
-.text-grey{
+
+.text-grey {
   color: grey;
 }
-.text-default{
+
+.text-default {
   color: #333;
 }
-.text-primary{
+
+.text-primary {
   color: @primary-color;
 }
-.text-info{
+
+.text-info {
   color: @info-color;
 }
-.text-success{
+
+.text-success {
   color: @success-color;
 }
-.text-processing{
+
+.text-processing {
   color: @processing-color;
 }
-.text-error{
+
+.text-error {
   color: @error-color;
 }
-.text-highlight{
+
+.text-highlight {
   color: @highlight-color;
 }
-.text-warning{
+
+.text-warning {
   color: @warning-color;
 }
-.text-normal{
+
+.text-normal {
   color: @normal-color;
 }
-.text-center{
+
+.text-center {
   text-align: center;
 }
-.text-right{
+
+.text-right {
   text-align: right;
 }
-.text-left{
+
+.text-left {
   text-align: left;
 }
+
 //Input
-.ant-input-lg{
+.ant-input-lg {
   font-size: 14px;
 }
+
 .ant-select-lg {
   font-size: 14px;
 }
@@ -65,18 +80,21 @@ body {
 //Button
 .action-btn {
   margin-top: 12px;
-  .cancel-text{
+
+  .cancel-text {
     margin-right: 12px;
   }
+
   button {
     margin-right: 4px;
   }
 }
 
-.group-btn,.submit-set {
-  .cancel-text{
+.group-btn, .submit-set {
+  .cancel-text {
     margin-right: 12px;
   }
+
   button {
     margin-right: 4px;
   }
@@ -84,10 +102,12 @@ body {
 
 .middle-btn {
   min-width: 66px;
+  //min-height: 42px;
   //min-width: 90px;
   //height: 35px !important;
 }
-.ant-btn-lg{
+
+.ant-btn-lg {
   font-size: 14px;
 }
 
@@ -106,18 +126,22 @@ body {
 .table-list {
   .item {
     display: inline-block;
+
     &.row-img {
       img {
         width: 85px;
         height: 85px;
       }
     }
+
     &.row-title {
       margin-left: 12px;
       vertical-align: middle;
       width: 75%;
+
       .title {
         margin-bottom: 0;
+
         &.title-name {
           padding: 5px 24px 5px 5px;
           color: @primary-color;
@@ -125,14 +149,17 @@ body {
       }
     }
   }
+
   .edit-content {
     .prefix {
       position: absolute;
       line-height: 2.3;
     }
+
     .editable-cell {
       width: 115px;
     }
+
     &.price {
       .editable-cell-input-wrapper, .editable-cell-text-wrapper {
         padding-left: 15px;
@@ -142,9 +169,10 @@ body {
 }
 
 //Drowdown
-.ant-dropdown-menu-item{
+.ant-dropdown-menu-item {
   color: grey;
 }
+
 .field-right-menu {
   width: 240px;
 
@@ -186,19 +214,22 @@ body {
 }
 
 //Modal
-.ant-modal{
+.ant-modal {
   top: 50px;
 }
-.scroll-modal{
-  .ant-modal-body{
+
+.scroll-modal {
+  .ant-modal-body {
     padding-bottom: 24px;
     height: 70vh;
   }
-  .modal-content{
+
+  .modal-content {
     padding: 0 24px;
     height: 100%;
   }
-  .modal-footer{
+
+  .modal-footer {
     position: fixed;
     bottom: 13vh;
     background: #FFF;
@@ -206,11 +237,26 @@ body {
   }
 }
 
-.hidden{
+.task-detail-modal {
+  width: 1200px;
+
+  &.ant-modal {
+    padding-bottom: 0;
+  }
+
+  .ant-modal-content {
+    .ant-modal-body {
+      padding: 0;
+    }
+
+  }
+}
+
+.hidden {
   display: block;
 }
 
-.project-navigation{
+.project-navigation {
   border-bottom: 1px solid #D9D9D9;
   z-index: 1;
   background-color: #F5F5F5;
@@ -218,35 +264,42 @@ body {
   position: fixed;
   width: 100%;
 }
-.project-navigation .ivu-breadcrumb-item-separator{
+
+.project-navigation .ivu-breadcrumb-item-separator {
   color: #383838;
 }
-.project-navigation .ivu-breadcrumb > span:last-child{
-  font-weight:normal;
+
+.project-navigation .ivu-breadcrumb > span:last-child {
+  font-weight: normal;
 }
-.project-navigation .project-nav-header{
+
+.project-navigation .project-nav-header {
   position: absolute;
   z-index: 2;
   left: 0;
   height: 50px;
   margin: 0;
   padding: 15px;
-  .nav-title{
+
+  .nav-title {
     font-size: 15px;
     margin-right: 12px;
   }
-  .actions{
+
+  .actions {
     cursor: pointer;
     margin-right: 12px;
   }
 }
+
 .project-navigation .nav-underscore {
   position: relative;
   height: 50px;
   border: none;
   margin-bottom: 0;
 }
-.project-navigation .nav-body{
+
+.project-navigation .nav-body {
   position: relative;
   white-space: nowrap;
   z-index: 1;
@@ -257,14 +310,17 @@ body {
   -ms-flex-pack: center;
   justify-content: center;
 }
+
 .project-navigation .nav-body .nav-wrapper.nav > li {
   z-index: 2;
   padding: 0 20px;
 }
+
 .project-navigation .nav-underscore > li {
   list-style: none;
   float: left;
 }
+
 .project-navigation .nav-underscore > li a {
   display: inline-block;
   position: relative;
@@ -275,6 +331,7 @@ body {
   font-size: 15px;
   font-weight: normal;
 }
+
 .project-navigation .nav-body .nav-wrapper.nav > li .app[data-app=tasks] {
   position: relative;
   float: left;
@@ -283,9 +340,11 @@ body {
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+
 .project-navigation .nav-underscore > li > a:hover {
   background-color: inherit;
 }
+
 .project-navigation .nav-underscore > li > a:after {
   position: absolute;
   left: 0;
@@ -296,6 +355,7 @@ body {
   content: '';
   opacity: 0;
 }
+
 .project-navigation .nav-underscore > li > a:hover:after, .project-navigation .nav-underscore > .actives > a:after {
   border-width: 3px;
   opacity: 1;

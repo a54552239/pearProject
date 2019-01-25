@@ -275,7 +275,7 @@
                 } else if (action == 'collect') {
                     const type = record.collected ? 'cancel' : 'collect';
                     collect(record.code, type).then(() => {
-                        record.collected = !record.collected;
+                        app.$set(app.dataSource[index], 'collected', !record.collected);
                         if (this.requestData.type == 'collect') {
                             app.dataSource.splice(index, 1);
                         }

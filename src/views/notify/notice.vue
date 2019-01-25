@@ -29,7 +29,7 @@
                 </a-form>
             </div>
             <div class="action">
-                <a-button icon="check" :disabled="!selectedRowKeys.length" @click="listAction({key:'setReadied'})">
+                <a-button icon="check" class="m-r-sm" :disabled="!selectedRowKeys.length" @click="listAction({key:'setReadied'})">
                     <span>批量标记已读</span>
                 </a-button>
                 <a-button icon="delete" type="danger" :disabled="!selectedRowKeys.length" @click="listAction({key:'delete'})">

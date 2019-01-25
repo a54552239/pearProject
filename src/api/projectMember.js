@@ -7,6 +7,9 @@ export function searchInviteMember(keyword, code) {
 export function inviteMember(memberCode, code) {
     return $http.post('project/project_member/inviteMember', {memberCode: memberCode, projectCode: code});
 }
+export function _joinByInviteLink(inviteCode) {
+    return $http.post('project/project_member/_joinByInviteLink', {inviteCode: inviteCode});
+}
 export function removeMember(memberCode, code) {
     return $http.post('project/project_member/removeMember', {memberCode: memberCode, projectCode: code});
 }

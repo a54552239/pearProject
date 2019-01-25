@@ -250,8 +250,8 @@
                                 .catch(err => {
                                     setTimeout(hide, 1);
                                     clearInterval(interval);
-                                    app.state.time = 60;
-                                    app.state.smsSendBtn = false;
+                                    this.state.time = 60;
+                                    this.state.smsSendBtn = false;
                                     this.requestFailed(err)
                                 })
                         }
