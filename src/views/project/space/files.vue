@@ -87,7 +87,7 @@
                                                     v-show="item.editing"
                                                     @pressEnter="onCellChange(item)"
                                                     @blur="onCellChange(item)"></a-input>
-                                            <a class="text-default" target="_blank" :href="item.file_url"
+                                            <a class="text-default" target="_blank" :href="item | showPreviewUrl"
                                                v-show="!item.editing">{{item.fullName}}</a>
                                         </a-tooltip>
                                     </div>
@@ -107,7 +107,7 @@
                                 </div>
                                 <span slot="actions">
                                     <a-tooltip title="下载">
-                                        <a class="muted" target="_blank" :href="item.file_url"><a-icon type="download"/></a>
+                                        <a class="muted" target="_blank" :href="item | showPreviewUrl"><a-icon type="download"/></a>
                                     </a-tooltip>
                                 </span>
                                 <!-- <span slot="actions">
@@ -336,7 +336,7 @@
                     type = 'MB';
                 }
                 return `${size.toFixed(2)} ${type}`;
-            }
+            },
         }
     }
 </script>
