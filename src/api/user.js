@@ -8,8 +8,8 @@ export function register(data) {
     return $http.post('project/login/register', data);
 }
 
-export function getCaptcha() {
-    return $http.post('project/login/getCaptcha');
+export function getCaptcha(mobile) {
+    return $http.post('project/login/getCaptcha', {mobile: mobile});
 }
 
 export function changeCurrentOrganization(organizationCode) {

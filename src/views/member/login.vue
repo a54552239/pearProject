@@ -235,7 +235,7 @@
                 e.preventDefault();
                 const app = this;
 
-                this.form.validateFields(['mobile'], {force: true}, err => {
+                this.form.validateFields(['mobile'], {force: true}, (err, values) => {
                     if (!err) {
                         this.state.smsSendBtn = true;
 
@@ -248,17 +248,23 @@
                         }, 1000);
 
                         const hide = this.$message.loading('验证码发送中..', 0);
-                        getCaptcha()
+                        getCaptcha(values.mobile)
                             .then(res => {
-                                setTimeout(() => {
-                                    this.$message.destroy();
-                                    this.$notification['success']({
-                                        message: '提示',
-                                        description: '验证码获取成功，您的验证码为：' + res.data,
-                                        duration: 8,
-                                        placement: 'bottomLeft'
-                                    })
-                                }, 1000);
+                                this.$message.destroy();
+
+                                if (!checkResponse(res)) {
+                                    return false;
+                                }
+                                let tips = '验证码获取成功';
+                                if (res.data) {
+                                    tips += '，您的验证码为：' + res.data;
+                                }
+                                this.$notification['success']({
+                                    message: '提示',
+                                    description: tips,
+                                    duration: 8,
+                                    placement: 'bottomLeft'
+                                });
                             })
                             .catch(err => {
                                 // setTimeout(hide, 1);
