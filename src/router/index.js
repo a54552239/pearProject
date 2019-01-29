@@ -3,9 +3,10 @@ import store from '@/store'
 import Router from 'vue-router'
 import Index from '@/views/index'
 import Home from './home';
-import {getStore} from "../assets/js/storage";
-import {createRoute} from "../assets/js/utils";
+import {getStore, setStore} from "../assets/js/storage";
+import {createRoute, isTokenExpired} from "../assets/js/utils";
 import config from "../config/config";
+import {refreshAccessToken} from "../api/common/common";
 
 Vue.use(Router);
 const routes = [].concat(
@@ -98,6 +99,19 @@ const router = new Router({
 
 router.beforeEach((to, from, next) => {
     console.log(to);
+    let tokenList = getStore('tokenList', true);
+    if (tokenList) {
+        let refreshToken = tokenList.refreshToken;
+        let accessTokenExp = tokenList.accessTokenExp;
+        //判断accessToken即将到期后刷新token
+        if (accessTokenExp && isTokenExpired(accessTokenExp)) {
+            refreshAccessToken(refreshToken).then(res => {
+                tokenList.accessToken = res.data.accessToken;
+                tokenList.accessTokenExp = res.data.accessTokenExp;
+                setStore('tokenList', tokenList);
+            });
+        }
+    }
     const HOME_PAGE = config.HOME_PAGE;
     //页面中转
     if (to.name === 'index' || to.path === '/index' || to.path === '/') {

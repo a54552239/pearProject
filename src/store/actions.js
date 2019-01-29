@@ -11,7 +11,7 @@ export default {
         commit('SET_USER', data);
     },
     SET_LOGOUT({commit}) {
-        removeStore('token');
+        removeStore('tokenList');
         removeStore('userInfo');
         commit('SET_LOGOUT');
     },

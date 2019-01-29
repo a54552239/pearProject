@@ -22,6 +22,7 @@
                     <a-dropdown
                             :trigger="['click']"
                             v-model="showCreateDepartment"
+                            placement="bottomCenter"
                     >
                         <a>
                             <a-icon :style="{fontSize: '14px'}" type="plus-circle"/>

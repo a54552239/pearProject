@@ -19,11 +19,11 @@ if (tokenList) {
     let refreshToken = tokenList.refreshToken;
     let accessTokenExp = tokenList.accessTokenExp;
     if (accessTokenExp && isTokenExpired(accessTokenExp)) {
-        refreshAccessToken(refreshToken).then(res => {
-            tokenList.accessToken = res.data;
-            setStore('tokenList', tokenList);
-            console.log(res);
-        });
+        // refreshAccessToken(refreshToken).then(res => {
+        //     tokenList.accessToken = res.data;
+        //     setStore('tokenList', tokenList);
+        //     console.log(res);
+        // });
     }
 }
 
@@ -32,24 +32,12 @@ if (tokenList) {
 $http.interceptors.request.use(
     config => {
         //正在请求更新token时，其他接口等待
-        // console.log(refreshing);
-        // if (refreshing && refreshingTime < 30) {
-        //     console.log(refreshing);
-        //     setTimeout(function () {
-        //         refreshingTime++;
-        //         setStore('refreshingTime', refreshingTime);
-        //         tokenList = getStore('tokenList', true);
-        //         accessToken = tokenList.accessToken;
-        //         refreshToken = tokenList.refreshToken;
-        //         tokenType = tokenList.tokenType;
-        //     }, 500);
-        // }
         config.url = utils.getApiUrl(config.url);
         if (config.method === 'post') {
             const querystring = require('querystring');
             config.data = querystring.stringify(config.data);
         }
-        console.log(tokenList);
+        let tokenList = getStore('tokenList', true);
         if (tokenList) {
             let accessToken = tokenList.accessToken;
             let tokenType = tokenList.tokenType;
@@ -74,50 +62,18 @@ $http.interceptors.response.use(
             case 200:
                 response.msg !== '' && notice(response.msg, 'message', 'success');
                 return Promise.resolve(response);
-            case 401:
-                $router.replace('/member/login?redirect=' + $router.currentRoute.fullPath);
-                $store.dispatch('SET_LOGOUT');
-                return new Promise(() => {
-                });
-            case 4010:
-                // refreshing = true;
-                // setStore('refreshing', true);
-                // refreshAccessToken(refreshToken).then(res => {
-                //     refreshing = false;
-                //     setStore('refreshing', false);
-                //     // tokenList.accessToken = res.data;
-                //     setStore('tokenList', tokenList);
-                //     console.log(res);
-                // });
-                return new Promise(() => {
-                });
-            case 403:
-                notice({
-                    title: response.msg !== '' ? response.msg : '无权限操作资源，访问被拒绝',
-                }, 'notice', 'error', 5);
-                return Promise.reject(response.msg);
-            case 4031:
-                //无权限操作资源
-                notice({
-                    title: response.msg !== '' ? response.msg : '无权限操作资源，访问被拒绝',
-                }, 'notice', 'error', 5);
-                $router.replace(HOME_PAGE);
-                return Promise.reject(response.msg);
-            case 404:
-                //资源不存在
-                notice({
-                    title: response.msg !== '' ? response.msg : '资源不存在',
-                }, 'notice', 'warning', 5);
-                $router.replace(HOME_PAGE);
-                return new Promise(() => {
-                });
-            default:
-                notice({
-                    title: '请求错误 ' + response.code,
-                    desc: response.msg
-                }, 'notice', 'warning', 5);
-                // $router.back();
-                return Promise.reject(response);
+        }
+        if (response.code === 200) {
+            notice({
+                title: '请求错误 ' + response.code,
+                desc: response.msg
+            }, 'notice', 'warning', 5);
+            return Promise.reject(response);
+        } else {
+            response.msg !== '' && notice({
+                title: response.msg,
+            }, 'notice', 'error', 5);
+            return Promise.reject(response);
         }
         /*if (response.code == 200) {
             response.msg !== '' && notice(response.msg, 'message', 'success');
@@ -182,12 +138,39 @@ $http.interceptors.response.use(
     },
     error => {
         const response = error.response.data;
+        console.log(response);
+        response.code = Number(response.code);
         message.destroy();
-        notice({
-            title: response.msg ? response.msg : '未知错误，请稍后重试',
-            desc: ' ' + error
-        }, 'notice', 'error', 5);
-        return Promise.reject(error);
+        switch (response.code) {
+            case 401:
+                $router.replace('/member/login?redirect=' + $router.currentRoute.fullPath);
+                $store.dispatch('SET_LOGOUT');
+                return Promise.reject(error);
+            case 403:
+                notice({
+                    title: response.msg !== '' ? response.msg : '无权限操作资源，访问被拒绝',
+                }, 'notice', 'error', 5);
+                return Promise.reject(error);
+            case 4031:
+                //无权限操作资源
+                notice({
+                    title: response.msg !== '' ? response.msg : '无权限操作资源，访问被拒绝',
+                }, 'notice', 'error', 5);
+                $router.replace(HOME_PAGE);
+                return Promise.reject(error);
+            case 404:
+                //资源不存在
+                notice({
+                    title: response.msg !== '' ? response.msg : '资源不存在',
+                }, 'notice', 'warning', 5);
+                $router.replace(HOME_PAGE);
+                return Promise.reject(error);
+            default:
+                response.msg !== '' && notice({
+                    title: response.msg,
+                }, 'notice', 'error', 5);
+                return Promise.reject(error);
+        }
     }
 );
 
