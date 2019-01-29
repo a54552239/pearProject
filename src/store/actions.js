@@ -1,12 +1,12 @@
-import {getStore, setStore, removeStore} from '@/assets/js/storage'
+import {setStore, removeStore} from '@/assets/js/storage'
 
 export default {
-    SET_LOGGED({commit, state}, data) {
-        setStore('token', data.token);
+    SET_LOGGED({commit}, data) {
+        setStore('tokenList', data.tokenList);
         setStore('userInfo', data.userInfo);
         commit('SET_LOGGED', data);
     },
-    SET_USER({commit, state}, data) {
+    SET_USER({commit}, data) {
         setStore('userInfo', data);
         commit('SET_USER', data);
     },

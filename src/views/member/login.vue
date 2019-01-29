@@ -217,7 +217,7 @@
                         loginParams.token = res.token;
                         const obj = {
                             userInfo: res.data.member,
-                            token: res.token
+                            tokenList: res.data.tokenList
                         };
                         app.$store.dispatch('SET_LOGGED', obj);
                         app.$store.dispatch('setOrganizationList', res.data.organizationList);
