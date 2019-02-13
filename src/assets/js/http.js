@@ -1,32 +1,17 @@
-import {message, notification} from 'ant-design-vue'
+import {message,} from 'ant-design-vue'
 import Axios from "axios"
 import * as utils from './utils'
-import {getStore, setStore} from './storage'
+import {getStore} from './storage'
 import $store from '../../store/index';
 import $router from '../../router/index';
 import {notice} from './notice';
 import config from "../../config/config";
-import {refreshAccessToken} from "../../api/common/common";
-import {isTokenExpired} from "./utils";
 
 const HOME_PAGE = config.HOME_PAGE;
 const $http = Axios.create({
     withCredentials: true,
     crossDomain: true
 });
-let tokenList = getStore('tokenList', true);
-if (tokenList) {
-    let refreshToken = tokenList.refreshToken;
-    let accessTokenExp = tokenList.accessTokenExp;
-    if (accessTokenExp && isTokenExpired(accessTokenExp)) {
-        // refreshAccessToken(refreshToken).then(res => {
-        //     tokenList.accessToken = res.data;
-        //     setStore('tokenList', tokenList);
-        //     console.log(res);
-        // });
-    }
-}
-
 
 // Before request
 $http.interceptors.request.use(
