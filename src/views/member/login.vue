@@ -120,6 +120,7 @@
     import {checkResponse, createRoute, timeFix} from '@/assets/js/utils'
     import {getStore} from '@/assets/js/storage'
     import {checkInstall} from "../../api/common/common";
+    import {setStore} from "../../assets/js/storage";
 
     export default {
         components: {},
@@ -217,16 +218,16 @@
                         loginParams.token = res.token;
                         const obj = {
                             userInfo: res.data.member,
-                            token: res.token
+                            tokenList: res.data.tokenList
                         };
                         app.$store.dispatch('SET_LOGGED', obj);
                         app.$store.dispatch('setOrganizationList', res.data.organizationList);
                         app.$store.dispatch('setCurrentOrganization', res.data.organizationList[0]);
                         app.$store.dispatch('GET_MENU').then(() => {
+                            app.loginBtn = false;
                             app.loginSuccess(res);
                         });
                     }
-                    app.loginBtn = false;
                 }).catch(res => {
                     this.loginBtn = false
                 });

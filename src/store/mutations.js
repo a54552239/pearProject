@@ -1,5 +1,5 @@
 export default {
-    SET_LOGGED(state, {token, userInfo}) {
+    SET_LOGGED(state, {tokenList, userInfo}) {
         state.logged = true;
         state.userInfo = userInfo;
     },
@@ -19,7 +19,7 @@ export default {
     windowLoading(state, status) {
         state.windowLoading = status
     },
-    setSystem(state,data) {
+    setSystem(state, data) {
         state.system = data;
     },
     setOrganizationList(state, data) {
