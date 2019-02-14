@@ -22,7 +22,7 @@
                                             'email',
                                             {rules: [{ required: true, message: '请输入您的邮箱' }]}
                                             ]"
-                                     />
+                                    />
                                 </a-form-item>
                                 <a-form-item
                                         label='昵称'
@@ -55,6 +55,7 @@
                                     name="avatar"
                                     class="avatar-uploader"
                                     :showUploadList="false"
+                                    :headers="headers"
                                     :action="uploadAction"
                                     :beforeUpload="beforeUpload"
                                     @change="handleChange"
@@ -74,9 +75,11 @@
     import AccountSetting from "@/components/layout/account/setting"
     import {checkResponse, getApiUrl, getBase64} from "../../../assets/js/utils";
     import {editPersonal} from "../../../api/user";
+    import {getStore} from "../../../assets/js/storage";
+
     export default {
         name: "settingBase",
-        components:{
+        components: {
             AccountSetting
         },
         data() {
@@ -90,10 +93,19 @@
         computed: {
             ...mapState({
                 userInfo: state => state.userInfo,
-            })
+            }),
+            headers() {
+                let tokenList = getStore('tokenList', true);
+                if (tokenList) {
+                    let accessToken = tokenList.accessToken;
+                    let tokenType = tokenList.tokenType;
+                    return {Authorization: `${tokenType} ${accessToken}`};
+                }
+                return {};
+            }
         },
-        mounted(){
-            this.$nextTick(()=>{
+        mounted() {
+            this.$nextTick(() => {
                 this.form.setFieldsValue({
                     email: this.userInfo.email,
                     name: this.userInfo.name,
@@ -132,6 +144,7 @@
                 if (info.file.status === 'done') {
                     getBase64(info.file.originFileObj, (imageUrl) => {
                         this.userInfo.avatar = info.file.response.data.url;
+                        this.$store.dispatch('SET_USER', this.userInfo);
                         this.uploadLoading = false;
                         // this.$store.dispatch('SET_USER', this.userInfo);
                     })
@@ -153,6 +166,7 @@
         .wrapper-main {
             padding-left: 0;
         }
+
         .setting-content {
             display: flex;
             flex-direction: row;
@@ -160,24 +174,30 @@
             .right {
                 flex: 1 1 0;
                 padding: 8px 40px;
-                .setting-info-title{
+
+                .setting-info-title {
                     font-size: 20px;
                 }
-                .setting-info{
+
+                .setting-info {
                     display: flex;
                     flex-direction: row;
                     padding-top: 12px;
-                    &-content{
+
+                    &-content {
                         width: 320px;
                     }
-                    &-avatar{
+
+                    &-avatar {
                         padding-left: 104px;
                         display: flex;
                         flex-direction: column;
-                        .avatar{
+
+                        .avatar {
                             margin-top: 12px;
                         }
-                        .avatar-uploader{
+
+                        .avatar-uploader {
                             width: 115px;
                             margin: 24px auto;
                         }

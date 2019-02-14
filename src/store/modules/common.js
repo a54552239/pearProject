@@ -10,7 +10,6 @@ const common = {
             state.uploader = data;
         },
         setTempData(state, data) {
-
             state.tempData = data;
         },
     },

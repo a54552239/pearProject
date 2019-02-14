@@ -228,6 +228,7 @@
                             app.loginSuccess(res);
                         });
                     }
+                    this.loginBtn = false
                 }).catch(res => {
                     this.loginBtn = false
                 });

@@ -119,11 +119,16 @@
                         return getStore('tempData', true);//query暂时无法动态响应
                     },
                     headers: function () {
-                        let token = getStore('token');
+                        let tokenList = getStore('tokenList', true);
+                        let accessToken = '';
+                        let tokenType = '';
+                        if (tokenList) {
+                            accessToken = tokenList.accessToken;
+                            tokenType = tokenList.tokenType;
+                        }
                         let organization = getStore('currentOrganization', true);
                         return {
-                            authorization: token,
-                            token: token,
+                            Authorization: `${tokenType} ${accessToken}`,
                             organizationcode: organization.code,
                         };
                     },
