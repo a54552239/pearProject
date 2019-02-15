@@ -57,7 +57,7 @@
                         <router-link to="/project/list/my" slot="extra">全部项目</router-link>
                         <div>
                             <a-card-grid class="project-card-grid" :key="i" v-for="(item, i) in projectList">
-                                <a-card :bordered="false" :body-style="{ padding: 0 }">
+                                <a-card :bordered="false" :body-style="{ padding: 0 }" @click="routerLink('/project/space/task/' + item.code)">
                                     <a-card-meta>
                                         <div slot="title" class="card-title">
                                             <a-avatar size="small" :src="item.cover"/>

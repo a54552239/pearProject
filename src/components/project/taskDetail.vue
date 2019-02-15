@@ -346,6 +346,46 @@
                                     <div class="component-mount">
                                         <div class="field">
                                             <div class="field-left">
+                                                <a-icon type="tag"/>
+                                                <span class="field-name">标签</span>
+                                            </div>
+                                            <div class="field-right">
+                                                <a-dropdown
+                                                        :trigger="['click']"
+                                                        v-model="visibleTaskTagMenu"
+                                                        :disabled="!!task.deleted"
+                                                        placement="bottomCenter"
+                                                >
+                                                    <a-tooltip :mouseEnterDelay="0.5" v-if="!task.deleted">
+                                                        <template slot="title">
+                                                            <span>添加标签</span>
+                                                        </template>
+                                                        <div class="field-flex">
+                                                            <a-tag color="green">客户端</a-tag>
+                                                        </div>
+                                                    </a-tooltip>
+                                                    <div class="field-flex">
+                                                        <a-tag color="green">客户端</a-tag>
+                                                    </div>
+                                                    <div slot="overlay">
+                                                        <task-tag-menu
+                                                                v-if="visibleTaskTagMenu"
+                                                                :projectCode="projectCodeCurrent"
+                                                                :taskCode="code"
+                                                                @close="init(false)"
+                                                                @inviteProjectMember="
+                                                            showInviteMember = true,
+                                                            visibleTaskTagMenu = false,
+                                                            visibleTaskMemberMenu = false"
+                                                        ></task-tag-menu>
+                                                    </div>
+                                                </a-dropdown>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="component-mount">
+                                        <div class="field">
+                                            <div class="field-left">
                                                 <a-icon type="bars"/>
                                                 <span class="field-name">子任务 <span v-show="childTaskList.length"> · {{childTaskDoneNum}}/{{childTaskList.length}}</span></span>
                                             </div>
@@ -701,6 +741,7 @@
     import {del as delSourceLink} from "@/api/sourceLink";
     import {list as getTaskMembers} from "@/api/taskMember";
     import taskMemberMenu from "@/components/project/taskMemberMenu"
+    import taskTagMenu from "@/components/project/taskTagMenu"
     import projectMemberMenu from "@/components/project/projectMemberMenu"
     import inviteProjectMember from '@/components/project/inviteProjectMember'
     import {getStore} from "@/assets/js/storage";
@@ -716,6 +757,7 @@
         components: {
             editor,
             taskMemberMenu,
+            taskTagMenu,
             projectMemberMenu,
             inviteProjectMember
         },
@@ -748,6 +790,8 @@
 
                 /*成员菜单*/
                 visibleTaskMemberMenu: false,
+                /*任务标签*/
+                visibleTaskTagMenu: false,
                 visibleProjectMemberMenu: false,
                 showInviteMember: false,
 
@@ -907,6 +951,7 @@
                 // this.$router.push(`/project/space/task/${this.task.project_code}`);
             },
             clearMemberMenu() {
+                this.visibleTaskTagMenu = false;
                 this.visibleTaskMemberMenu = false;
                 this.visibleProjectMemberMenu = false;
                 this.showChildTask = false;
