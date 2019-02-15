@@ -1,8 +1,6 @@
 <template>
     <div class="member-menu">
         <a-spin :spinning="listLoading || doListLoading">
-            <!--<div class="header">
-            </div>-->
             <div class="search-content">
                 <a-input v-model="keyword" size="large" placeholder="搜索标签">
                     <a-icon slot="prefix" type="search"/>
