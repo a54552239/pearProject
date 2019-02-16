@@ -343,13 +343,18 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="component-mount">
+                                    <div class="component-mount task-tag">
                                         <div class="field">
                                             <div class="field-left">
                                                 <a-icon type="tag"/>
                                                 <span class="field-name">标签</span>
                                             </div>
                                             <div class="field-right">
+                                                <div class="inline-block">
+                                                    <a-tag :color="tag.tag.color" v-for="(tag,index) in task.tags"
+                                                           :key="index">{{tag.tag.name}}
+                                                    </a-tag>
+                                                </div>
                                                 <a-dropdown
                                                         :trigger="['click']"
                                                         v-model="visibleTaskTagMenu"
@@ -360,23 +365,23 @@
                                                         <template slot="title">
                                                             <span>添加标签</span>
                                                         </template>
-                                                        <div class="field-flex">
-                                                            <a-tag color="green">客户端</a-tag>
+                                                        <div class="inline-block">
+                                                            <a-icon class="member-item invite" type="plus-circle"
+                                                                    theme="twoTone"/>
                                                         </div>
                                                     </a-tooltip>
-                                                    <div class="field-flex">
-                                                        <a-tag color="green">客户端</a-tag>
+                                                    <div class="inline-block">
+                                                        <a-icon class="member-item invite" type="plus-circle"
+                                                                theme="twoTone"/>
                                                     </div>
                                                     <div slot="overlay">
                                                         <task-tag-menu
                                                                 v-if="visibleTaskTagMenu"
                                                                 :projectCode="projectCodeCurrent"
                                                                 :taskCode="code"
-                                                                @close="init(false)"
-                                                                @inviteProjectMember="
-                                                            showInviteMember = true,
-                                                            visibleTaskTagMenu = false,
-                                                            visibleTaskMemberMenu = false"
+                                                                @change="taskTagChange"
+                                                                @update="taskTagUpdate"
+                                                                @delete="taskTagDelete"
                                                         ></task-tag-menu>
                                                     </div>
                                                 </a-dropdown>
@@ -1307,6 +1312,29 @@
                     this.childTaskList = res.data.list;
                 })
             },
+            taskTagChange(tag) {
+                const index = this.task.tags.findIndex(item => item.tag_code == tag.code);
+                if (index !== -1) {
+                    this.task.tags.splice(index, 1);
+                } else {
+                    this.task.tags.push({
+                        tag_code: tag.code,
+                        tag: tag
+                    });
+                }
+            },
+            taskTagUpdate(tag) {
+                const index = this.task.tags.findIndex(item => item.tag_code == tag.code);
+                if (index !== -1) {
+                    this.task.tags[index].tag = tag;
+                }
+            },
+            taskTagDelete(tag) {
+                const index = this.task.tags.findIndex(item => item.tag_code == tag.code);
+                if (index !== -1) {
+                    this.task.tags.splice(index, 1);
+                }
+            },
             updateChildExecutor(member) {
                 this.visibleChildTaskMemberMenu = false;
                 this.childExecutor = member;
@@ -1347,6 +1375,12 @@
         justify-content: flex-start;
     }
 
+    .task-tag {
+        .ant-tag {
+            margin-bottom: 6px;
+        }
+    }
+
     .task-detail {
         background: #FFF;
         display: -webkit-box;
@@ -1382,6 +1416,7 @@
 
                     a {
                         color: inherit;
+
                         &:hover {
                             color: #40a9ff;
                         }
@@ -1510,6 +1545,10 @@
                                     .field-right {
                                         cursor: pointer;
                                         max-width: calc(100% - 132px);
+
+                                        .inline-block {
+                                            display: inline-block;
+                                        }
 
                                         &.width-block {
                                             width: 100%;

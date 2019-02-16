@@ -24,6 +24,13 @@ export function edit(data) {
     return $http.post('project/task/edit', data);
 }
 
+export function taskToTags(data) {
+    return $http.post('project/task/taskToTags', data);
+}
+export function setTag(data) {
+    return $http.post('project/task/setTag', data);
+}
+
 export function like(code, like) {
     return $http.post('project/task/like', {like: like, taskCode: code});
 }

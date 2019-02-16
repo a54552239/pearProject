@@ -169,8 +169,12 @@
                                                              <a-icon type="bars"></a-icon>
                                                             <span>{{task.childCount[1]}}/{{task.childCount[0]}}</span>
                                                        </span>
-                                                            <span class="tag muted" :class="'tag-color-'+ tag.color"
-                                                                  v-for="(tag,tag_index) in task.task_tag_item_list"> {{ tag.name }} </span>
+                                                           <span class="tag muted"  v-for="tag in task.tags"                                                                          :key="tag.code"
+                                                           >
+                                                                <a-badge status="success"
+                                                                         :class="`badge-${tag.tag.color}`"/>
+                                                               {{tag.tag.name}}
+                                                           </span>
                                                             <span :class="'icon-wrapper text text-' + task.task_execute.color"
                                                                   v-if="task.execute_state > 0">{{ task.task_execute_name }}</span>
                                                             <span class="icon-wrapper muted" v-if="task.like">
