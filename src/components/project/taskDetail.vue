@@ -757,6 +757,13 @@
     import {checkResponse} from "../../assets/js/utils";
     import {setPrivate, taskSources} from "../../api/task";
 
+    let tokenList = getStore('tokenList', true);
+    let authorization = '';
+    if (tokenList) {
+        let accessToken = tokenList.accessToken;
+        let tokenType = tokenList.tokenType;
+        authorization = `${tokenType} ${accessToken}`;
+    }
     export default {
         name: "task-detail",
         components: {
@@ -814,7 +821,7 @@
                 editorConfig: {
                     uploadImgServer: getApiUrl('project/index/uploadImg'),
                     uploadImgHeaders: {
-                        token: getStore('token')
+                        Authorization: authorization
                     },
                     menus: [
                         'head',	// 标题
