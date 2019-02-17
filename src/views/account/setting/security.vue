@@ -42,7 +42,7 @@
                                                 </div>
                                             </div>
                                             <ul class="ant-list-item-action">
-                                                <li><a>修改</a></li>
+                                                <li @click="editMobile"><a>修改</a></li>
                                             </ul>
                                         </div>
                                         <div class="ant-list-item">
@@ -57,7 +57,7 @@
                                                 </div>
                                             </div>
                                             <ul class="ant-list-item-action">
-                                                <li><a>修改</a></li>
+                                                <li @click="editMail"><a>修改</a></li>
                                             </ul>
                                         </div>
                                     </div>
@@ -125,6 +125,99 @@
                 </a-form-item>
             </a-form>
         </a-modal>
+        <a-modal
+                class="mobile-modal"
+                :width="385"
+                v-model="mobileInfo.modalStatus"
+                :title="mobileInfo.modalTitle"
+                :bodyStyle="{paddingBottom:'1px'}"
+                :footer="null"
+        >
+            <a-alert style="margin-bottom: 12px;"
+                     v-show="errorTips"
+                     :message="errorTips"
+                     type="error"
+            />
+            <a-form
+                    layout="vertical"
+                    :form="mobileForm"
+                    hideRequiredMark
+                    @submit.prevent="handleMobileSubmit">
+                <a-form-item
+                >
+                    <a-input size="large" type="text" placeholder="手机号"
+                             v-decorator="[
+                                'mobile',
+                                {rules: [{ required: true, pattern: /^1[34578]\d{9}$/, message: '请输入正确的手机号' }], validateTrigger: 'change'}
+                            ]">
+                        <a-icon slot="prefix" type="mobile" :style="{ color: 'rgba(0,0,0,.25)' }"/>
+                    </a-input>
+                </a-form-item>
+
+                <a-row :gutter="16">
+                    <a-col class="gutter-row" :span="16">
+                        <a-form-item
+                        >
+                            <a-input size="large" type="text" placeholder="验证码"
+                                     v-decorator="[
+                                'captcha',
+                                {rules: [{ required: true, message: '请输入验证码' }], validateTrigger: 'blur'}
+                            ]">
+                                <a-icon slot="prefix" type="mail" :style="{ color: 'rgba(0,0,0,.25)' }"/>
+                            </a-input>
+                        </a-form-item>
+                    </a-col>
+                    <a-col class="gutter-row" :span="8">
+                        <a-button
+                                class="getCaptcha"
+                                size="large"
+                                tabindex="-1"
+                                :disabled="mobileInfo.state.smsSendBtn"
+                                @click.stop.prevent="getCaptcha"
+                                v-text="!mobileInfo.state.smsSendBtn && '获取验证码' || (mobileInfo.state.time+' s')"
+                        ></a-button>
+                    </a-col>
+                </a-row>
+                <a-form-item
+                >
+                    <a-button type='primary' htmlType='submit' block size="large" :loading="mobileInfo.confirmLoading" :disabled="mobileInfo.confirmLoading">绑定</a-button>
+                </a-form-item>
+            </a-form>
+        </a-modal>
+        <a-modal
+                class="mail-modal"
+                :width="385"
+                v-model="mailInfo.modalStatus"
+                :title="mailInfo.modalTitle"
+                :bodyStyle="{paddingBottom:'1px'}"
+                :footer="null"
+        >
+            <a-alert style="margin-bottom: 12px;"
+                     v-show="errorTips"
+                     :message="errorTips"
+                     type="error"
+            />
+            <a-form
+                    layout="vertical"
+                    :form="mailForm"
+                    hideRequiredMark
+                    @submit.prevent="handleMailSubmit">
+                <a-form-item
+                >
+                    <a-input size="large" type="text" placeholder="邮箱地址"
+                             v-decorator="[
+                                'mail',
+                                {rules: [{ required: true, pattern: /^([a-zA-Z0-9_-])+@([a-zA-Z0-9_-])+((\.[a-zA-Z0-9_-]{2,3}){1,2})$/, message: '请输入正确的邮箱地址' }], validateTrigger: 'change'}
+                            ]">
+                        <a-icon slot="prefix" type="mail" :style="{ color: 'rgba(0,0,0,.25)' }"/>
+                    </a-input>
+                </a-form-item>
+                <a-form-item
+                >
+                    <a-button type='primary' htmlType='submit' block size="large" :loading="mailInfo.confirmLoading" :disabled="mailInfo.confirmLoading">保存</a-button>
+                </a-form-item>
+            </a-form>
+        </a-modal>
     </div>
 </template>
 
@@ -133,7 +226,7 @@
     import {mapState} from 'vuex'
     import AccountSetting from "@/components/layout/account/setting"
     import {checkResponse} from "../../../assets/js/utils";
-    import {editPassword} from "../../../api/user";
+    import {_bindMail, _bindMobile, editPassword, getCaptcha} from "../../../api/user";
 
     export default {
         name: "settingSecurity",
@@ -143,6 +236,8 @@
         data() {
             return {
                 form: this.$form.createForm(this),
+                mobileForm: this.$form.createForm(this),
+                mailForm: this.$form.createForm(this),
                 errorTips: '',
                 passwordInfo: {
                     modalStatus: false,
@@ -150,6 +245,28 @@
                     modalTitle: '修改密码',
                     okText: '保存',
                     cancelText: '放弃',
+                },
+                mobileInfo: {
+                    modalStatus: false,
+                    confirmLoading: false,
+                    modalTitle: '修改手机',
+                    okText: '保存',
+                    cancelText: '放弃',
+                    state: {
+                        time: 60,
+                        smsSendBtn: false
+                    },
+                },
+                mailInfo: {
+                    modalStatus: false,
+                    confirmLoading: false,
+                    modalTitle: '修改邮箱',
+                    okText: '保存',
+                    cancelText: '放弃',
+                    state: {
+                        time: 60,
+                        smsSendBtn: false
+                    },
                 },
             }
         },
@@ -161,6 +278,12 @@
         methods: {
             editPassword(){
                 this.passwordInfo.modalStatus = true;
+            },
+            editMobile(){
+                this.mobileInfo.modalStatus = true;
+            },
+            editMail(){
+                this.mailInfo.modalStatus = true;
             },
             handlePasswordSubmit() {
                 let app = this;
@@ -193,8 +316,98 @@
                     },
                 );
             },
+            handleMobileSubmit() {
+                let app = this;
+                this.mobileForm.validateFields(
+                    (err, values) => {
+                        if (!err) {
+                            let obj = app.mobileForm.getFieldsValue();
+                            this.setErrorTips('');
+                            app.mobileInfo.confirmLoading = true;
+                            _bindMobile(obj).then(res => {
+                                app.mobileInfo.confirmLoading = false;
+                                if (!checkResponse(res)) {
+                                    return;
+                                }
+                                const obj = {
+                                    userInfo: res.data.member,
+                                    tokenList: res.data.tokenList
+                                };
+                                app.$store.dispatch('SET_LOGGED', obj);
+                                this.mobileInfo.modalStatus = false;
+                                app.mobileForm && app.mobileForm.resetFields();
+                            });
+                        }
+                    },
+                );
+            },
+            handleMailSubmit() {
+                let app = this;
+                this.mailForm.validateFields(
+                    (err, values) => {
+                        if (!err) {
+                            let obj = app.mailForm.getFieldsValue();
+                            this.setErrorTips('');
+                            app.mailInfo.confirmLoading = true;
+                            _bindMail(obj).then(res => {
+                                app.mailInfo.confirmLoading = false;
+                                if (!checkResponse(res)) {
+                                    return;
+                                }
+                                this.mailInfo.modalStatus = false;
+                                app.mailForm && app.mailForm.resetFields();
+                            });
+                        }
+                    },
+                );
+            },
             setErrorTips(content = '') {
                 this.errorTips = content;
+            },
+            getCaptcha(e) {
+                e.preventDefault();
+                const app = this;
+
+                this.mobileForm.validateFields(['mobile'], {force: true}, (err, values) => {
+                    if (!err) {
+                        this.mobileInfo.state.smsSendBtn = true;
+
+                        const interval = window.setInterval(() => {
+                            if (app.mobileInfo.state.time-- <= 0) {
+                                app.mobileInfo.state.time = 60;
+                                app.mobileInfo.state.smsSendBtn = false;
+                                window.clearInterval(interval)
+                            }
+                        }, 1000);
+
+                        const hide = this.$message.loading('验证码发送中..', 0);
+                        getCaptcha(values.mobile)
+                            .then(res => {
+                                this.$message.destroy();
+
+                                if (!checkResponse(res)) {
+                                    return false;
+                                }
+                                let tips = '验证码获取成功';
+                                if (res.data) {
+                                    tips += '，您的验证码为：' + res.data;
+                                }
+                                this.$notification['success']({
+                                    message: '提示',
+                                    description: tips,
+                                    duration: 8,
+                                    placement: 'bottomLeft'
+                                });
+                            })
+                            .catch(err => {
+                                // setTimeout(hide, 1);
+                                clearInterval(interval);
+                                app.mobileInfo.state.time = 60;
+                                app.mobileInfo.state.smsSendBtn = false;
+                                this.requestFailed(err)
+                            })
+                    }
+                })
             },
         }
     }
@@ -228,6 +441,13 @@
                     }
                 }
             }
+        }
+    }
+    .mobile-modal{
+        .getCaptcha {
+            display: block;
+            width: 100%;
+            height: 40px;
         }
     }
 </style>

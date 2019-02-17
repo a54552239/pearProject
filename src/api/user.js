@@ -63,6 +63,15 @@ export function editPersonal(data) {
 export function editPassword(data) {
     return $http.post('project/index/editPassword', data);
 }
+export function _bindMobile(data) {
+    return $http.post('project/login/_bindMobile', data);
+}
+export function _bindMail(data) {
+    return $http.post('project/login/_bindMail', data);
+}
+export function _checkBindMail(data) {
+    return $http.post('project/login/_checkBindMail', data);
+}
 
 export function _joinByInviteLink(inviteCode) {
     return $http.post('project/account/_joinByInviteLink', {inviteCode: inviteCode});

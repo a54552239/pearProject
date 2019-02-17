@@ -1,12 +1,15 @@
 // common-mixin.vue
 export default {
     data() {
-        return {
-        }
+        return {}
     },
     methods: {
-        routerLink(page) {
-            this.$router.push(page)
+        routerLink(page, replace = false) {
+            if (replace) {
+                this.$router.replace(page);
+            } else {
+                this.$router.push(page);
+            }
         },
     }
 }

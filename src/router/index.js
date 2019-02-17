@@ -77,6 +77,12 @@ const router = new Router({
             meta: {model: 'error'},
         },
         {
+            name: 'resetEmail',
+            path: '/reset/email',
+            component: resolve => require(['@/views/reset/email'], resolve),
+            meta: {model: 'error'},
+        },
+        {
             name: '404',
             path: '/404',
             component: resolve => require(['@/views/error/404'], resolve),
