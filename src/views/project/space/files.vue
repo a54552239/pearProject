@@ -107,7 +107,7 @@
                                 </div>
                                 <span slot="actions">
                                     <a-tooltip title="下载">
-                                        <a class="muted" target="_blank" :href="item | showPreviewUrl"><a-icon type="download"/></a>
+                                        <a class="muted" target="_blank" :href="item.file_url"><a-icon type="download"/></a>
                                     </a-tooltip>
                                 </span>
                                 <!-- <span slot="actions">
