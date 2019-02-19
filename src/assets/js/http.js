@@ -8,10 +8,13 @@ import {notice} from './notice';
 import config from "../../config/config";
 
 const HOME_PAGE = config.HOME_PAGE;
-const $http = Axios.create({
-    withCredentials: true,
-    crossDomain: true
-});
+const crossDomain = config.crossDomain;
+let axiosConfig = {};
+if (crossDomain) {
+    axiosConfig.withCredentials = true;
+    axiosConfig.crossDomain = true;
+}
+const $http = Axios.create(axiosConfig);
 
 // Before request
 $http.interceptors.request.use(
