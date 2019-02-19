@@ -1,5 +1,6 @@
 import {notice} from './notice';
 import config from '../../config/config'
+import {getStore} from "./storage";
 
 const PROD_URL = config.PROD_URL;
 const crossDomain = config.crossDomain;
@@ -198,6 +199,15 @@ export function timeFix() {
     const time = new Date();
     const hour = time.getHours();
     return hour < 9 ? '早上好' : (hour <= 11 ? '上午好' : (hour <= 13 ? '中午好' : (hour < 20 ? '下午好' : '晚上好')))
+}
+export function getAuthorization() {
+    let tokenList = getStore('tokenList', true);
+    if (tokenList) {
+        let accessToken = tokenList.accessToken;
+        let tokenType = tokenList.tokenType;
+        return {Authorization: `${tokenType} ${accessToken}`};
+    }
+    return {};
 }
 
 /**

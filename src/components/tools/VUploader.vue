@@ -89,7 +89,7 @@
 </template>
 
 <script>
-    import {checkResponse, getApiUrl} from "../../assets/js/utils";
+    import {checkResponse, getApiUrl, getAuthorization} from "../../assets/js/utils";
     import {mapState} from 'vuex'
     import {getStore} from "../../assets/js/storage";
     import {notice} from "../../assets/js/notice";
@@ -119,18 +119,10 @@
                         return getStore('tempData', true);//query暂时无法动态响应
                     },
                     headers: function () {
-                        let tokenList = getStore('tokenList', true);
-                        let accessToken = '';
-                        let tokenType = '';
-                        if (tokenList) {
-                            accessToken = tokenList.accessToken;
-                            tokenType = tokenList.tokenType;
-                        }
                         let organization = getStore('currentOrganization', true);
-                        return {
-                            Authorization: `${tokenType} ${accessToken}`,
-                            organizationcode: organization.code,
-                        };
+                        const auth = getAuthorization();
+                        auth.organizationcode = organization.code;
+                        return auth;
                     },
                 },
                 attrs: {

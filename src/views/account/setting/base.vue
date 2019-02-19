@@ -73,7 +73,7 @@
 <script>
     import {mapState} from 'vuex'
     import AccountSetting from "@/components/layout/account/setting"
-    import {checkResponse, getApiUrl, getBase64} from "../../../assets/js/utils";
+    import {checkResponse, getApiUrl, getAuthorization, getBase64} from "../../../assets/js/utils";
     import {editPersonal} from "../../../api/user";
     import {getStore} from "../../../assets/js/storage";
 
@@ -95,13 +95,7 @@
                 userInfo: state => state.userInfo,
             }),
             headers() {
-                let tokenList = getStore('tokenList', true);
-                if (tokenList) {
-                    let accessToken = tokenList.accessToken;
-                    let tokenType = tokenList.tokenType;
-                    return {Authorization: `${tokenType} ${accessToken}`};
-                }
-                return {};
+                return getAuthorization();
             }
         },
         mounted() {

@@ -73,6 +73,7 @@
                             name="cover"
                             class="cover-uploader"
                             :showUploadList="false"
+                            :headers="headers"
                             :action="uploadAction"
                             :beforeUpload="beforeUpload"
                             @change="handleChange"
@@ -116,6 +117,7 @@
     import {checkResponse, getApiUrl, getBase64} from '@/assets/js/utils';
     import pagination from "@/mixins/pagination";
     import config from "@/config/config"
+    import {getAuthorization} from "../../../assets/js/utils";
 
     export default {
         components: {},
@@ -141,6 +143,11 @@
                 },
                 uploadLoading: false,
                 uploadAction: getApiUrl('project/project_template/uploadCover'),
+            }
+        },
+        computed: {
+            headers() {
+                return getAuthorization();
             }
         },
         watch: {
