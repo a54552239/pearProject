@@ -352,7 +352,9 @@
                                             <div class="field-right">
                                                 <div class="inline-block">
                                                     <a-tag :color="tag.tag.color" v-for="(tag,index) in task.tags"
-                                                           :key="index">{{tag.tag.name}}
+                                                           :key="index">
+                                                        {{tag.tag.name}}
+                                                        <a-icon type="close" @click="removeTag(tag.tag,index)"/>
                                                     </a-tag>
                                                 </div>
                                                 <a-dropdown
@@ -755,7 +757,7 @@
     import {notice} from "@/assets/js/notice";
     import {relativelyTaskTime, relativelyTime} from "@/assets/js/dateTime";
     import {checkResponse} from "../../assets/js/utils";
-    import {setPrivate, taskSources} from "../../api/task";
+    import {setPrivate, setTag, taskSources} from "../../api/task";
 
     let tokenList = getStore('tokenList', true);
     let authorization = '';
@@ -1341,6 +1343,11 @@
                 if (index !== -1) {
                     this.task.tags.splice(index, 1);
                 }
+            },
+            removeTag(tag, index) {
+                setTag({taskCode: this.task.code, tagCode: tag.code}).then(() => {
+                    this.task.tags.splice(index, 1);
+                });
             },
             updateChildExecutor(member) {
                 this.visibleChildTaskMemberMenu = false;
