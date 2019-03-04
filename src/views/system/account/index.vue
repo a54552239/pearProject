@@ -187,7 +187,7 @@
                     res.data.authList.forEach(function (v) {
                         const obj = {
                             label: v.title,
-                            value: v.id
+                            value: v.code
                         };
                         app.authList.push(obj);
                     });
@@ -218,11 +218,11 @@
                     }
                 } else if (action == 'status') {
                     const status = record.status;
-                    status ? forbid(record.id).then(res=>{
+                    status ? forbid(record.code).then(res=>{
                         if (checkResponse(res)) {
                             record.status = Number(!status);
                         }
-                    }) : resume(record.id).then(res=>{
+                    }) : resume(record.code).then(res=>{
                         if (checkResponse(res)) {
                             record.status = Number(!status);
                         }
@@ -256,9 +256,9 @@
                 let app = this;
                 app.actionInfo.confirmLoading = true;
                 let obj = app.form.getFieldsValue();
-                if (app.newData.id) {
+                if (app.newData.code) {
                     //编辑
-                    obj.id = app.newData.id;
+                    obj.code = app.newData.code;
                 } else {
                     //新增
                     Object.assign(obj, app.newData);
@@ -268,7 +268,7 @@
                     if (!checkResponse(res)) {
                         return;
                     }
-                    if (app.newData.id) {
+                    if (app.newData.code) {
                         app.newData.email = obj.email;
                         app.newData.name = obj.name;
                         app.newData.mobile = obj.mobile;
@@ -291,7 +291,7 @@
             authApply() {
                 let app = this;
                 app.authInfo.confirmLoading = true;
-                auth(app.currentUser.id, app.currentUser.authorize).then(res => {
+                auth(app.currentUser.code, app.currentUser.authorize).then(res => {
                     if (checkResponse(res)) {
                         app.dataSource[app.currentUser.index] = app.currentUser;
                         app.authInfo.modalStatus = false;

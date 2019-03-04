@@ -193,6 +193,17 @@
                         </a-form-item>
                     </a-col>
                 </a-row>
+                <a-row :gutter="24">
+                    <a-col :span="24">
+                        <a-form-item
+                                label='描述'
+                        >
+                            <a-input placeholder='输入描述' size="large" type="textarea" :rows="3"
+                                     v-decorator="['description']"
+                            />
+                        </a-form-item>
+                    </a-col>
+                </a-row>
                 <a-form-item
                 >
                     <div class="action-btn" style="text-align: center">
@@ -335,6 +346,7 @@
                         mobile: this.member.mobile,
                         email: this.member.email,
                         position: this.member.position,
+                        description: this.member.description,
                     });
                 });
             },
