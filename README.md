@@ -51,7 +51,7 @@ Composer
 2. 安装后端依赖
     1. 进入接口文件目录
     2. 方式一：Composer
-    3. 方式二：下载[vendor.zip](https://static.vilson.xyz/help/pearproject/vendor.zip)，直接解压到项目根目录，覆盖原有的vender文件夹
+    3. 方式二：下载[vendor.zip](https://vilson-static.oss-cn-shenzhen.aliyuncs.com/common/vendor.zip)，直接解压到项目根目录，覆盖原有的vender文件夹
 3. 下载前端项目
 4. 安装node.js
     1. 地址：http://nodejs.cn/download/ 根据情况选择版本
