@@ -56,11 +56,16 @@
                     this.$store.commit('catchSocketAction', data);
                 }
                 if (data.action === 'connect') {
-                    data.data.client_id && setStore('client_id', data.data.client_id);
-                    const userInfo = getStore('userInfo',true);
-                    const uid = userInfo ? userInfo.code : '';
-                    if (uid) {
-                        bindClientId(data.data.client_id, uid);
+                    if (data.data.client_id) {
+                        if (!this.$store.state.boundClient) {
+                            setStore('client_id', data.data.client_id);
+                            const userInfo = getStore('userInfo', true);
+                            const uid = userInfo ? userInfo.code : '';
+                            if (uid) {
+                                bindClientId(data.data.client_id, uid);
+                                this.$store.dispatch('setBoundClient', true);
+                            }
+                        }
                     }
                 }
             },

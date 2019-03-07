@@ -30,5 +30,8 @@ export default {
     },
     catchSocketAction(state, data) {
         state.socketAction = data;
+    },
+    setBoundClient(state, data) {
+        state.boundClient = data;
     }
 };

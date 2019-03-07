@@ -12,5 +12,6 @@ export default {
     windowLoading: false, // 窗口loading
     pageLoading: false, // 页面加载loading
     socketAction: '',
+    boundClient: false,//是否绑定client
 
 }

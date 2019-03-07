@@ -37,4 +37,7 @@ export default {
         setStore('system', data);
         commit('setSystem', data);
     },
+    setBoundClient({commit}, data) {
+        commit('setBoundClient', data);
+    },
 }
