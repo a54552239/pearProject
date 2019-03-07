@@ -1,11 +1,11 @@
-<!--suppress ALL    -->
+<!--suppress ALL-->
 <template>
     <div class="index">
         <a-spin :spinning="windowLoading">
             <a-layout id="layout" :class="layoutClass">
                 <a-layout-header :class="{'collapsed':collapsed}">
                     <div class="logo" @click="()=>{this.$router.push(config.HOME_PAGE)}">
-                        <img class="logo-img" src="../assets/image/common/logo3.png" alt="">
+                        <img class="logo-img" src="../assets/image/common/logo.png" alt="">
                         <span class="title" v-if="system">
                             {{system.app_name}}
                              <span class="version">{{system.app_version}}</span>

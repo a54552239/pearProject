@@ -111,15 +111,15 @@
                                      class="scrum-stage-content thin-scroll">
                                 <a-spin wrapperClassName="tasks-loading" :spinning="stage.tasksLoading">
                                     <!--未完成列表-->
-                                    <draggable v-model="stage.tasks"
+                                    <draggable v-model="stage.unDoneTasks"
                                                :options="{group:'task',ghostClass:'task-ghost',dragClass:'task-drag',fallbackClass:'task-drag',forceFallback:false}"
                                                @end="taskSort"
                                                class="scrum-stage-tasks">
-                                        <template v-for="(task,taskIndex) in stage.tasks">
+                                        <template v-for="(task,taskIndex) in stage.unDoneTasks">
                                             <div class="task task-card ui-sortable-handle"
                                                  :index="taskIndex"
                                                  :id="task.code"
-                                                 :key="task.code"
+                                                 :key="task. code"
                                                  :class="showTaskPri(task.pri)"
                                                  v-if="!task.done && task.canRead"
                                                  @click.stop="taskDetail(task.code,index)"
@@ -236,12 +236,18 @@
                                         </form>
                                     </div>
                                     <!--已完成列表-->
-                                    <ul v-if="stage.tasks.length" class="scrum-stage-tasks-done">
-                                        <template v-for="(task,taskIndex) in stage.tasks">
-                                            <li class="task done task-card ui-sortable-handle"
-                                                :key="task.code"
-                                                v-if="task.done && task.canRead"
-                                                @click.stop="taskDetail(task.code,index)"
+                                    <draggable v-model="stage.doneTasks"
+                                               :options="{group:'task-done',ghostClass:'task-ghost',dragClass:'task-drag',fallbackClass:'task-drag',forceFallback:false}"
+                                               @end="taskSort"
+                                               class="scrum-stage-tasks-done">
+                                        <!--<ul v-if="stage.tasks.length" class="scrum-stage-tasks-done">-->
+                                        <template v-for="(task,taskIndex) in stage.doneTasks">
+                                            <div class="task done task-card ui-sortable-handle"
+                                                 :index="taskIndex"
+                                                 :id="task.code"
+                                                 :key="task.code"
+                                                 v-if="task.canRead"
+                                                 @click.stop="taskDetail(task.code,index)"
                                             >
                                                 <div class="task-priority bg-priority-0"></div>
                                                 <a class="check-box"
@@ -265,18 +271,20 @@
                                                     <div class="task-info-wrapper clearfix">
                                                         <div class="task-infos">
                                             <span class="tag muted" :class="'tag-color-'+ tag.color"
-                                                  v-for="(tag,tag_index) in task.task_tag_item_list"> {{ tag.name }} </span>
+                                                  v-for="(tag,tag_index) in task.task_tag_item_list" :key="tag.code"> {{ tag.name }} </span>
                                                         </div>
                                                     </div>
                                                 </div>
-                                            </li>
+                                            </div>
                                         </template>
-                                        <li class="task muted" style="margin: 0 10px 8px;"
-                                            v-show="stage.canNotReadCount">
+                                        <!--</ul>-->
+                                    </draggable>
+                                    <div class="scrum-stage-tasks-done" v-show="stage.canNotReadCount">
+                                        <li class="task muted" style="margin: 0 10px 8px;">
                                             <span><a-icon type="lock"></a-icon>
                                                 有 {{stage.canNotReadCount}} 个任务被隐藏（因为设置了仅参与者可见）</span>
                                         </li>
-                                    </ul>
+                                    </div>
                                     <!--添加任务按钮-->
                                     <div class="task-creator-handler-wrap" @click.stop="showTaskCard(index)"
                                          v-if="!stage.showTaskCard">
@@ -615,7 +623,16 @@
                     if (stageIndex != undefined) {
                         getTasks({stageCode: this.taskStages[stageIndex].code}).then((res) => {
                             this.taskStages[stageIndex].tasksLoading = false;
-                            this.taskStages[stageIndex].tasks = res.data
+                            this.taskStages[stageIndex].tasks = res.data;
+                            let doneTasks = this.taskStages[stageIndex].doneTasks = [];
+                            let unDoneTasks = this.taskStages[stageIndex].unDoneTasks = [];
+                            res.data.forEach((task) => {
+                                if (task.done) {
+                                    doneTasks.push(task);
+                                } else {
+                                    unDoneTasks.push(task);
+                                }
+                            });
                         });
                     }
                 }
@@ -682,6 +699,11 @@
                                 res.data.forEach((task) => {
                                     if (!task.canRead) {
                                         canNotReadCount++;
+                                    }
+                                    if (task.done) {
+                                        v.doneTasks.push(task);
+                                    } else {
+                                        v.unDoneTasks.push(task);
                                     }
                                 });
                                 v.canNotReadCount = canNotReadCount;
@@ -764,9 +786,13 @@
                     const result = checkResponse(res);
                     if (result) {
                         app.$message.destroy();
-                        getTasks({stageCode: app.task.stage_code}).then((res) => {
-                            app.taskStages[stageIndex].tasks = res.data;
-                        });
+                        let taskStages = app.taskStages[stageIndex];
+                        taskStages.tasks.push(res.data);
+                        app.taskStages[stageIndex].unDoneTasks.push(res.data);
+                        // getTasks({stageCode: app.task.stage_code}).then((res) => {
+                        //     let taskStages = app.taskStages[stageIndex];
+                        //     taskStages.tasks = res.data;
+                        // });
                         app.task = {};
                         // notice({
                         //     title: '添加任务成功',
@@ -778,7 +804,15 @@
                 });
             },
             taskDone(taskCode, stageIndex, taskIndex, done) {
-                let task = this.taskStages[stageIndex].tasks[taskIndex];
+                let task = null;
+                let unDoneTasks = this.taskStages[stageIndex].unDoneTasks;
+                let doneTasks = this.taskStages[stageIndex].doneTasks;
+                if (done) {
+                    task = unDoneTasks[taskIndex];
+                } else {
+                    task = doneTasks[taskIndex];
+                }
+                // let task = this.taskStages[stageIndex].tasks[taskIndex];
                 if (task.hasUnDone) {
                     return false;
                 }
@@ -788,6 +822,27 @@
                         return false;
                     }
                     task.done = done;
+                    if (done) {
+                        unDoneTasks.splice(taskIndex, 1);
+                        doneTasks.push(task);
+                        doneTasks = doneTasks.sort(function (a, b) {
+                            if (a.sort === b.sort) {
+                                return a.id_num - b.id_num;
+                            } else {
+                                return a.sort - b.sort;
+                            }
+                        });
+                    } else {
+                        doneTasks.splice(taskIndex, 1);
+                        unDoneTasks.push(task);
+                        unDoneTasks = unDoneTasks.sort(function (a, b) {
+                            if (a.sort === b.sort) {
+                                return a.id_num - b.id_num;
+                            } else {
+                                return a.sort - b.sort;
+                            }
+                        });
+                    }
                 });
             },
             showInputStrageName() {
@@ -965,6 +1020,7 @@
                 sort(this.preCode, this.nextCode, this.code);
             },
             taskSort(event) {
+                console.log(event);
                 const toStageCode = event.to.parentNode.parentNode.parentNode.getAttribute('id');
                 let codes = '';
                 for (let i = 0, len = event.to.children.length; i < len; i++) {

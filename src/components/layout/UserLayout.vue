@@ -5,7 +5,7 @@
                 <div class="header">
                     <a-badge :count="'Beta 2.0'">
                         <a href="/">
-                            <img src="../../assets/image/common/logo3.png" class="logo" alt="logo">
+                            <img src="../../assets/image/common/logo.png" class="logo" alt="logo">
                             <span class="title">Pear Project</span>
                         </a>
                     </a-badge>
