@@ -187,7 +187,7 @@
                     res.data.authList.forEach(function (v) {
                         const obj = {
                             label: v.title,
-                            value: v.code
+                            value: v.id
                         };
                         app.authList.push(obj);
                     });
@@ -291,7 +291,7 @@
             authApply() {
                 let app = this;
                 app.authInfo.confirmLoading = true;
-                auth(app.currentUser.code, app.currentUser.authorize).then(res => {
+                auth(app.currentUser.id, app.currentUser.authorize).then(res => {
                     if (checkResponse(res)) {
                         app.dataSource[app.currentUser.index] = app.currentUser;
                         app.authInfo.modalStatus = false;
