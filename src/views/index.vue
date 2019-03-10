@@ -29,7 +29,8 @@
                     </a-menu>
                     <div class="right-menu">
                         <div class="m-r-lg" v-if="config.WS_URI">
-                            <a-badge title="当前在线" :count="online" showZero :numberStyle="{backgroundColor: '#52c41a'} " :offset="[10,0]">
+                            <a-badge title="当前在线" :count="online" showZero :numberStyle="{backgroundColor: '#52c41a'} "
+                                     :offset="[10,0]">
                                 <a-icon type="team"/>
                             </a-badge>
                         </div>
@@ -61,7 +62,7 @@
                                 :key="menu.id.toString()"
                                 :openKeys="openKeys"
                                 v-model="selectedKeys"
-                                @click="menuClick"
+                                @click="menuClick($event, menu)"
                                 @openChange="onOpenChange"
                                 mode="inline">
                             <a-menu-item
@@ -281,11 +282,17 @@
                 });
                 that.$store.dispatch('setBreadCrumbInfo', that.breadCrumbInfo);
             },
-            menuClick(event) {
+            menuClick(event, menu) {
                 //点击左侧导航跳转页面
                 let that = this;
+                let openKeys = [];
+                if (!this.openKeys.length) {
+                    openKeys = [menu.id.toString()];
+                } else {
+                    openKeys = JSON.parse(JSON.stringify(that.openKeys));
+                }
                 that.menus.forEach(function (v) {
-                    if (v.id == that.openKeys) {
+                    if (v.id == openKeys) {
                         let turnPath = '/';
                         if (v.children) {
                             v.children.forEach(function (v2) {
