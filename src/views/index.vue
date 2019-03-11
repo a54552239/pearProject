@@ -270,8 +270,7 @@
                                     if (!that.collapsed) {
                                         that.openKeys.push(v2.pid.toString());
                                     } else {
-                                        that.openKeysTemp.push(v2.pid.toString());
-
+                                        that.openKeysTemp = [v2.pid.toString()];
                                     }
                                 }
                             })
