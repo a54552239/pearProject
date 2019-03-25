@@ -147,16 +147,17 @@
                     mysqlPassword: '',
                     mysqlPrefix: '',
                     mysqlHostport: '',
+                    initData: false,
                 }
             }
         },
         created() {
             this.checkInstall();
         },
-        mounted(){
-            setTimeout(()=>{
+        mounted() {
+            setTimeout(() => {
                 this.form = this.$form.createForm(this);
-            },500)
+            }, 500)
         },
         methods: {
             handleSubmit() {
@@ -172,6 +173,7 @@
             },
             install() {
                 this.loading = true;
+                this.installInfo.initData = this.installInfo.initData ? 1 : 0;
                 install(this.installInfo).then(res => {
                     this.loading = false;
                     if (!checkResponse(res)) {
