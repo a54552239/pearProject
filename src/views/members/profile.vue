@@ -301,7 +301,7 @@
             getTasks() {
                 this.task.loading = true;
                 selfList({
-                    memberCode: this.member.code,
+                    memberCode: this.member.member_code,
                     type: Number(this.task.type[0]),
                     page: this.task.page,
                     pageSize: this.task.pageSize
@@ -329,7 +329,7 @@
             getProjectList() {
                 this.task.loading = true;
                 getProjectList({
-                    memberCode: this.member.code,
+                    memberCode: this.member.member_code,
                     page: this.task.page,
                     pageSize: this.task.pageSize
                 }).then(res => {
