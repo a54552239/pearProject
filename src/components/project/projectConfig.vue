@@ -18,6 +18,7 @@
                                     name="cover"
                                     class="cover-uploader"
                                     :showUploadList="false"
+                                    :headers="headers"
                                     :action="uploadAction"
                                     :beforeUpload="beforeUpload"
                                     @change="handleChange"
@@ -145,7 +146,7 @@
 <script>
     import {read as getProject, doData, archive, recycle, recoveryArchive, recovery, quit} from "../../api/project";
     import {notice} from "../../assets/js/notice";
-    import {checkResponse, getApiUrl, getBase64} from "../../assets/js/utils";
+    import {checkResponse, getApiUrl, getAuthorization, getBase64} from "../../assets/js/utils";
 
     export default {
         name: "projectConfig",
@@ -165,6 +166,11 @@
                 project: {},
                 uploadLoading: false,
                 uploadAction: getApiUrl('project/project/uploadCover'),
+            }
+        },
+        computed: {
+            headers() {
+                return getAuthorization();
             }
         },
         watch: {

@@ -10,7 +10,7 @@
 
     export default {
         name: 'editor',
-        props: ['id', 'value', 'width', 'height', 'uploadImgServer', 'disabled', 'menus', 'mapKey', 'menuFixed', 'pasteFilter', 'codeDefaultLang', 'hideLinkImg', 'uploadImgParams', 'uploadImgHeaders', 'isRealtime', 'disabledMenus', 'uploadFileName'],
+        props: ['id', 'value', 'width', 'height', 'uploadImgServer', 'disabled', 'menus', 'mapKey', 'menuFixed', 'pasteFilter', 'codeDefaultLang', 'hideLinkImg', 'uploadImgParams', 'uploadImgHeaders', 'isRealtime', 'disabledMenus', 'uploadFileName', 'uploadImgShowBase64'],
         data() {
             return {
                 styleObject: {
@@ -40,7 +40,7 @@
             initConfig() {
                 this.editor.customConfig.uploadFileName = this.uploadFileName ? this.uploadFileName : 'image[]';
                 this.editor.customConfig.uploadImgServer = this.uploadImgServer;
-                // this.editor.customConfig.uploadImgShowBase64 = true;
+                this.editor.customConfig.uploadImgShowBase64 = this.uploadImgShowBase64 ? this.uploadImgShowBase64 : false;
                 // this.editor.customConfig.uploadImgFns.onload = (resultText, xhr) => {
                 //     let originalName = this.editor.uploadImgOriginalName || '';
                 //     this.$emit('load', originalName, resultText)
@@ -62,9 +62,9 @@
                     this.editor.customConfig.menus = this.filterMenu(this.menus)
                 } else if (this.disabledMenus) {
                     // 禁用菜单
-                    this.editor.customConfig.menus = this.filterDisabledMenu(wangEditor.config.menus, this.disabledMenus)
+                    this.editor.customConfig.menus = this.filterDisabledMenu(this.editor.customConfig.menus, this.disabledMenus)
                 } else {
-                    this.editor.customConfig.menus = this.filterMenu(wangEditor.config.menus)
+                    // this.editor.customConfig.menus = this.filterMenu(wangEditor.config.menus)
                 }
                 if (this.menuFixed != undefined) {
                     // 配置菜单栏吸顶，默认true
