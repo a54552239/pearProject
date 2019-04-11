@@ -575,7 +575,7 @@
                                                                           icon="link"
                                                                           :src="item.sourceDetail.file_url"/>
                                                                 <div slot="title">
-                                                                    <span>{{ item.title }}</span>
+                                                                    <a class="muted" target="_blank" :href="item.sourceDetail.file_url">{{ item.title }}</a>
                                                                 </div>
                                                                 <div slot="description">
                                                                     <!--{{item.create_time}}-->
@@ -595,11 +595,10 @@
                                                                         <a-icon type="down"/>
                                                                     </a>
                                                                     <!--</a-tooltip>-->
-                                                                    <a-menu @click="doSource($event,item.code)"
+                                                                    <a-menu v-clipboard="item.sourceDetail.file_url" @click="doSource($event,item)"
                                                                             class="field-right-menu"
                                                                             slot="overlay">
-                                                                        <a-menu-item key="copy"
-                                                                                     v-clipboard="item.sourceDetail.file_url">
+                                                                        <a-menu-item key="copy">
                                                                             <a-icon type="link"/>
                                                                             <span>复制链接</span>
                                                                         </a-menu-item>
@@ -1081,7 +1080,7 @@
                     this.$refs.inputTitle.focus();
                 });
             },
-            doSource(action, sourceCode) {
+            doSource(action, source) {
                 let app = this;
                 const actionKey = action.key;
                 switch (actionKey) {
@@ -1093,7 +1092,7 @@
                             okType: 'danger',
                             cancelText: `再想想`,
                             onOk() {
-                                delSourceLink(sourceCode).then((res) => {
+                                delSourceLink(source.code).then((res) => {
                                     const result = checkResponse(res);
                                     if (!result) {
                                         return false;
