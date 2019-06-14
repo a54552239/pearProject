@@ -223,7 +223,7 @@
                                                 <span class="field-name">时间</span>
                                             </div>
                                             <div class="field-right field-date">
-                                                <template v-show="task.openBeginTime">
+                                                <template v-if="task.openBeginTime">
                                                     <a-dropdown :trigger="['click']" v-model="showBeginTime"
                                                                 :disabled="!!task.deleted">
                                                         <a-tooltip :mouseEnterDelay="0.5" v-if="!task.deleted">
