@@ -222,7 +222,47 @@
                                                 <a-icon type="calendar"/>
                                                 <span class="field-name">时间</span>
                                             </div>
-                                            <div class="field-right">
+                                            <div class="field-right field-date">
+                                                <template v-show="task.openBeginTime">
+                                                    <a-dropdown :trigger="['click']" v-model="showBeginTime"
+                                                                :disabled="!!task.deleted">
+                                                        <a-tooltip :mouseEnterDelay="0.5" v-if="!task.deleted">
+                                                            <template slot="title">
+                                                                <span>点击设置开始时间</span>
+                                                            </template>
+                                                            <div class="field-flex">
+                                                                <a class="muted name" style="margin: 0">
+                                                                    <template v-if="!task.setBeginTime">点击设置开始时间</template>
+                                                                    <template v-else>{{task.begin_time_format}}</template>
+                                                                </a>
+                                                            </div>
+                                                        </a-tooltip>
+                                                        <div class="field-flex" v-else>
+                                                            <a class="muted name" style="margin: 0">
+                                                                <template v-if="!task.setBeginTime">点击设置开始时间</template>
+                                                                <template v-else>{{task.begin_time_format}}</template>
+                                                            </a>
+                                                        </div>
+                                                        <div slot="overlay">
+                                                            <a-date-picker
+                                                                    v-model="task.begin_time"
+                                                                    size="small"
+                                                                    format="MM月DD日 HH:mm"
+                                                                    showTime
+                                                                    allowClear
+                                                                    :showToday="false"
+                                                                    :open="showBeginTime"
+                                                                    @ok="doBeginTime(true)"
+                                                            >
+                                                                <template slot="renderExtraFooter">
+                                                                    <a style="position: absolute;" size="small"
+                                                                       @click="doBeginTime(false)">清除</a>
+                                                                </template>
+                                                            </a-date-picker>
+                                                        </div>
+                                                    </a-dropdown>
+                                                    <span class="m-l-sm m-r-sm">-</span>
+                                                </template>
                                                 <a-dropdown :trigger="['click']" v-model="showEndTime"
                                                             :disabled="!!task.deleted">
                                                     <a-tooltip :mouseEnterDelay="0.5" v-if="!task.deleted">
@@ -575,7 +615,9 @@
                                                                           icon="link"
                                                                           :src="item.sourceDetail.file_url"/>
                                                                 <div slot="title">
-                                                                    <a class="muted" target="_blank" :href="item.sourceDetail.file_url">{{ item.title }}</a>
+                                                                    <a class="muted" target="_blank"
+                                                                       :href="item.sourceDetail.file_url">{{ item.title
+                                                                        }}</a>
                                                                 </div>
                                                                 <div slot="description">
                                                                     <!--{{item.create_time}}-->
@@ -595,7 +637,8 @@
                                                                         <a-icon type="down"/>
                                                                     </a>
                                                                     <!--</a-tooltip>-->
-                                                                    <a-menu v-clipboard="item.sourceDetail.file_url" @click="doSource($event,item)"
+                                                                    <a-menu v-clipboard="item.sourceDetail.file_url"
+                                                                            @click="doSource($event,item)"
                                                                             class="field-right-menu"
                                                                             slot="overlay">
                                                                         <a-menu-item key="copy">
@@ -813,6 +856,7 @@
 
                 /*日期*/
                 showEditName: false,
+                showBeginTime: false,
                 showEndTime: false,
 
                 /*备注*/
@@ -985,7 +1029,14 @@
                         this.task.end_time = moment(this.task.end_time);
                     }
                     this.task.end_time_format = relativelyTaskTime(this.task.end_time, true);
-
+                    if (!this.task.begin_time) {
+                        this.task.setBeginTime = false;
+                        this.task.begin_time = moment(moment().format('YYYY-MM-DD') + ' 18:00');
+                    } else {
+                        this.task.setBeginTime = true;
+                        this.task.begin_time = moment(this.task.begin_time);
+                    }
+                    this.task.begin_time_format = relativelyTaskTime(this.task.begin_time, true);
                     this.initContent(this.task.description);
                     if (this.task.executor) {
                         this.childExecutor = this.task.executor;
@@ -1186,6 +1237,19 @@
                     this.getTask();
                     this.getChildTasks();
                 });
+            },
+            doBeginTime(setBeginTime = false, showBeginTime = false) {
+                this.task.setEndTime = setBeginTime;
+                this.showBeginTime = showBeginTime;
+                let beginTime = '';
+                if (setBeginTime) {
+                    beginTime = moment(this.task.begin_time).format('YYYY-MM-DD HH:mm');
+                    this.task.begin_time_format = moment(this.task.begin_time).format('MM月DD日 HH:mm');
+                } else {
+                    beginTime = '';
+                }
+                this.editTask({begin_time: beginTime});
+
             },
             doEndTime(setEndTime = false, showEndTime = false) {
                 this.task.setEndTime = setEndTime;
@@ -1561,6 +1625,10 @@
 
                                         .inline-block {
                                             display: inline-block;
+                                        }
+
+                                        &.field-date {
+                                            display: flex;
                                         }
 
                                         &.width-block {

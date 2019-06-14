@@ -110,6 +110,7 @@ export const formatTaskTime = (begin, end) => {
     if (!begin) {
         return relativelyTaskTime(end) + ' 截止';
     }
+    return relativelyTaskTime(begin) + ' - ' + relativelyTaskTime(end);
 };
 /**
  * 格式化时间

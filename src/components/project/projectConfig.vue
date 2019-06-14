@@ -115,6 +115,20 @@
                     </div>
                     <a-switch v-model="project.open_prefix" @change="saveProject"/>
                 </div>
+                <div class="content-item">
+                    <div class="infos">
+                        <p class="item-title">任务开始时间</p>
+                        <div class="item-tips muted">为任务设置开始时间，更科学地规划工作。</div>
+                    </div>
+                    <a-switch v-model="project.open_begin_time" @change="saveProject"/>
+                </div>
+                <div class="content-item">
+                    <div class="infos">
+                        <p class="item-title">新任务默认开启隐私模式</p>
+                        <div class="item-tips muted">对本项目内的新任务默认开启隐私模式，创建成功后仅参与者可见</div>
+                    </div>
+                    <a-switch v-model="project.open_task_private" @change="saveProject"/>
+                </div>
             </div>
         </a-tab-pane>
         <a-tab-pane key="4">
@@ -188,6 +202,8 @@
                     this.loading = false;
                     this.project = res.data;
                     this.project.open_prefix = !!res.data.open_prefix;
+                    this.project.open_begin_time = !!res.data.open_begin_time;
+                    this.project.open_task_private = !!res.data.open_task_private;
                 });
             },
             saveProject() {
@@ -200,6 +216,8 @@
                     private: project.private,
                     prefix: project.prefix,
                     open_prefix: Number(project.open_prefix),
+                    open_begin_time: Number(project.open_begin_time),
+                    open_task_private: Number(project.open_task_private),
                     schedule: Number(project.schedule),
                 }).then((res) => {
                     if (!checkResponse(res)) {
@@ -414,6 +432,7 @@
             &.task-config {
                 .content-item {
                     padding-bottom: 24px;
+                    padding-right: 16px;
                     border-bottom: 1px solid #e5e5e5;
                 }
 
