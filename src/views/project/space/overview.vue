@@ -1,5 +1,5 @@
 <template>
-    <div class="project-space-overview">
+    <div class="project-space-overview" :class="project.task_board_theme">
         <div class="project-navigation">
             <div class="project-nav-header">
                 <a-breadcrumb>

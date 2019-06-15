@@ -72,9 +72,9 @@
                         <div class="m-t">
                             <a-avatar :src="project.owner_avatar"></a-avatar>
                             <span class="m-l">{{project.owner_name}}</span>
-                            <a-button class="middle-btn pull-right" size="large">
+                            <!--<a-button class="middle-btn pull-right" size="large">
                                 移交
-                            </a-button>
+                            </a-button>-->
                         </div>
                     </div>
                 </div>
@@ -89,13 +89,24 @@
                 </div>
             </div>
         </a-tab-pane>
-        <!-- <a-tab-pane key="2" forceRender>
+         <a-tab-pane key="2" forceRender>
              <span slot="tab">
                  <a-icon type="eye"/>
-                 项目偏好 *
+                 项目偏好
              </span>
-             项目偏好
-         </a-tab-pane>-->
+             <div class="config-content task-config">
+                 <div class="content-item">
+                     <div class="infos">
+                         <p class="item-title">看板风格</p>
+                         <div class="item-tips muted">切换任务看板的主题风格，内置两种风格。</div>
+                         <a-radio-group @change="saveProject" v-model="project.task_board_theme">
+                             <a-radio style="display: block;height: 30px;line-height: 30px" value="default">默认</a-radio>
+                             <a-radio style="display: block;height: 30px;line-height: 30px" value="simple">简约</a-radio>
+                         </a-radio-group>
+                     </div>
+                 </div>
+             </div>
+         </a-tab-pane>
         <a-tab-pane key="3">
                     <span slot="tab">
                         <a-icon type="check-square"/>
@@ -215,6 +226,7 @@
                     cover: project.cover,
                     private: project.private,
                     prefix: project.prefix,
+                    task_board_theme: project.task_board_theme,
                     open_prefix: Number(project.open_prefix),
                     open_begin_time: Number(project.open_begin_time),
                     open_task_private: Number(project.open_task_private),
@@ -371,7 +383,7 @@
 
         .ant-tabs-left-content {
             padding-top: 18px;
-            padding-right: 12px;
+            padding-right: 24px;
         }
 
         .ant-tabs .ant-tabs-left-bar .ant-tabs-tab {

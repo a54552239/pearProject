@@ -1,5 +1,5 @@
 <template>
-    <div class="project-space-task">
+    <div class="project-space-task" :class="project.task_board_theme">
         <div class="project-navigation">
             <div class="project-nav-header">
                 <a-breadcrumb>
@@ -69,7 +69,7 @@
                                         <span>编辑任务列表</span>
                                     </template>
                                     <a href="javascript:void(0)" class="menu-toggler-title">
-                                        <a-icon type="down-circle" style="font-size: 18px;"/>
+                                        <a-icon type="ellipsis" style="font-size: 18px;"/>
                                     </a>
                                 </a-tooltip>
                                 <!--<div slot="overlay" class="task-popover-content">-->
@@ -303,8 +303,8 @@
                     <header class="scrum-stage-header">
                         <div class="stage-name hinted" style="width: 100%">
                             <a class="muted" v-show="!showCreateStage" @click="showInputStrageName">
-                                <span class="ivu-icon ivu-icon-plus"></span>
-                                <span>新建任务列表...</span>
+                                <a-icon type="plus"/>
+                                <span class="m-l-xs">新建任务列表</span>
                             </a>
                             <div v-show="showCreateStage">
                                 <div>

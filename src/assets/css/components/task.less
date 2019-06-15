@@ -100,7 +100,7 @@
 }
 
 .scrum-stage-header.ui-sortable-handle {
-  cursor: pointer;
+  cursor: move;
 }
 
 .scrum-stage .stage-menu-toggler {
@@ -174,7 +174,7 @@
   /*margin-bottom: 8px;*/
 }
 
-.scrum-stage .scrum-stage-tasks,.scrum-stage .scrum-stage-tasks-done {
+.scrum-stage .scrum-stage-tasks, .scrum-stage .scrum-stage-tasks-done {
   transition: opacity 0.08s ease-out;
   opacity: 1;
   min-height: 5px;
@@ -1506,4 +1506,61 @@ li.activity.creator i {
 .task-move {
   //transform: rotate(2deg);
 
+}
+
+.project-space-task {
+  &.simple {
+    .project-navigation {
+      background: hsla(0, 0%, 100%, .95);
+    }
+
+    .layout-content {
+      background: inherit;
+
+      .scrum-stage .scrum-stage-header, .scrum-stage .sort-header-placeholder {
+        padding: 14px 14px;
+        font-size: 14px;
+      }
+
+      .scrum-stage-wrap.ui-sortable {
+        padding-bottom: 35px;
+      }
+
+      .scrum-stage {
+        background: inherit;
+        margin-right: 0;
+
+        .scrum-stage-tasks {
+          //padding-left: 0
+        }
+      }
+
+      .task-creator-handler-wrap {
+        background: #fff;
+        height: auto;
+        margin: 0 12px;
+        width: 270px;
+        border-radius: 3px;
+
+        .task-creator-handler {
+          font-size: 14px;
+          color: #a6a6a6 !important;
+          border-radius: 3px;
+
+          &:hover {
+            color: #3da8f5 !important;
+            //box-shadow: 0 1px 4px rgba(0, 0, 0, .15);
+            background-color: inherit;
+          }
+
+          &.link-add-handler {
+            padding: 5px 15px;
+            display: flex;
+            justify-content: center;
+          }
+
+        }
+      }
+    }
+  }
 }
