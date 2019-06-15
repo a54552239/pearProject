@@ -88,6 +88,7 @@
             </a-list>
         </wrapper-content>
         <a-modal
+                destroyOnClose
                 :width="360"
                 v-model="actionInfo.modalStatus"
                 :title="actionInfo.modalTitle"
@@ -143,6 +144,7 @@
             </a-form>
         </a-modal>
         <a-modal
+                destroyOnClose
                 class="project-config-modal"
                 :width="800"
                 v-model="projectModal.modalStatus"

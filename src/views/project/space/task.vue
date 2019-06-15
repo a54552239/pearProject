@@ -878,12 +878,15 @@
                             okType: 'danger',
                             cancelText: `再想想`,
                             onOk() {
+                                app.taskStages[stageIndex].tasks = [];
+                                app.$set(app.taskStages[stageIndex], 'doneTasks', []);
                                 recycleBatch({stageCode: stageCode}).then(res => {
                                     const result = checkResponse(res);
                                     if (!result) {
                                         return false;
                                     }
-                                    app.$set(app.taskStages[stageIndex], 'tasks', []);
+                                    app.$set(app.taskStages[stageIndex], 'doneTasks', []);
+                                    app.$set(app.taskStages[stageIndex], 'unDoneTasks', []);
                                 });
                                 return Promise.resolve();
                             }
