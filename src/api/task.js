@@ -3,6 +3,9 @@ import $http from '@/assets/js/http'
 export function list(data) {
     return $http.post('project/task', data);
 }
+export function getListByTaskTag(data) {
+    return $http.post('project/task/getListByTaskTag', data);
+}
 
 export function selfList(data) {
     return $http.post('project/task/selfList', data);
