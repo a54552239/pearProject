@@ -1,68 +1,76 @@
 <template>
-    <a-tabs tabPosition="left" defaultActiveKey="1" :animated="false" v-model="tabKey">
-        <a-tab-pane key="1">
-            <span slot="tab">
-                <a-icon type="check-square"/>
-                任务
-            </span>
-        </a-tab-pane>
-        <a-tab-pane key="2">
-            <span slot="tab">
-                <a-icon type="link"/>
-                文件
-            </span>
-        </a-tab-pane>
-        <div class="config-content">
-            <vue-scroll>
-                <div class="content-item">
-                    <div class="infos">
-                        <a-list>
-                            <div v-if="showLoadingMore" slot="loadMore"
-                                 :style="{ textAlign: 'center', marginTop: '12px', height: '32px', lineHeight: '32px' }">
-                                <a-spin v-if="loadingMore"/>
-                                <a-button v-else @click="onLoadMore">加载更多</a-button>
-                            </div>
-                            <a-list-item :key="index" v-for="(item, index) in list">
-                                <a-list-item-meta>
-                                    <div slot="title">
-                                        <router-link class="text-default" v-show="tabKey == '1'"
-                                                     :to="`/project/space/task/${code}/detail/${item.code}`">
-                                            {{ item.name }}
-                                        </router-link>
-                                        <a target="_blank" class="text-default" v-show="tabKey == '2'"
-                                                     :href="item.file_url">
-                                            {{ item.fullName }}
-                                        </a>
-                                    </div>
-                                    <div slot="description">
-                                        {{showTaskTime(item.deleted_time)}}
-                                    </div>
-                                </a-list-item-meta>
-                                <a class="muted" slot="actions" @click="recoveryTask(item,index)">
-                                    <a-tooltip title="恢复内容">
-                                        <a-icon type="undo"/>
-                                    </a-tooltip>
-                                </a>
-                                <a class="muted" slot="actions" @click="deleteItem(item,index)">
-                                    <a-tooltip title="彻底删除">
-                                        <a-icon type="delete"/>
-                                    </a-tooltip>
-                                </a>
-                            </a-list-item>
-                        </a-list>
-                    </div>
+    <a-tabs class="task-tag-index" tabPosition="left" defaultActiveKey="1" :animated="false" v-model="tabKey">
+        <a-tab-pane :key="taskTag.code" v-for="taskTag in taskTagList">
+            <div slot="tab">
+                <div class="tag-item">
+                    <a-badge status="success"
+                             :class="`badge-${taskTag.color}`"/>
+                    {{taskTag.name}}
                 </div>
-            </vue-scroll>
-        </div>
+            </div>
+            <div class="config-content">
+                <vue-scroll>
+                    <div class="content-item">
+                        <div class="infos">
+                            <a-list :loading="{spinning: loading,delay: 300}">
+                                <div v-if="showLoadingMore" slot="loadMore"
+                                     :style="{ textAlign: 'center', marginTop: '12px', height: '32px', lineHeight: '32px' }">
+                                    <a-spin v-if="loadingMore"/>
+                                    <a-button v-else @click="onLoadMore">加载更多</a-button>
+                                </div>
+                                <a-list-item :key="index" v-for="(item, index) in list">
+                                    <a-list-item-meta>
+                                        <div class="task-list" slot="title" :class="{'done': item.done}">
+                                            <div>
+                                                <!--                                                <a-avatar size="small" icon="user" class="m-r-sm"></a-avatar>-->
+
+                                                <router-link class="text-default task-content"
+                                                             :to="`/project/space/task/${code}/detail/${item.code}`">
+                                                    <a-tooltip placement="top"
+                                                               v-if="item.executor && item.executor.avatar">
+                                                        <template slot="title">
+                                                            <span>{{item.executor.name}}</span>
+                                                        </template>
+                                                        <img
+                                                                :src="item.executor.avatar"
+                                                                :title="item.executor.name"
+                                                                class="avatar task-executor img-circle img-24 hinted m-r-sm">
+                                                    </a-tooltip>
+                                                    <a-avatar size="small" icon="user" class="m-r-sm" v-else></a-avatar>
+                                                    <span class="task-name m-r">{{ item.name }}</span>
+                                                    <span class="muted flex m-r tag-name" v-for="tag in item.tags"
+                                                          :key="tag.code"
+                                                    >
+                                                    <a-badge status="success"
+                                                             :class="`badge-${tag.tag.color} m-r-xs`"/>
+                                                   {{tag.tag.name}}
+                                                </span>
+                                                </router-link>
+                                            </div>
+                                            <div class="label task-time" :class="showTimeLabel(item.end_time)"
+                                                 v-if="item.end_time">
+                                                {{showTaskTime(item.begin_time, item.end_time)}}
+                                            </div>
+                                        </div>
+                                    </a-list-item-meta>
+                                </a-list-item>
+                            </a-list>
+                        </div>
+                    </div>
+                </vue-scroll>
+            </div>
+        </a-tab-pane>
     </a-tabs>
+
 </template>
 
 <script>
     import {checkResponse} from "../../assets/js/utils";
-    import {list, recovery, del} from "../../api/task";
-    import {list as getFiles, recovery as recoveryFile, del as delFile} from "../../api/file";
+    import {list, del} from "../../api/taskTag";
     import pagination from "../../mixins/pagination";
-    import {relativelyTaskTime} from "../../assets/js/dateTime";
+    import {formatTaskTime, relativelyTaskTime} from "../../assets/js/dateTime";
+    import {getListByTaskTag} from "../../api/task";
+    import moment from "moment";
 
     export default {
         name: "taskTag",
@@ -80,6 +88,7 @@
                 loading: false,
                 tabKey: '1',
                 project: {},
+                taskTagList: [],
                 list: [],
                 showLoadingMore: false,
                 loadingMore: false,
@@ -90,7 +99,7 @@
                 this.init();
             },
             tabKey(val) {
-                this.init();
+                this.getTaskList(val);
             }
 
         },
@@ -98,39 +107,30 @@
             this.init();
         },
         methods: {
-            init(reset = true) {
+            init() {
                 let app = this;
+                this.requestData.projectCode = this.code;
+                app.getTaskTags();
+            },
+            getTaskTags() {
+                let app = this;
+                list(app.requestData).then(res => {
+                    app.taskTagList = res.data;
+                    if (res.data) {
+                        app.tabKey = res.data[0].code;
+                    }
+                });
+            },
+            getTaskList(reset = true) {
+                let app = this;
+                app.loading = true;
                 if (reset) {
                     this.list = [];
                     this.pagination.page = 1;
                     this.pagination.pageSize = 10;
                     this.showLoadingMore = false;
                 }
-                this.requestData.deleted = 1;
-                this.requestData.projectCode = this.code;
-                app.loading = true;
-                switch (this.tabKey) {
-                    case '1':
-                        app.getTasks();
-                        break;
-                    case '2':
-                        app.getFiles();
-                        break;
-                }
-            },
-            getTasks() {
-                let app = this;
-                list(app.requestData).then(res => {
-                    app.list = app.list.concat(res.data.list);
-                    app.pagination.total = res.data.total;
-                    app.showLoadingMore = app.pagination.total > app.list.length;
-                    app.loading = false;
-                    app.loadingMore = false
-                });
-            },
-            getFiles() {
-                let app = this;
-                getFiles(app.requestData).then(res => {
+                getListByTaskTag({taskTagCode: this.tabKey}).then(res => {
                     app.list = app.list.concat(res.data.list);
                     app.pagination.total = res.data.total;
                     app.showLoadingMore = app.pagination.total > app.list.length;
@@ -141,53 +141,25 @@
             onLoadMore() {
                 this.loadingMore = true;
                 this.pagination.page++;
-                this.init(false);
+                this.getTaskList(false);
             },
-            showTaskTime(time) {
-                return relativelyTaskTime(time);
+            showTaskTime(time, timeEnd) {
+                return formatTaskTime(time, timeEnd);
             },
-            recoveryTask(item, index) {
-                let app = this;
-                switch (this.tabKey) {
-                    case '1':
-                        this.$confirm({
-                            title: '确定恢复内容？',
-                            content: `恢复后可在任务列表中查看`,
-                            okText: '恢复内容',
-                            okType: 'primary',
-                            cancelText: '再想想',
-                            onOk() {
-                                recovery(item.code).then((res) => {
-                                    if (!checkResponse(res)) {
-                                        return;
-                                    }
-                                    app.list.splice(index, 1);
-                                    app.$emit('update', item);
-                                });
-                                return Promise.resolve();
-                            }
-                        });
-                        break;
-                    case '2':
-                        this.$confirm({
-                            title: '确定恢复文件？',
-                            content: `恢复后可在我的文件中查看`,
-                            okText: '恢复文件',
-                            okType: 'primary',
-                            cancelText: '再想想',
-                            onOk() {
-                                recoveryFile(item.code).then((res) => {
-                                    if (!checkResponse(res)) {
-                                        return;
-                                    }
-                                    app.list.splice(index, 1);
-                                    app.$emit('update', item);
-                                });
-                                return Promise.resolve();
-                            }
-                        });
-                        break;
+            showTimeLabel(time) {
+                let str = 'label-primary';
+                if (time == null) {
+                    return str;
                 }
+                let cha = moment(moment(time).format("YYYY-MM-DD")).diff(moment().format("YYYY-MM-DD"), 'days');
+                if (cha < 0) {
+                    str = 'label-danger';
+                } else if (cha == 0) {
+                    str = 'label-warning';
+                } else if (cha > 7) {
+                    str = 'label-normal'
+                }
+                return str;
             },
             deleteItem(item, index) {
                 let app = this;
@@ -237,7 +209,7 @@
 </script>
 
 <style lang="less">
-    .recycle-bin-modal {
+    .task-tag-modal {
         .ant-modal-body {
             padding: 0;
         }
@@ -278,6 +250,7 @@
                 justify-content: space-between;
                 flex: 1 1;
                 margin-bottom: 24px;
+                padding-right: 12px;
 
                 .infos {
                     width: 100%;
@@ -295,6 +268,54 @@
                         margin-bottom: 12px;
                     }
                 }
+            }
+        }
+    }
+
+    .task-tag-index {
+        .tag-item {
+            display: flex;
+
+            .ant-badge-status-dot {
+                width: 8px;
+                height: 8px;
+            }
+        }
+
+        .config-content {
+            text-decoration: none;
+
+            .task-list {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+
+                &.done {
+                    .task-name {
+                        color: #A6A6A6;
+                        text-decoration: line-through;
+                    }
+                }
+            }
+
+            .task-content {
+                /*display: flex;*/
+                /*align-items: inherit;*/
+                text-decoration: none;
+            }
+
+            .tag-name {
+                display: inline-block;
+            }
+
+
+            .task-executor {
+                width: 24px !important;
+                height: 24px !important;
+            }
+
+            .task-name {
+                /*line-height: 1px;*/
             }
         }
     }

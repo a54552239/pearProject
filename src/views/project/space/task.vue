@@ -129,9 +129,12 @@
                                                     <template slot="title">
                                                         <span v-if="task.hasUnDone" style="font-size: 12px;">子任务尚未全部完成，无法完成父任务</span>
                                                     </template>
-                                                    <a class="check-box"
+                                                    <div class="check-box-wrapper" @click.stop="taskDone(task.code,index,taskIndex,1)">
+                                                       <a-icon class="check-box" :class="{'disabled': task.hasUnDone}" type="border" :style="{fontSize:'16px'}"/>
+                                                    </div>
+                                                    <!--<a class="check-box"
                                                        :class="{'disabled': task.hasUnDone}"
-                                                       @click.stop="taskDone(task.code,index,taskIndex,1)"></a>
+                                                       @click.stop="taskDone(task.code,index,taskIndex,1)"></a>-->
                                                 </a-tooltip>
                                                 <div class="task-content-set open-detail">
                                                     <div class="task-content-wrapper">
@@ -250,10 +253,13 @@
                                                  @click.stop="taskDetail(task.code,index)"
                                             >
                                                 <div class="task-priority bg-priority-0"></div>
-                                                <a class="check-box"
+                                                <span class="check-box-wrapper" @click.stop="taskDone(task.code,index,taskIndex,0)">
+                                                       <a-icon class="check-box" type="check-square" :style="{fontSize:'16px'}" :class="{'disabled': task.hasUnDone}"/>
+                                                </span>
+                                                <!--<a class="check-box"
                                                    @click.stop="taskDone(task.code,index,taskIndex,0)">
                                                     <a-icon type="check"/>
-                                                </a>
+                                                </a>-->
                                                 <div class="task-content-set open-detail">
                                                     <div class="task-content-wrapper">
                                                         <div class="task-content">{{ task.name }}</div>
@@ -326,6 +332,7 @@
             </draggable>
             <router-view></router-view>
         </wrapper-content>
+        <!--编辑任务列表-->
         <a-modal
                 :width="360"
                 v-model="stageModal.modalStatus"
@@ -357,6 +364,7 @@
                 </a-form-item>
             </a-form>
         </a-modal>
+        <!--项目成员-->
         <a-drawer
                 wrapClassName="info-drawer"
                 title="项目成员"
@@ -404,6 +412,7 @@
                 </a-list>
             </div>
         </a-drawer>
+        <!--项目设置菜单-->
         <a-drawer
                 wrapClassName="info-drawer"
                 title="项目设置"
@@ -421,9 +430,9 @@
                         </a>
                     </li>
                     <li class="menu-item">
-                        <a>
+                        <a @click="taskTagModal.modalStatus = true">
                             <a-icon type="tags"/>
-                            标签 *
+                            标签
                         </a>
                     </li>
                     <li class="menu-item">
@@ -460,6 +469,7 @@
 
             </div>
         </a-drawer>
+        <!--项目设置-->
         <a-modal
                 class="project-config-modal"
                 :width="800"
@@ -469,6 +479,7 @@
         >
             <project-config :code="code" @update="updateProject"></project-config>
         </a-modal>
+        <!--回收站-->
         <a-modal
                 class="recycle-bin-modal"
                 :width="800"
@@ -478,6 +489,17 @@
         >
             <recycle-bin v-if="recycleModal.modalStatus" :code="code" @update="init"></recycle-bin>
         </a-modal>
+        <!--任务标签-->
+        <a-modal
+                class="task-tag-modal"
+                :width="800"
+                v-model="taskTagModal.modalStatus"
+                :title="taskTagModal.modalTitle"
+                :footer="null"
+        >
+            <task-tag v-if="taskTagModal.modalStatus" :code="code" @update="init"></task-tag>
+        </a-modal>
+        <!--设置任务执行者-->
         <a-modal
                 class="invite-project-member"
                 :width="360"
@@ -522,6 +544,7 @@
     import inviteProjectMember from '@/components/project/inviteProjectMember'
     import projectConfig from '@/components/project/projectConfig'
     import RecycleBin from '@/components/project/recycleBin'
+    import TaskTag from '@/components/project/taskTag'
 
     import {list as getTaskStages, sort, tasks as getTasks} from "../../../api/taskStages";
     import {read as getProject} from "../../../api/project";
@@ -537,6 +560,7 @@
         name: "project-space-task",
         components: {
             RecycleBin,
+            TaskTag,
             draggable,
             inviteProjectMember,
             projectConfig
@@ -589,6 +613,11 @@
                 recycleModal: {
                     modalStatus: false,
                     modalTitle: '查看回收站',
+                },
+                /*任务标签*/
+                taskTagModal: {
+                    modalStatus: false,
+                    modalTitle: '任务标签',
                 },
 
                 /*项目成员*/

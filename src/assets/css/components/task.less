@@ -592,16 +592,35 @@
 }
 
 .task.task-card .check-box {
-  margin: 14px 12px 0 8px;
+  //margin: 14px 12px 0 8px;
+}
+
+.task .check-box-wrapper {
+  display: flex;
+  align-items: center;
+  text-align: center;
+  margin: 12px 6px 0 6px;
+  justify-content: center;
+  transition: background 218ms;
+  border-radius: 3px;
+  &:hover {
+    .check-box {
+      color: grey;
+    }
+
+    background: #f5f5f5;
+  }
 }
 
 .task .check-box {
-  width: 20px;
-  height: 20px;
-  margin-top: 2px;
-  border: solid 2px #A6A6A6;
+  //width: 20px;
+  //height: 20px;
+  //margin-top: 2px;
+  //border: solid 2px #A6A6A6;
+  color: #A6A6A6;
   cursor: pointer;
   border-radius: 3px;
+  margin: 5px;
 }
 
 .task .check-box.disabled {
@@ -1533,6 +1552,24 @@ li.activity.creator i {
         .scrum-stage-tasks {
           //padding-left: 0
         }
+      }
+
+      .task.task-card .check-box {
+        //margin: 16px 12px 0 10px;
+      }
+
+      .task .check-box {
+        //width: 16px;
+        //height: 16px;
+      }
+
+
+      .task.done {
+        background: #fff;
+      }
+
+      .scrum-stage-tasks-done .task.task-card.ui-sortable-handle {
+        border-left: 3px solid #fff;
       }
 
       .task-creator-handler-wrap {
