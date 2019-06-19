@@ -232,8 +232,10 @@
                                                             </template>
                                                             <div class="field-flex">
                                                                 <a class="muted name" style="margin: 0">
-                                                                    <template v-if="!task.setBeginTime">点击设置开始时间</template>
-                                                                    <template v-else>{{task.begin_time_format}}</template>
+                                                                    <template v-if="!task.setBeginTime">点击设置开始时间
+                                                                    </template>
+                                                                    <template v-else>{{task.begin_time_format}}
+                                                                    </template>
                                                                 </a>
                                                             </div>
                                                         </a-tooltip>
@@ -459,12 +461,19 @@
                                                                             <span v-else-if="childTask.hasUnDone"
                                                                                   style="font-size: 12px;">子任务尚未全部完成，无法完成父任务</span>
                                                                         </template>
-                                                                        <a class="task-item check-box"
+                                                                        <div class="check-box-wrapper task-item"
+                                                                             @click.stop="()=>{if(task.deleted || childTask.parentDone || childTask.hasUnDone) return false;taskDone(childTask.code,!childTask.done,index,'child')}">
+                                                                            <a-icon class="check-box"
+                                                                                    :class="{'disabled': task.deleted || childTask.parentDone || childTask.hasUnDone}"
+                                                                                    :type="childTask.done ? 'check-square' : 'border'"
+                                                                                    :style="{fontSize:'16px'}"/>
+                                                                        </div>
+                                                                        <!--<a class="task-item check-box"
                                                                            :class="{'disabled': task.deleted || childTask.parentDone || childTask.hasUnDone}"
                                                                            @click="()=>{if(task.deleted || childTask.parentDone || childTask.hasUnDone) return false;taskDone(childTask.code,!childTask.done,index,'child')}">
                                                                             <a-icon type="check"
                                                                                     v-show="childTask.done"/>
-                                                                        </a>
+                                                                        </a>-->
                                                                     </a-tooltip>
                                                                     <a-tooltip :mouseEnterDelay="0.5">
                                                                         <template slot="title">
@@ -1662,7 +1671,7 @@
                                             padding: 8px 0;
 
                                             .list-item {
-                                                padding: 4px 12px 4px 16px;
+                                                padding: 4px 12px 4px 5px;
                                                 display: flex;
                                                 align-items: center;
                                                 /*justify-content: space-between;*/
@@ -1686,6 +1695,10 @@
 
                                                     &:hover, &:focus {
                                                     }
+                                                }
+
+                                                .check-box-wrapper {
+                                                    margin-top: 0;
                                                 }
 
                                                 .task-item {
