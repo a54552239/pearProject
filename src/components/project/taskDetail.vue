@@ -232,7 +232,7 @@
                                                             </template>
                                                             <div class="field-flex">
                                                                 <a class="muted name" style="margin: 0">
-                                                                    <template v-if="!task.setBeginTime">点击设置开始时间
+                                                                    <template v-if="!task.setBeginTime">设置开始时间
                                                                     </template>
                                                                     <template v-else>{{task.begin_time_format}}
                                                                     </template>
@@ -241,7 +241,7 @@
                                                         </a-tooltip>
                                                         <div class="field-flex" v-else>
                                                             <a class="muted name" style="margin: 0">
-                                                                <template v-if="!task.setBeginTime">点击设置开始时间</template>
+                                                                <template v-if="!task.setBeginTime">设置开始时间</template>
                                                                 <template v-else>{{task.begin_time_format}}</template>
                                                             </a>
                                                         </div>

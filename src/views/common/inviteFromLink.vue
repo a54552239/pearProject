@@ -60,19 +60,27 @@
                 });
             },
             acceptInvite() {
+                let app = this;
                 if (this.inviteLink.invite_type == 'project') {
                     _joinByInviteLink(this.$route.params.code).then(res => {
                         const result = checkResponse(res);
                         if (!result) {
                             return false;
                         }
-                        this.$router.replace({name: 'task', params: {code: this.inviteLink.source_code}})
+                        this.$store.dispatch('setOrganizationList', res.data.organizationList);
+                        this.$store.dispatch('setCurrentOrganization', res.data.currentOrganization);
+                        setTimeout(function () {
+                            app.$router.replace({name: 'task', params: {code: app.inviteLink.source_code}})
+                        }, 500);
                     });
                 } else if (this.inviteLink.invite_type == 'organization') {
                     joinOrganation(this.$route.params.code).then(res => {
-                       ``
-                        this.$notice({title: '你已成功加入组织', msg: '重新登录后可选择进入该组织'}, 'notice', 'success');
-                        this.$router.replace('/')
+                        this.$store.dispatch('setOrganizationList', res.data.organizationList);
+                        this.$store.dispatch('setCurrentOrganization', res.data.currentOrganization);
+                        this.$notice({title: '你已成功加入组织', msg: '你可以在右上方切换当前组织'}, 'notice', 'success');
+                        setTimeout(function () {
+                            app.$router.replace('/')
+                        }, 500);
                     });
                 }
             }
