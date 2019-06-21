@@ -114,7 +114,7 @@
 <script>
     import {mapState} from 'vuex'
     import moment from 'moment';
-    import {noReads} from "../../../api/notify";
+    import {_clearAll, noReads} from "../../../api/notify";
     import {notice} from "../../../assets/js/notice";
     import {showMsgNotification} from "../../../assets/js/notify";
     import {selfList} from "../../../api/task";
@@ -177,6 +177,11 @@
             setRead(type) {
                 this.total -= this.list[type].length;
                 this.list[type] = [];
+                switch (type) {
+                    case 'message':
+                        this.totalSum.message = 0;
+                        _clearAll();
+                }
             },
             showMore(key) {
                 switch (key) {

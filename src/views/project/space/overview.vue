@@ -31,8 +31,8 @@
                         概览</a>
                     </li>
                     <li class=""><a class="app" data-app="build"
-                                    @click="$router.push('/project/build/' + project_id)">
-                        版本 * </a>
+                                    @click="$router.push('/project/space/features/' + project.code)">
+                        版本管理</a>
                     </li>
                 </ul>
             </section>
