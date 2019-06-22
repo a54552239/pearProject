@@ -67,7 +67,10 @@
                     <a-list-item-meta
                             :description="item.description"
                     >
-                        <router-link slot="title" :to="'/project/space/task/' + item.code">{{item.name}}</router-link>
+                        <div slot="title">
+                            <router-link :to="'/project/space/task/' + item.code">{{item.name}}</router-link>
+                            <a-tag color="green" class="m-l" v-show="!item.private">公开</a-tag>
+                        </div>
                         <a-avatar slot="avatar" icon="user" :src="item.cover"/>
                     </a-list-item-meta>
                     <div class="other-info muted">

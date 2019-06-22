@@ -1248,7 +1248,7 @@
                 });
             },
             doBeginTime(setBeginTime = false, showBeginTime = false) {
-                this.task.setEndTime = setBeginTime;
+                this.task.setBeginTime = setBeginTime;
                 this.showBeginTime = showBeginTime;
                 let beginTime = '';
                 if (setBeginTime) {
