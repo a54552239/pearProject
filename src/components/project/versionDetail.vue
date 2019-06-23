@@ -79,6 +79,7 @@
                                                     </a-tooltip>
                                                     <a-menu class="field-right-menu" slot="overlay"
                                                             :selectable="false"
+                                                            v-show="!disableEdit"
                                                             @click="changeVersionStatus">
                                                         <a-menu-item key="0">
                                                             <div class="menu-item-content">
@@ -311,7 +312,7 @@
                                                                     </div>
                                                                 </div>
                                                                 <span class="m-r muted">
-                                                                    <span v-if="versionTask.done"  class="text-success">已完成</span>
+                                                                    <span v-if="versionTask.done" class="text-success">已完成</span>
                                                                     <span v-else>未完成</span>
                                                                 </span>
                                                                 <a class="muted"
@@ -758,7 +759,7 @@
             },
             changeVersionStatus(e) {
                 let app = this;
-                if (e.key == this.version.code) {
+                if (e.key == this.version.code || this.version.status == 3) {
                     return false;
                 }
                 if (e.key == 3) {
