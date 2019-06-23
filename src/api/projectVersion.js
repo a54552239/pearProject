@@ -20,6 +20,12 @@ export function save(data) {
 export function edit(data) {
     return $http.post('project/project_version/edit', data);
 }
+export function addVersionTask(data) {
+    return $http.post('project/project_version/addVersionTask', data);
+}
+export function removeVersionTask(data) {
+    return $http.post('project/project_version/removeVersionTask', data);
+}
 export function changeStatus(data) {
     return $http.post('project/project_version/changeStatus', data);
 }

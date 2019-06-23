@@ -223,7 +223,7 @@
                                                            :mouseEnterDelay="0.3"
                                                            :title="`系统自动统计当前版本的完成进度`">
                                                     <a-progress :strokeWidth="4"
-                                                                :percent="parseInt(versionTaskSchedule)"/>
+                                                                :percent="version.schedule"/>
                                                 </a-tooltip>
                                             </div>
                                         </div>
@@ -262,7 +262,7 @@
                                         <div class="field">
                                             <div class="field-left">
                                                 <a-icon type="bars"/>
-                                                <span class="field-name">关联任务 <span v-show="versionTaskSchedule"> · {{versionTaskDoneNum}}/{{versionTaskList.length}}</span></span>
+                                                <span class="field-name">发布内容 <span v-show="versionTaskSchedule !== false"> · {{versionTaskDoneNum}}/{{versionTaskList.length}}</span></span>
                                             </div>
                                             <div class="field-right width-block">
                                             </div>
@@ -287,31 +287,36 @@
                                                                         <span v-if="versionTask.executor">{{versionTask.executor.name}}</span>
                                                                         <span v-else>待认领</span>
                                                                     </template>
-                                                                    <a-avatar
-                                                                            v-if="versionTask.executor"
-                                                                            class="task-item disabled"
-                                                                            size="small"
-                                                                            icon="user"
-                                                                            :src="versionTask.executor.avatar"
-                                                                    ></a-avatar>
-                                                                    <a-avatar
-                                                                            v-else
-                                                                            class="task-item disabled"
-                                                                            size="small"
-                                                                            icon="user"
-                                                                    ></a-avatar>
+                                                                   <div @click.stop="showTaskDetail(versionTask)">
+                                                                       <a-avatar
+                                                                               v-if="versionTask.executor"
+                                                                               class="task-item"
+                                                                               size="small"
+                                                                               icon="user"
+                                                                               :src="versionTask.executor.avatar"
+                                                                       ></a-avatar>
+                                                                       <a-avatar
+                                                                               v-else
+                                                                               class="task-item"
+                                                                               size="small"
+                                                                               icon="user"
+                                                                       ></a-avatar>
+                                                                   </div>
                                                                 </a-tooltip>
                                                                 <div class="task-item task-title"
                                                                      @click.stop="showTaskDetail(versionTask)">
                                                                     <div class="title-text"
-                                                                         :class="{'done': versionTask.done}"
                                                                     >
                                                                         {{versionTask.name}}
                                                                     </div>
                                                                 </div>
+                                                                <span class="m-r muted">
+                                                                    <span v-if="versionTask.done"  class="text-success">已完成</span>
+                                                                    <span v-else>未完成</span>
+                                                                </span>
                                                                 <a class="muted"
-                                                                   @click.stop="showTaskDetail(versionTask)">
-                                                                    <a-icon class="task-item" type="right"/>
+                                                                   @click.stop="removeVersionTask(versionTask)">
+                                                                    <a-icon class="task-item" type="delete"/>
                                                                 </a>
                                                             </div>
                                                         </div>
@@ -320,9 +325,9 @@
                                                         <a class="add-handler"
                                                            :class="{'disabled': disableEdit}"
                                                            v-show="!showChildTask"
-                                                           @click="()=>{if (disableEdit) return false; showChildTask = true}">
+                                                           @click="getTaskStages">
                                                             <a-icon type="plus" style="margin-right: 6px;"/>
-                                                            添加关联任务
+                                                            添加发布内容
                                                         </a>
                                                     </a-tooltip>
                                                 </div>
@@ -403,12 +408,57 @@
         </a-modal>
         <a-modal
                 destroyOnClose
+                class="publish-task-modal"
+                :width="800"
+                v-model="publishTask.modalStatus"
+                title="规划发布内容"
+                :footer="null"
+        >
+            <div>
+                <p v-show="publishTask.selectTaskList.length">已选择 <span class="text-warning">{{publishTask.selectTaskList.length}}</span>
+                    项</p>
+                <p class="muted" v-show="!publishTask.selectTaskList.length">请勾选需要发布的内容</p>
+            </div>
+            <vue-scroll>
+                <div class="publish-task">
+                    <a-checkbox-group v-model="publishTask.selectTaskList">
+                        <div v-for="(taskStages, stageIndex) in publishTask.taskStages" :key="stageIndex" class="m-b">
+                            <strong>{{taskStages.name}}</strong>
+                            <a-list
+                                    class="publish-task-list"
+                                    :loading="taskStages.tasksLoading"
+                                    itemLayout="horizontal"
+                                    :dataSource="taskStages.tasks"
+                            >
+                                <a-list-item slot="renderItem" slot-scope="task,index">
+                                    <a-list-item-meta
+                                    >
+                                        <div slot="title" :class="{'muted': task.version_code}">
+                                            {{task.name}}
+                                        </div>
+                                        <div slot="avatar">
+                                            <a-checkbox :value="task.code"></a-checkbox>
+                                        </div>
+                                    </a-list-item-meta>
+                                </a-list-item>
+                            </a-list>
+                        </div>
+                    </a-checkbox-group>
+                </div>
+            </vue-scroll>
+            <div class="footer-item text-right m-t">
+                <a-button type="primary" size="large" class="middle-btn" @click="addVersionTask">保存</a-button>
+            </div>
+        </a-modal>
+        <a-modal
+                destroyOnClose
                 class="task-detail-modal"
                 width="min-content"
                 :closable="false"
                 v-model="showTaskDetailModal"
                 title=""
                 :footer="null"
+                @cancel="taskDetailClose"
         >
             <task-detail :taskCode="taskCode" @close="taskDetailClose"></task-detail>
 
@@ -430,7 +480,9 @@
     } from "@/api/projectVersion";
     import {relativelyTaskTime, relativelyTime} from "@/assets/js/dateTime";
     import {checkResponse} from "../../assets/js/utils";
-    import {changeStatus} from "../../api/projectVersion";
+    import {addVersionTask, changeStatus, removeVersionTask} from "../../api/projectVersion";
+    import {list as getTaskStages, tasks as getTasks} from "../../api/taskStages";
+    import {notice} from "../../assets/js/notice";
 
     export default {
         name: "version-detail",
@@ -491,6 +543,14 @@
                 showMoreTaskLog: 0,
                 hasMoreVersionLog: false,
                 hideShowMore: false,
+
+                publishTask: {
+                    modalStatus: false,
+                    confirmLoading: false,
+                    loading: false,
+                    selectTaskList: [],
+                    taskStages: []
+                },
             }
         },
         computed: {
@@ -514,7 +574,7 @@
             },
             versionTaskSchedule() {
                 if (!this.versionTaskList.length) {
-                    return 0;
+                    return false;
                 }
                 return this.versionTaskDoneNum / this.versionTaskList.length * 100
             },
@@ -600,8 +660,10 @@
                 });
             },
             getVersionLog() {
-                getVersionLog({versionCode: this.code, all: this.showMoreVersionLog,
-                    pageSize: 5,}).then(res => {
+                getVersionLog({
+                    versionCode: this.code, all: this.showMoreVersionLog,
+                    pageSize: 5,
+                }).then(res => {
                     // this.versionLog = res.data;
                     this.versionLog = res.data.list;
                     this.versionLogTotal = res.data.total;
@@ -616,13 +678,32 @@
                 this.hideShowMore = true;
                 this.getVersionLog();
             },
+            getTaskStages() {
+                if (this.disableEdit) {
+                    return false
+                }
+                this.publishTask.modalStatus = true;
+                this.publishTask.loading = true;
+                getTaskStages({projectCode: this.version.projectCode, pageSize: 30}).then((res) => {
+                    this.publishTask.taskStages = res.data.list;
+                    if (this.publishTask.taskStages) {
+                        this.publishTask.taskStages.forEach((v) => {
+                            getTasks({stageCode: v.code}).then((res) => {
+                                v.tasksLoading = false;
+                                v.tasks = res.data;
+                            })
+                        })
+                    }
+                    this.changeModalHeight();
+                    this.publishTask.loading = false;
+                })
+            },
             showTaskDetail(task) {
                 this.showTaskDetailModal = true;
                 this.taskCode = task.code;
-                // this.$router.push(`/project/space/task/${task.project_code}/detail/${task.code}`)
             },
             taskDetailClose() {
-                this.getVersionTask();
+                this.init();
                 this.showTaskDetailModal = false;
                 this.taskCode = '';
             },
@@ -633,7 +714,7 @@
                     case 'delete':
                         this.$confirm({
                             title: '删除版本',
-                            content: `删除版本后，关联任务的版本字段将被清空，是否确定删除？`,
+                            content: `删除版本后，发布内容的版本字段将被清空，是否确定删除？`,
                             okText: '确定',
                             okType: 'danger',
                             cancelText: `再想想`,
@@ -778,11 +859,43 @@
                 this.editVersion({description: content});
                 this.showVersionDescriptionEdit = false;
             },
+            addVersionTask() {
+                addVersionTask({
+                    taskCodeList: JSON.stringify(this.publishTask.selectTaskList),
+                    versionCode: this.code
+                }).then(res => {
+                    notice({title: `成功添加 ${res.data.successTotal} 项发布内容到版本`}, 'notice', 'success');
+                    this.publishTask.modalStatus = false;
+                    this.publishTask.selectTaskList = [];
+                    this.init();
+                })
+            },
+            removeVersionTask(task) {
+                let app = this;
+                this.$confirm({
+                    title: '移除发布内容',
+                    content: `确定移除这个发布内容？`,
+                    okText: '确定',
+                    okType: 'danger',
+                    cancelText: `再想想`,
+                    onOk() {
+                        removeVersionTask({taskCode: task.code}).then((res) => {
+                            const result = checkResponse(res);
+                            if (!result) {
+                                return false;
+                            }
+                            app.init();
+                        });
+                        return Promise.resolve();
+                    }
+                });
+            },
             changeModalHeight() {
                 const defaultWidth = this.width;
                 let width = $(window).width() - 100;
                 let height = $(window).height() - 150;
                 let logHeight = $(window).height() - 200;
+                let publishModalHeight = $(window).height() - 255;
                 if (defaultWidth === 'full-screen' || this.$route.query['full-screen'] !== undefined) {
                     //全屏显示
                     $(".task-detail-modal").css("width", $(window).width());
@@ -799,6 +912,7 @@
                     $(".version-detail").css("width", width);
                     $(".content-left").css("height", height + "px");
                     $(".log-wrap").css("height", logHeight + "px");
+                    $(".publish-task").css("height", publishModalHeight + "px");
                 }
             }
         }
@@ -1172,7 +1286,7 @@
                     .log-wrap {
                         border-top: none;
                         border-bottom: none;
-                        padding-bottom: 0;
+                        padding-bottom: 12px;
 
                         .header {
                             width: 100%;
@@ -1227,6 +1341,20 @@
                         display: flex;
                     }
                 }
+            }
+        }
+    }
+
+    .publish-task-modal {
+        .ant-modal-body {
+            padding: 12px 12px 12px 24px;
+        }
+
+        .publish-task {
+            padding-right: 18px;
+
+            .ant-checkbox-group {
+                width: 100%;
             }
         }
     }

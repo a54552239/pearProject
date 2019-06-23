@@ -294,6 +294,7 @@
                 title=""
                 :footer="null"
                 v-model="versionDetail.modalStatus"
+                @cancel="versionDetailClose"
         >
             <version-detail :versionCode="versionDetail.code" @close="versionDetailClose"></version-detail>
 
