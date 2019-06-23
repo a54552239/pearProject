@@ -1,7 +1,7 @@
 <template>
-    <div class="task-detail">
-        <a-spin class="task-detail-spin" :spinning="loading">
-            <div class="task-header" :class="{'disabled': disableEdit}">
+    <div class="version-detail">
+        <a-spin class="version-detail-spin" :spinning="loading">
+            <div class="task-header">
                     <span class="head-title">
                         <span>{{version.featureName}}</span>
                     </span>
@@ -79,7 +79,7 @@
                                                     </a-tooltip>
                                                     <a-menu class="field-right-menu" slot="overlay"
                                                             :selectable="false"
-                                                            @click="changeVersionStatus($event,version)">
+                                                            @click="changeVersionStatus">
                                                         <a-menu-item key="0">
                                                             <div class="menu-item-content">
                                                                 <a-tag>未开始</a-tag>
@@ -219,8 +219,12 @@
                                                 <span class="field-name">完成进度</span>
                                             </div>
                                             <div class="field-right width-block">
-                                                <a-progress :strokeWidth="4"
-                                                            :percent="parseInt(versionTaskSchedule)"/>
+                                                <a-tooltip placement="top"
+                                                           :mouseEnterDelay="0.3"
+                                                           :title="`系统自动统计当前版本的完成进度`">
+                                                    <a-progress :strokeWidth="4"
+                                                                :percent="parseInt(versionTaskSchedule)"/>
+                                                </a-tooltip>
                                             </div>
                                         </div>
                                     </div>
@@ -232,17 +236,17 @@
                                             </div>
                                             <div class="field-right width-block">
                                                 <div class="task-description" :class="{'disabled': disableEdit}"
-                                                     v-show="!showTaskDescriptionEdit"
-                                                     @click="showTaskDesc">
+                                                     v-show="!showVersionDescriptionEdit"
+                                                     @click="showVersionDesc">
                                                     <div class="description-txt" v-show="version.description"
                                                          v-html="version.description"></div>
                                                     <span v-show="!version.description">添加备注</span>
                                                 </div>
-                                                <div v-show="showTaskDescriptionEdit">
+                                                <div v-show="showVersionDescriptionEdit">
                                                     <a-input type="textarea" v-model="version.description"></a-input>
                                                     <div class="action-btn pull-right">
                                                         <a type="text" class="cancel-text muted"
-                                                           @click="showTaskDescriptionEdit = false">
+                                                           @click="showVersionDescriptionEdit = false">
                                                             取消
                                                         </a>
                                                         <a-button type="primary" htmlType='submit'
@@ -258,7 +262,7 @@
                                         <div class="field">
                                             <div class="field-left">
                                                 <a-icon type="bars"/>
-                                                <span class="field-name">发布内容 <span v-show="versionTaskSchedule"> · {{versionTaskDoneNum}}/{{versionTaskList.length}}</span></span>
+                                                <span class="field-name">关联任务 <span v-show="versionTaskSchedule"> · {{versionTaskDoneNum}}/{{versionTaskList.length}}</span></span>
                                             </div>
                                             <div class="field-right width-block">
                                             </div>
@@ -316,9 +320,9 @@
                                                         <a class="add-handler"
                                                            :class="{'disabled': disableEdit}"
                                                            v-show="!showChildTask"
-                                                           @click="()=>{if (task.deleted || task.done) return false; showChildTask = true}">
+                                                           @click="()=>{if (disableEdit) return false; showChildTask = true}">
                                                             <a-icon type="plus" style="margin-right: 6px;"/>
-                                                            添加发布内容
+                                                            添加关联任务
                                                         </a>
                                                     </a-tooltip>
                                                 </div>
@@ -338,6 +342,11 @@
                             </div>
                             <vue-scroll>
                                 <div class="log-list muted">
+                                    <a class="show-more muted" v-show="checkShowMoreLog"
+                                       @click="getMoreVersionLog">
+                                        <a-icon type="ellipsis"/>
+                                        显示较早的 {{versionLogTotal - versionLog.length}} 条动态
+                                    </a>
                                     <div class="list-item"
                                          v-for="log in versionLog" :key="log.code">
                                         <template>
@@ -362,6 +371,36 @@
                 </div>
             </div>
         </a-spin>
+        <a-modal
+                destroyOnClose
+                :width="360"
+                v-model="publishVersion.modalStatus"
+                title="实际发布时间"
+                :bodyStyle="{paddingBottom:'1px'}"
+                :footer="null"
+        >
+            <a-form
+                    @submit.prevent="handleSubmitPublishVersion"
+                    :form="publishVersionForm"
+            >
+                <a-form-item
+                >
+                    <a-date-picker showTime format="YYYY年MM月DD日 HH:mm" style="width: 100%"
+                                   placeholder="选择实际发布时间" v-decorator="['publishTime']"></a-date-picker>
+                </a-form-item>
+                <a-form-item
+                >
+                    <div class="action-btn">
+                        <a-button type="primary" htmlType='submit'
+                                  block
+                                  size="large"
+                                  :loading="publishVersion.confirmLoading"
+                                  class="middle-btn">确认发布
+                        </a-button>
+                    </div>
+                </a-form-item>
+            </a-form>
+        </a-modal>
         <a-modal
                 destroyOnClose
                 class="task-detail-modal"
@@ -391,6 +430,7 @@
     } from "@/api/projectVersion";
     import {relativelyTaskTime, relativelyTime} from "@/assets/js/dateTime";
     import {checkResponse} from "../../assets/js/utils";
+    import {changeStatus} from "../../api/projectVersion";
 
     export default {
         name: "version-detail",
@@ -420,11 +460,12 @@
                 showTaskDetailModal: false,
                 taskCode: '',
                 version: {},
-                /*任务菜单*/
+
+                /*菜单*/
                 visibleTaskMenu: false,
 
 
-                /*任务标题*/
+                /*标题*/
                 versionName: '',
 
                 /*日期*/
@@ -433,13 +474,23 @@
                 showPlanPublishTime: false,
 
                 /*备注*/
-                showTaskDescriptionEdit: false,
+                showVersionDescriptionEdit: false,
 
                 versionTaskList: [],
-                /*子任务*/
-                childTaskList: [],
                 showChildTask: false,
+                versionLogTotal: 0,
                 versionLog: [],
+
+                publishVersionForm: this.$form.createForm(this),
+                publishVersion: {
+                    modalStatus: false,
+                    confirmLoading: false,
+                    status: -1,
+                },
+
+                showMoreTaskLog: 0,
+                hasMoreVersionLog: false,
+                hideShowMore: false,
             }
         },
         computed: {
@@ -452,6 +503,14 @@
             versionTaskDoneNum() {
                 const list = this.versionTaskList.filter(item => item.done == 1);
                 return list.length;
+            },
+            checkShowMoreLog() {
+                if (!this.hideShowMore) {
+                    if (this.versionLogTotal > 5) {
+                        return true;
+                    }
+                }
+                return false;
             },
             versionTaskSchedule() {
                 if (!this.versionTaskList.length) {
@@ -506,13 +565,13 @@
                 this.loading = true;
                 this.getVersion();
                 this.getVersionTask();
-                this.getVersionLog();
             },
             detailClose() {
                 this.$emit('close', this.version);
             },
             getVersion() {
                 getVersionInfo({versionCode: this.code}).then(res => {
+                    this.getVersionLog();
                     this.version = res.data;
                     this.versionName = res.data.name;
                     if (!this.version.start_time) {
@@ -541,9 +600,21 @@
                 });
             },
             getVersionLog() {
-                getVersionLog({versionCode: this.code}).then(res => {
-                    this.versionLog = res.data;
+                getVersionLog({versionCode: this.code, all: this.showMoreVersionLog,
+                    pageSize: 5,}).then(res => {
+                    // this.versionLog = res.data;
+                    this.versionLog = res.data.list;
+                    this.versionLogTotal = res.data.total;
+                    if (res.data.total > 5) {
+                        this.hasMoreVersionLog = true;
+                        // this.showMoreTaskLog = 1;
+                    }
                 });
+            },
+            getMoreVersionLog() {
+                this.showMoreVersionLog = 1;
+                this.hideShowMore = true;
+                this.getVersionLog();
             },
             showTaskDetail(task) {
                 this.showTaskDetailModal = true;
@@ -551,7 +622,7 @@
                 // this.$router.push(`/project/space/task/${task.project_code}/detail/${task.code}`)
             },
             taskDetailClose() {
-                this.getVersion();
+                this.getVersionTask();
                 this.showTaskDetailModal = false;
                 this.taskCode = '';
             },
@@ -562,7 +633,7 @@
                     case 'delete':
                         this.$confirm({
                             title: '删除版本',
-                            content: `删除版本后，发布内容的版本字段将被清空，是否确定删除？`,
+                            content: `删除版本后，关联任务的版本字段将被清空，是否确定删除？`,
                             okText: '确定',
                             okType: 'danger',
                             cancelText: `再想想`,
@@ -604,25 +675,53 @@
                     }
                 });
             },
-            taskDone(taskCode, done, index, type = 'self') {
-                done ? done = 1 : done = 0;
-                taskDone(taskCode, done).then((res) => {
-                    const result = checkResponse(res);
-                    if (!result) {
-                        return false;
-                    }
-                    this.getTaskLog();
-                    if (type == 'self') {
-                        //自身完成
-                        this.task.done = done;
-                        // this.init();
-                    } else {
-                        //完成子任务
-                        this.childTaskList[index].done = done;
-                        // this.init(this.childTaskList[index].pcode);
-                    }
-                    this.getVersion();
-                });
+            changeVersionStatus(e) {
+                let app = this;
+                if (e.key == this.version.code) {
+                    return false;
+                }
+                if (e.key == 3) {
+                    //请确认当前版本发布内容已全部完成后再发布。
+                    this.$confirm({
+                        title: '发布提示',
+                        content: `请确认当前版本发布内容已全部完成后再发布。`,
+                        okText: '确认发布',
+                        okType: 'primary',
+                        onOk() {
+                            app.publishVersion.status = e.key;
+                            app.publishVersion.modalStatus = true;
+                            app.$nextTick(function () {
+                                app.publishVersionForm.setFieldsValue({
+                                    publishTime: moment(),
+                                });
+                            });
+                            return Promise.resolve();
+                        }
+                    });
+
+                } else {
+                    changeStatus({versionCode: this.version.code, status: e.key}).then(res => {
+                        this.getVersion();
+                    });
+                }
+            },
+            handleSubmitPublishVersion() {
+                let app = this;
+                app.publishVersionForm.validateFields(
+                    (err) => {
+                        if (!err) {
+                            let obj = app.publishVersionForm.getFieldsValue();
+                            obj.publishTime = moment(obj.publishTime).format('YYYY-MM-DD HH:mm');
+                            changeStatus({
+                                versionCode: this.code,
+                                status: this.publishVersion.status,
+                                publishTime: obj.publishTime,
+                            }).then(res => {
+                                app.publishVersion.modalStatus = false;
+                                app.getVersion();
+                            });
+                        }
+                    })
             },
             doStartTime(setStartTime = false, showStartTime = false) {
                 this.version.setStartTime = setStartTime;
@@ -668,16 +767,16 @@
                     this.getVersion();
                 });
             },
-            showTaskDesc() {
-                if (this.task.deleted) {
+            showVersionDesc() {
+                if (this.disableEdit) {
                     return false;
                 }
-                this.showTaskDescriptionEdit = true;
+                this.showVersionDescriptionEdit = true;
             },
             doContent() {
                 let content = this.version.description;
                 this.editVersion({description: content});
-                this.showTaskDescriptionEdit = false;
+                this.showVersionDescriptionEdit = false;
             },
             changeModalHeight() {
                 const defaultWidth = this.width;
@@ -687,7 +786,7 @@
                 if (defaultWidth === 'full-screen' || this.$route.query['full-screen'] !== undefined) {
                     //全屏显示
                     $(".task-detail-modal").css("width", $(window).width());
-                    $(".task-detail").css("width", $(window).width());
+                    $(".version-detail").css("width", $(window).width());
                     $(".ant-modal").css("top", 0);
                     height += 85;
                     logHeight += 85;
@@ -697,7 +796,7 @@
                     if (width > defaultWidth) {
                         width = defaultWidth;
                     }
-                    $(".task-detail").css("width", width);
+                    $(".version-detail").css("width", width);
                     $(".content-left").css("height", height + "px");
                     $(".log-wrap").css("height", logHeight + "px");
                 }
@@ -722,7 +821,7 @@
         }
     }
 
-    .task-detail {
+    .version-detail {
         background: #FFF;
         display: -webkit-box;
         display: -ms-flexbox;
@@ -737,7 +836,7 @@
         min-width: 1px;
         margin: auto;
 
-        .task-detail-spin {
+        .version-detail-spin {
             width: 100%;
         }
 
