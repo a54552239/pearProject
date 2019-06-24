@@ -77,15 +77,22 @@ Composer
         2. 修改./vue.config.js，将DEV_URL的值改为接口的访问地址
         3. 重启启动项目
 8. 消息推送
-    1. 后端
-        1. 进入application/common/Plugins/GateWayWorker
-        2. 修改config.php，修改 SERVER_ADDRESS 的值为内网IP地址。端口号根据情况需改，注意服务器要放行对应的端口
-        3. 如果是HTTPS协议，需要开启SSL支持
-        4. Windows环境下，直接运行start_for_win.bat文件
-        5. Linux环境下，运行 bash start.sh 启动服务，运行 bash stop.sh 终止服务
-    2. 前端
-        1. 进入 src/config/config.js
-        2.WS_URI 地址修改为相应的ip地址。如果使用https，不能写ip需要写域名 
+    1. 桌面推送
+        1. 后端
+            1. 进入application/common/Plugins/GateWayWorker
+            2. 修改config.php，修改 SERVER_ADDRESS 的值为内网IP地址。端口号根据情况需改，注意服务器要放行对应的端口
+            3. 如果是HTTPS协议，需要开启SSL支持
+            4. Windows环境下，直接运行start_for_win.bat文件
+            5. Linux环境下，运行 bash start.sh 启动服务，运行 bash stop.sh 终止服务
+            6. 进入config/config.php 修改 notice_push 的值为 true
+        2. 前端
+            1. 进入 src/config/config.js
+            2.WS_URI 地址修改为相应的ip地址。如果使用https，不能写ip需要写域名 
+    2. 钉钉推送
+        1. 进入config/config.php 修改 dingtalk_push 的值为 true
+        2. 进入config/dingtalk.php 修改 agent_id 的值为 对应的应用id
+9. 钉钉登录
+    1. 进入config/dingtalk.php 填写好对应的配置信息，其中 oauth->redirect 的值为 [你的域名]index.php/index/oauth/dingTalkOauthCallback
         
 ### 鼓励一下 ###
 <img src="https://static.vilson.xyz/pay/wechat.png" alt="Sample"  width="150" height="150">
