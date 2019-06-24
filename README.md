@@ -43,6 +43,7 @@
 PHP >= 7.0.0 (推荐PHP7.2版本)
 Mysql >= 5.5.0 (需支持innodb引擎)
 PDO PHP Extension
+Redis
 Node.js
 Composer
 ```
