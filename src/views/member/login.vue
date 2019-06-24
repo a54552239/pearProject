@@ -1,6 +1,10 @@
 <template>
     <div class="main">
+        <a-spin class="text-center" :spinning="oauthLoading">
+            <span v-show="oauthLoading">正在登陆，请稍后...</span>
+        </a-spin>
         <a-form
+                v-show="!oauthLoading"
                 class="user-layout-login"
                 ref="formLogin"
                 id="formLogin"
@@ -95,6 +99,12 @@
 
             <div class="user-login-other">
                 <span>其他登录方式</span>
+                <a-tooltip :mouseEnterDelay="0.3"
+                           title="现已支持">
+                    <a @click="dingTalkOauth">
+                        <a-icon class="item-icon" type="dingding"/>
+                    </a>
+                </a-tooltip>
                 <a>
                     <a-icon class="item-icon" type="alipay-circle"></a-icon>
                 </a>
@@ -121,6 +131,9 @@
     import {getStore} from '@/assets/js/storage'
     import {checkInstall} from "../../api/common/common";
     import {setStore} from "../../assets/js/storage";
+    import {_checkLogin} from "../../api/user";
+    import {dingTalkOauth} from "../../api/oauth";
+    import {notice} from "../../assets/js/notice";
 
     export default {
         components: {},
@@ -128,6 +141,7 @@
             return {
                 customActiveKey: 'tab1',
                 loginBtn: false,
+                oauthLoading: false,
                 // login type: 0 email, 1 account, 2 telephone
                 loginType: 0,
                 requiredTwoStepCaptcha: false,
@@ -153,6 +167,14 @@
         },
         created() {
             this.checkInstall();
+            if (this.$route.query.logged) {
+                this.oauthLoading = true;
+                this.checkLogin();
+            }
+            if (this.$route.query.message) {
+                notice({title: this.$route.query.message}, 'notice');
+                // notice(this.$route.query.message);
+            }
         },
         methods: {
             ...mapActions(['Login', 'Logout']),
@@ -305,9 +327,40 @@
                         this.$notification.success({
                             message: '欢迎',
                             description: `${res.data.member.name}，${timeFix()}，欢迎回来`,
-                        })
+                        });
+                        this.oauthLoading = false;
                     }
                 }, 500);
+            },
+            dingTalkOauth() {
+                let url = dingTalkOauth() + '?redirect=' + this.$route.query.redirect;
+                let redirect = this.$route.query.redirect;
+                if (redirect) {
+                    url += '?redirect=' + redirect;
+                }
+                console.log(url);
+                location.href = url;
+            },
+            checkLogin() {
+                let app = this;
+                _checkLogin().then(res => {
+                    if (res.data) {
+                        const obj = {
+                            userInfo: res.data.member,
+                            tokenList: res.data.tokenList
+                        };
+                        app.$store.dispatch('SET_LOGGED', obj);
+                        app.$store.dispatch('setOrganizationList', res.data.organizationList);
+                        app.$store.dispatch('setCurrentOrganization', res.data.organizationList[0]);
+                        app.$store.dispatch('GET_MENU').then(() => {
+                            app.loginSuccess(res);
+                        });
+                    } else {
+                        app.oauthLoading = false;
+                        app.$store.dispatch('SET_LOGOUT');
+                        // app.$router.replace('/login?redirect=' + this.$router.currentRoute.fullPath);
+                    }
+                });
             },
             requestFailed(err) {
                 this.$notification['error']({

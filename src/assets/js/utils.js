@@ -68,6 +68,12 @@ export const showWarConfirm = (options = {}, callback = function () {
     });
 };
 
+/**
+ * 获取完整的api请求地址
+ */
+export const getFullUrl = (api) => {
+    return PROD_URL + '/' + api
+};
 
 export const getApiUrl = (api) => {
     if (crossDomain) {
@@ -200,6 +206,7 @@ export function timeFix() {
     const hour = time.getHours();
     return hour < 9 ? '早上好' : (hour <= 11 ? '上午好' : (hour <= 13 ? '中午好' : (hour < 20 ? '下午好' : '晚上好')))
 }
+
 export function getAuthorization() {
     let tokenList = getStore('tokenList', true);
     if (tokenList) {

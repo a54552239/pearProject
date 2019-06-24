@@ -38,7 +38,7 @@
             desc: {
                 type: [String],
                 default() {
-                    return '欢迎登录Pear Project项目管理系统';
+                    return '欢迎使用Pear Project项目管理系统';
                 }
             }
         }

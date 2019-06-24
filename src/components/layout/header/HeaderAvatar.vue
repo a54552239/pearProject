@@ -35,6 +35,7 @@
 
 <script>
     import {mapState} from 'vuex'
+    import {_out} from "../../../api/user";
 
     export default {
         name: 'HeaderAvatar',
@@ -51,6 +52,7 @@
             userAction(action) {
                 let app = this;
                 if (action.key == 'logout') {
+                    _out();
                     app.$store.dispatch('SET_LOGOUT');
                 } else if (action.key == 'setting') {
                     app.$router.push('/account/setting/base');
