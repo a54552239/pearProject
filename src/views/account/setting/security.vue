@@ -42,7 +42,10 @@
                                                 </div>
                                             </div>
                                             <ul class="ant-list-item-action">
-                                                <li @click="editMobile"><a>修改</a></li>
+                                                <li @click="editMobile"><a>
+                                                    <span v-if="userInfo.mobile">修改</span>
+                                                    <span v-else>绑定</span>
+                                                </a></li>
                                             </ul>
                                         </div>
                                         <div class="ant-list-item">
@@ -60,7 +63,10 @@
                                                 </div>
                                             </div>
                                             <ul class="ant-list-item-action">
-                                                <li @click="editMail"><a>修改</a></li>
+                                                <li @click="editMail"><a>
+                                                    <span v-if="userInfo.email">修改</span>
+                                                    <span v-else>绑定</span>
+                                                </a></li>
                                             </ul>
                                         </div>
                                         <div class="ant-list-item">
