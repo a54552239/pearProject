@@ -187,7 +187,7 @@
                     }
                     info().then(res => {
                         this.$store.dispatch('setSystem', res.data);
-                        this.getDingTalkCode();
+                        this.dingTalkLogin();
                     });
                 });
             },
