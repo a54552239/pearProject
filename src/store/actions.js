@@ -1,5 +1,5 @@
 import {setStore, removeStore} from '@/assets/js/storage'
-import {_currentMember} from "../api/user";
+import {_checkLogin, _currentMember} from "../api/user";
 
 export default {
     SET_LOGGED({commit}, data) {
@@ -25,6 +25,23 @@ export default {
             }else{
                 setStore('userInfo', res.data);
                 commit('SET_USER', res.data);
+            }
+        });
+    },
+    checkLogin({commit}) {
+        _checkLogin().then(res => {
+            if (res.data) {
+                const obj = {
+                    userInfo: res.data.member,
+                    tokenList: res.data.tokenList
+                };
+                setStore('tokenList', obj.tokenList);
+                setStore('userInfo', obj.userInfo);
+                commit('SET_LOGGED', obj);
+            } else {
+                removeStore('tokenList');
+                removeStore('userInfo');
+                commit('SET_LOGOUT');
             }
         });
     },

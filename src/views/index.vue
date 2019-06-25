@@ -181,7 +181,7 @@
         created() {
             this.checkLayout();
             if (this.$route.query.logged) {
-                this.$store.dispatch('getUser');
+                this.$store.dispatch('checkLogin');
             }
             if (this.$route.query.message) {
                 notice({title: this.$route.query.message}, 'notice');
