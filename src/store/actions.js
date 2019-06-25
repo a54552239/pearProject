@@ -1,4 +1,5 @@
 import {setStore, removeStore} from '@/assets/js/storage'
+import {_currentMember} from "../api/user";
 
 export default {
     SET_LOGGED({commit}, data) {
@@ -14,6 +15,18 @@ export default {
         removeStore('tokenList');
         removeStore('userInfo');
         commit('SET_LOGOUT');
+    },
+    getUser({commit}) {
+        _currentMember().then(res => {
+            if (!res.data) {
+                removeStore('tokenList');
+                removeStore('userInfo');
+                commit('SET_LOGOUT');
+            }else{
+                setStore('userInfo', res.data);
+                commit('SET_USER', res.data);
+            }
+        });
     },
     setTheme({commit}, theme) {
         setStore('theme', theme);

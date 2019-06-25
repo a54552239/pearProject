@@ -51,13 +51,35 @@
                                                     <h4 class="ant-list-item-meta-title"><a>邮箱帐号</a></h4>
                                                     <div class="ant-list-item-meta-description">
                                                         <span>
-                                                            <span class="security-list-description">已绑定邮箱 : {{userInfo.email}}</span>
+                                                            <span class="security-list-description">
+                                                                  <span v-if="userInfo.email">已绑定邮箱 : {{userInfo.email}}</span>
+                                                                <span v-else>未绑定邮箱</span>
+                                                            </span>
                                                         </span>
                                                     </div>
                                                 </div>
                                             </div>
                                             <ul class="ant-list-item-action">
                                                 <li @click="editMail"><a>修改</a></li>
+                                            </ul>
+                                        </div>
+                                        <div class="ant-list-item">
+                                            <div class="ant-list-item-meta">
+                                                <div class="ant-list-item-meta-content">
+                                                    <h4 class="ant-list-item-meta-title"><a>钉钉账号</a></h4>
+                                                    <div class="ant-list-item-meta-description">
+                                                        <span>
+                                                            <span class="security-list-description">
+                                                                  <span v-if="userInfo.dingtalk_unionid">已绑定</span>
+                                                                <span v-else>未绑定钉钉账号</span>
+                                                            </span>
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <ul class="ant-list-item-action">
+                                                <li v-if="userInfo.dingtalk_unionid" @click="unbindDingtalk"><a>解除绑定</a></li>
+                                                <li v-else @click="bindDingtalk"><a>绑定</a></li>
                                             </ul>
                                         </div>
                                     </div>
@@ -77,8 +99,8 @@
         >
             <a-alert style="margin-bottom: 12px;"
                      v-show="errorTips"
-                    :message="errorTips"
-                    type="error"
+                     :message="errorTips"
+                     type="error"
             />
             <a-form
                     layout="vertical"
@@ -180,7 +202,9 @@
                 </a-row>
                 <a-form-item
                 >
-                    <a-button type='primary' htmlType='submit' block size="large" :loading="mobileInfo.confirmLoading" :disabled="mobileInfo.confirmLoading">绑定</a-button>
+                    <a-button type='primary' htmlType='submit' block size="large" :loading="mobileInfo.confirmLoading"
+                              :disabled="mobileInfo.confirmLoading">绑定
+                    </a-button>
                 </a-form-item>
             </a-form>
         </a-modal>
@@ -214,7 +238,9 @@
                 </a-form-item>
                 <a-form-item
                 >
-                    <a-button type='primary' htmlType='submit' block size="large" :loading="mailInfo.confirmLoading" :disabled="mailInfo.confirmLoading">保存</a-button>
+                    <a-button type='primary' htmlType='submit' block size="large" :loading="mailInfo.confirmLoading"
+                              :disabled="mailInfo.confirmLoading">保存
+                    </a-button>
                 </a-form-item>
             </a-form>
         </a-modal>
@@ -226,7 +252,8 @@
     import {mapState} from 'vuex'
     import AccountSetting from "@/components/layout/account/setting"
     import {checkResponse} from "../../../assets/js/utils";
-    import {_bindMail, _bindMobile, editPassword, getCaptcha} from "../../../api/user";
+    import {_bindMail, _bindMobile, _unbindDingtalk, editPassword, getCaptcha} from "../../../api/user";
+    import {dingTalkOauth} from "../../../api/oauth";
 
     export default {
         name: "settingSecurity",
@@ -276,14 +303,38 @@
             })
         },
         methods: {
-            editPassword(){
+            editPassword() {
                 this.passwordInfo.modalStatus = true;
             },
-            editMobile(){
+            editMobile() {
                 this.mobileInfo.modalStatus = true;
             },
-            editMail(){
+            editMail() {
                 this.mailInfo.modalStatus = true;
+            },
+            bindDingtalk() {
+                let url = dingTalkOauth() + '?redirectPath=' + this.$route.fullPath + '&bindDingtalk=1';
+                location.href = url;
+            },
+            unbindDingtalk() {
+                let app = this;
+                this.$confirm({
+                    title: '确认解绑',
+                    content: `解除绑定后将无法使用该帐号进行登录`,
+                    okText: '确定',
+                    okType: 'danger',
+                    cancelText: `再想想`,
+                    onOk() {
+                        _unbindDingtalk().then((res) => {
+                            const result = checkResponse(res);
+                            if (!result) {
+                                return false;
+                            }
+                            app.$store.dispatch('SET_USER', res.data);
+                        });
+                        return Promise.resolve();
+                    }
+                });
             },
             handlePasswordSubmit() {
                 let app = this;
@@ -443,7 +494,8 @@
             }
         }
     }
-    .mobile-modal{
+
+    .mobile-modal {
         .getCaptcha {
             display: block;
             width: 100%;

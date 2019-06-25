@@ -126,6 +126,7 @@
     import VUploader from '../components/tools/VUploader';
     import Socket from '../components/websocket/socket';
     import config from "../config/config";
+    import {notice} from "../assets/js/notice";
 
 
     const ASider = ALayout.Sider;
@@ -179,6 +180,13 @@
         },
         created() {
             this.checkLayout();
+            if (this.$route.query.logged) {
+                this.$store.dispatch('getUser');
+            }
+            if (this.$route.query.message) {
+                notice({title: this.$route.query.message}, 'notice');
+                // notice(this.$route.query.message);
+            }
         },
         watch: {
             $route: function (to, from) {

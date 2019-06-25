@@ -105,7 +105,7 @@
                         <a-icon class="item-icon" type="dingding"/>
                     </a>
                 </a-tooltip>
-                <a>
+                <!--<a>
                     <a-icon class="item-icon" type="alipay-circle"></a-icon>
                 </a>
                 <a>
@@ -113,7 +113,7 @@
                 </a>
                 <a>
                     <a-icon class="item-icon" type="weibo-circle"></a-icon>
-                </a>
+                </a>-->
                 <router-link class="register" :to="{ name: 'register' }">注册账户</router-link>
             </div>
         </a-form>
@@ -122,6 +122,7 @@
 
 <script>
     import md5 from 'md5'
+    import * as dd from 'dingtalk-jsapi';
     import {mapActions} from 'vuex'
     import {mapState} from 'vuex'
     import {Login, getCaptcha} from '@/api/user'
@@ -132,7 +133,7 @@
     import {checkInstall} from "../../api/common/common";
     import {setStore} from "../../assets/js/storage";
     import {_checkLogin} from "../../api/user";
-    import {dingTalkOauth} from "../../api/oauth";
+    import {dingTalkLoginByCode, dingTalkOauth} from "../../api/oauth";
     import {notice} from "../../assets/js/notice";
 
     export default {
@@ -165,7 +166,7 @@
                 system: state => state.system,
             })
         },
-        created() {
+        mounted() {
             this.checkInstall();
             if (this.$route.query.logged) {
                 this.oauthLoading = true;
@@ -186,6 +187,7 @@
                     }
                     info().then(res => {
                         this.$store.dispatch('setSystem', res.data);
+                        this.getDingTalkCode();
                     });
                 });
             },
@@ -233,25 +235,14 @@
                 if (!flag) return;
 
                 app.loginBtn = true;
-                console.log(loginParams);
                 loginParams.clientid = getStore('client_id');
                 Login(loginParams).then(res => {
                     if (checkResponse(res)) {
                         loginParams.token = res.token;
-                        const obj = {
-                            userInfo: res.data.member,
-                            tokenList: res.data.tokenList
-                        };
-                        app.$store.dispatch('SET_LOGGED', obj);
-                        app.$store.dispatch('setOrganizationList', res.data.organizationList);
-                        app.$store.dispatch('setCurrentOrganization', res.data.organizationList[0]);
-                        app.$store.dispatch('GET_MENU').then(() => {
-                            app.loginBtn = false;
-                            app.loginSuccess(res);
-                        });
+                        this.dealDataBeforeLogin(res);
                     }
                     this.loginBtn = false
-                }).catch(res => {
+                }).catch(() => {
                     this.loginBtn = false
                 });
             },
@@ -338,29 +329,48 @@
                 if (redirect) {
                     url += '?redirect=' + redirect;
                 }
-                console.log(url);
                 location.href = url;
             },
-            checkLogin() {
+            dingTalkLogin() {
                 let app = this;
-                _checkLogin().then(res => {
-                    if (res.data) {
-                        const obj = {
-                            userInfo: res.data.member,
-                            tokenList: res.data.tokenList
-                        };
-                        app.$store.dispatch('SET_LOGGED', obj);
-                        app.$store.dispatch('setOrganizationList', res.data.organizationList);
-                        app.$store.dispatch('setCurrentOrganization', res.data.organizationList[0]);
-                        app.$store.dispatch('GET_MENU').then(() => {
-                            app.loginSuccess(res);
-                        });
-                    } else {
-                        app.oauthLoading = false;
-                        app.$store.dispatch('SET_LOGOUT');
-                        // app.$router.replace('/login?redirect=' + this.$router.currentRoute.fullPath);
-                    }
+                dd.ready(function () {
+                    // dd.ready参数为回调函数，在环境准备就绪时触发，jsapi的调用需要保证在该回调函数触发后调用，否则无效。
+                    dd.runtime.permission.requestAuthCode({
+                        corpId: "ding42ccb1a1923b200f35c2f4657eb6378f",
+                        onSuccess: function (result) {
+                            app.oauthLoading = true;
+                            dingTalkLoginByCode({code: result.code}).then(res => {
+                                if (checkResponse(res)) {
+                                    app.dealDataBeforeLogin(res);
+                                }
+                            });
+                        }
+                    });
                 });
+            },
+            checkLogin() {
+                _checkLogin().then(res => {
+                    this.dealDataBeforeLogin(res);
+                });
+            },
+            dealDataBeforeLogin(res) {
+                let app = this;
+                if (res.data) {
+                    const obj = {
+                        userInfo: res.data.member,
+                        tokenList: res.data.tokenList
+                    };
+                    app.$store.dispatch('SET_LOGGED', obj);
+                    app.$store.dispatch('setOrganizationList', res.data.organizationList);
+                    app.$store.dispatch('setCurrentOrganization', res.data.organizationList[0]);
+                    app.$store.dispatch('GET_MENU').then(() => {
+                        app.loginSuccess(res);
+                    });
+                } else {
+                    app.oauthLoading = false;
+                    app.$store.dispatch('SET_LOGOUT');
+                    // app.$router.replace('/login?redirect=' + this.$router.currentRoute.fullPath);
+                }
             },
             requestFailed(err) {
                 this.$notification['error']({
