@@ -1023,6 +1023,7 @@
                 this.showChildTask = false;
             },
             getTask() {
+                this.$store.commit('viewRefresh');
                 this.clearMemberMenu();
                 read(this.code).then((res) => {
                     this.getTaskLog();

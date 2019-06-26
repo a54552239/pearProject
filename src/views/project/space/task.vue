@@ -28,7 +28,8 @@
                                     @click="$router.push('/project/space/overview/' + project.code)">
                         概览</a>
                     </li>
-                    <li class=""><a class="app" data-app="build" @click="$router.push('/project/space/features/' + project.code)">
+                    <li class=""><a class="app" data-app="build"
+                                    @click="$router.push('/project/space/features/' + project.code)">
                         版本</a>
                     </li>
                 </ul>
@@ -129,8 +130,10 @@
                                                     <template slot="title">
                                                         <span v-if="task.hasUnDone" style="font-size: 12px;">子任务尚未全部完成，无法完成父任务</span>
                                                     </template>
-                                                    <div class="check-box-wrapper" @click.stop="taskDone(task.code,index,taskIndex,1)">
-                                                       <a-icon class="check-box" :class="{'disabled': task.hasUnDone}" type="border" :style="{fontSize:'16px'}"/>
+                                                    <div class="check-box-wrapper"
+                                                         @click.stop="taskDone(task.code,index,taskIndex,1)">
+                                                        <a-icon class="check-box" :class="{'disabled': task.hasUnDone}"
+                                                                type="border" :style="{fontSize:'16px'}"/>
                                                     </div>
                                                     <!--<a class="check-box"
                                                        :class="{'disabled': task.hasUnDone}"
@@ -253,8 +256,11 @@
                                                  @click.stop="taskDetail(task.code,index)"
                                             >
                                                 <div class="task-priority bg-priority-0"></div>
-                                                <span class="check-box-wrapper" @click.stop="taskDone(task.code,index,taskIndex,0)">
-                                                       <a-icon class="check-box" type="check-square" :style="{fontSize:'16px'}" :class="{'disabled': task.hasUnDone}"/>
+                                                <span class="check-box-wrapper"
+                                                      @click.stop="taskDone(task.code,index,taskIndex,0)">
+                                                       <a-icon class="check-box" type="check-square"
+                                                               :style="{fontSize:'16px'}"
+                                                               :class="{'disabled': task.hasUnDone}"/>
                                                 </span>
                                                 <!--<a class="check-box"
                                                    @click.stop="taskDone(task.code,index,taskIndex,0)">
@@ -631,7 +637,8 @@
         },
         computed: {
             ...mapState({
-                userInfo: state => state.userInfo
+                userInfo: state => state.userInfo,
+                viewRefresh: state => state.common.viewRefresh,
             }),
             scrollOps() {
                 return {
@@ -649,22 +656,27 @@
             $route(to, from) {
                 if (from.name == 'taskdetail') {
                     const stageIndex = from.query.from;
-                    if (stageIndex != undefined) {
-                        getTasks({stageCode: this.taskStages[stageIndex].code}).then((res) => {
-                            this.taskStages[stageIndex].tasksLoading = false;
-                            this.taskStages[stageIndex].tasks = res.data;
-                            let doneTasks = this.taskStages[stageIndex].doneTasks = [];
-                            let unDoneTasks = this.taskStages[stageIndex].unDoneTasks = [];
-                            res.data.forEach((task) => {
-                                if (task.done) {
-                                    doneTasks.push(task);
-                                } else {
-                                    unDoneTasks.push(task);
-                                }
-                            });
-                        });
-                    }
+                    // this.getTaskStages(false);
+                    // if (stageIndex != undefined) {
+                    //     getTasks({stageCode: this.taskStages[stageIndex].code}).then((res) => {
+                    //         this.taskStages[stageIndex].tasksLoading = false;
+                    //         this.taskStages[stageIndex].tasks = res.data;
+                    //         let doneTasks = this.taskStages[stageIndex].doneTasks = [];
+                    //         let unDoneTasks = this.taskStages[stageIndex].unDoneTasks = [];
+                    //         res.data.forEach((task) => {
+                    //             if (task.done) {
+                    //                 doneTasks.push(task);
+                    //             } else {
+                    //                 unDoneTasks.push(task);
+                    //             }
+                    //         });
+                    //     });
+                    // }
                 }
+            },
+            viewRefresh() {
+                console.log('viewRefresh');
+                this.getTaskStages(false);
             },
             inviteMemberDraw: {
                 handler(newVal) {
@@ -718,12 +730,24 @@
                     this.projectMembersCopy = res.data.list;
                 });
             },
-            getTaskStages() {
-                getTaskStages({projectCode: this.code, pageSize: 30}).then((res) => {
-                    this.taskStages = res.data.list;
-                    if (this.taskStages) {
-                        this.taskStages.forEach((v) => {
-                            getTasks({stageCode: v.code}).then((res) => {
+            getTaskStages(showLoading = true) {
+                let app = this;
+                getTaskStages({projectCode: this.code, pageSize: 30}).then(async (res) => {
+                    let taskStages = [];
+                    if (!showLoading) {
+                        res.data.list.forEach((v) => {
+                            v.tasksLoading = false;
+                            taskStages.push(v);
+                        });
+                        // this.taskStages = taskStages;
+                    } else {
+                        //提前赋值，展现loading
+                        this.taskStages = taskStages = res.data.list;
+                    }
+                    if (taskStages) {
+                        for (const v of taskStages) {
+                            await getTasks({stageCode: v.code}).then((res) => {
+                                console.log(0);
                                 let canNotReadCount = 0;
                                 res.data.forEach((task) => {
                                     if (!task.canRead) {
@@ -739,8 +763,12 @@
                                 v.tasksLoading = false;
                                 v.tasks = res.data;
                             })
-                        })
+                        }
                     }
+                    if (!showLoading) {
+                        app.taskStages = taskStages;
+                    }
+                    console.log(11);
                 })
             },
             filterTask(tasks, done) {
@@ -872,6 +900,8 @@
                             }
                         });
                     }
+                    //可能会触发工作流，所以全部刷新
+                    this.getTaskStages(false);
                 });
             },
             showInputStrageName() {
@@ -1058,7 +1088,9 @@
                 for (let i = 0, len = event.to.children.length; i < len; i++) {
                     codes += ',' + event.to.children[i].getAttribute('id');
                 }
-                sortTask({stageCode: toStageCode, codes: codes.substr(1)});
+                sortTask({stageCode: toStageCode, codes: codes.substr(1)}).then(res => {
+                    this.getTaskStages(false);
+                });
             },
             handleResize(vertical, stageIndex) {
                 if (vertical.barSize) {
