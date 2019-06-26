@@ -5,14 +5,13 @@ export default {
     },
     SET_USER(state, data) {
         state.userInfo = data;
-
     },
     SET_LOGOUT(state) {
         state.logged = false;
         state.userInfo = null;
     },
     setTheme(state, theme) {
-        state.userInfo = theme
+        state.theme = theme
     },
     pageLoading(state, status) {
         state.pageLoading = status
