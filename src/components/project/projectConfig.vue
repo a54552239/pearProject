@@ -78,7 +78,7 @@
                         </div>
                     </div>
                 </div>
-                <a-divider />
+                <a-divider/>
                 <div class="content-item">
                     <div class="infos">
                         <a-button type="primary" class="middle-btn pull-right" size="large"
@@ -89,24 +89,24 @@
                 </div>
             </div>
         </a-tab-pane>
-         <a-tab-pane key="2" forceRender>
+        <a-tab-pane key="2" forceRender>
              <span slot="tab">
                  <a-icon type="eye"/>
                  项目偏好
              </span>
-             <div class="config-content task-config">
-                 <div class="content-item">
-                     <div class="infos">
-                         <p class="item-title">看板风格</p>
-                         <div class="item-tips muted">切换任务看板的主题风格，内置两种风格。</div>
-                         <a-radio-group @change="saveProject" v-model="project.task_board_theme">
-                             <a-radio style="display: block;height: 30px;line-height: 30px" value="default">默认</a-radio>
-                             <a-radio style="display: block;height: 30px;line-height: 30px" value="simple">简约</a-radio>
-                         </a-radio-group>
-                     </div>
-                 </div>
-             </div>
-         </a-tab-pane>
+            <div class="config-content task-config">
+                <div class="content-item">
+                    <div class="infos">
+                        <p class="item-title">看板风格</p>
+                        <div class="item-tips muted">切换任务看板的主题风格，内置两种风格。</div>
+                        <a-radio-group @change="saveProject" v-model="project.task_board_theme">
+                            <a-radio style="display: block;height: 30px;line-height: 30px" value="default">默认</a-radio>
+                            <a-radio style="display: block;height: 30px;line-height: 30px" value="simple">简约</a-radio>
+                        </a-radio-group>
+                    </div>
+                </div>
+            </div>
+        </a-tab-pane>
         <a-tab-pane key="3">
                     <span slot="tab">
                         <a-icon type="check-square"/>
@@ -142,7 +142,47 @@
                 </div>
             </div>
         </a-tab-pane>
-        <a-tab-pane key="4">
+        <a-tab-pane key="4" forceRender>
+             <span slot="tab">
+                <a-icon type="deployment-unit" />
+                 任务流转
+             </span>
+            <div class="config-content">
+                <div class="content-item">
+                    <div class="infos" style="padding-right: 0">
+                        <p>
+                            <a-button type="primary" icon="plus">创建规则</a-button>
+                        </p>
+                        <a-list
+                                class="task-workflow-list"
+                                itemLayout="horizontal"
+                                :dataSource="taskWorkflowList"
+                        >
+                            <a-list-item slot="renderItem" slot-scope="item">
+                                <span slot="actions">
+                                     <a-tooltip placement="top"
+                                                title="编辑">
+                                        <a class="muted"><a-icon class="m-r-sm" type="edit"></a-icon></a>
+                                    </a-tooltip>
+                                     <a-tooltip placement="top"
+                                                title="删除">
+                                         <a class="muted">
+                                             <a-icon type="delete"></a-icon>
+                                         </a>
+                                    </a-tooltip>
+                                </span>
+                                <a-list-item-meta
+                                        :description="item.code"
+                                >
+                                    <span slot="title">{{item.name}}</span>
+                                </a-list-item-meta>
+                            </a-list-item>
+                        </a-list>
+                    </div>
+                </div>
+            </div>
+        </a-tab-pane>
+        <a-tab-pane key="5">
                     <span slot="tab">
                         <a-icon type="ellipsis"/>
                         更多
@@ -170,6 +210,7 @@
 
 <script>
     import {read as getProject, doData, archive, recycle, recoveryArchive, recovery, quit} from "../../api/project";
+    import {list as getTaskWorkflowList} from "../../api/taskWorkflow";
     import {notice} from "../../assets/js/notice";
     import {checkResponse, getApiUrl, getAuthorization, getBase64} from "../../assets/js/utils";
 
@@ -189,6 +230,7 @@
                 loading: false,
                 tabKey: '1',
                 project: {},
+                taskWorkflowList: [],
                 uploadLoading: false,
                 uploadAction: getApiUrl('project/project/uploadCover'),
             }
@@ -205,6 +247,7 @@
         },
         created() {
             this.getProject();
+            this.getTaskWorkflowList();
         },
         methods: {
             getProject() {
@@ -215,6 +258,11 @@
                     this.project.open_prefix = !!res.data.open_prefix;
                     this.project.open_begin_time = !!res.data.open_begin_time;
                     this.project.open_task_private = !!res.data.open_task_private;
+                });
+            },
+            getTaskWorkflowList() {
+                getTaskWorkflowList({projectCode: this.code}).then(res => {
+                    this.taskWorkflowList = res.data;
                 });
             },
             saveProject() {
@@ -372,7 +420,8 @@
         .ant-modal-body, .ant-tabs, .ant-tabs-bar {
             min-height: 730px;
             min-width: 180px;
-            .ant-tabs-tab{
+
+            .ant-tabs-tab {
                 padding: 12px 24px;
             }
         }
