@@ -163,7 +163,7 @@
                                 <span slot="actions">
                                      <a-tooltip placement="top"
                                                 title="编辑">
-                                        <a class="muted" @click="doTaskWorkflow(item)"><a-icon class="m-r-sm"
+                                        <a class="muted m-r-sm" @click="doTaskWorkflow(item)"><a-icon
                                                                                                type="edit"></a-icon></a>
                                     </a-tooltip>
                                      <a-tooltip placement="top"
@@ -174,7 +174,6 @@
                                     </a-tooltip>
                                 </span>
                                     <a-list-item-meta
-                                            :description="item.code"
                                     >
                                         <span slot="title">{{item.name}}</span>
                                     </a-list-item-meta>
@@ -388,12 +387,12 @@
                 },
                 taskWorkflowRuleActions: [
                     {id: -1, name: "请选择"},
-                    {id: 0, name: "任何条件"},
+                    {id: 0, name: "增加任务、被移动"},
                     {id: 1, name: "被完成"},
                     {id: 2, name: "被重做"},
                     {id: 3, name: "设置执行人"},
-                    {id: 4, name: "截止时间"},
-                    {id: 5, name: "优先级"},
+                    // {id: 4, name: "截止时间"},
+                    // {id: 5, name: "优先级"},
                 ],
                 taskWorkflowRuleTypes: [
                     {id: -1, name: "请选择"},
