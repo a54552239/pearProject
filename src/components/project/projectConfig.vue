@@ -566,6 +566,23 @@
                     this.loadingWorkflowRule = true;
                     this.currentTaskWorkflowRule.taskWorkflowName = taskWorkflow.name;
                     this.getTaskWorkflowRules(taskWorkflow.code);
+                }else{
+                    this.currentTaskWorkflowRule = {
+                        taskWorkflowName: '',
+                        firstObj: '',//哪个列表任务
+                        firstAction: {//做什么
+                            action: -1,
+                            value: ''
+                        },
+                        firstResult: {//就
+                            action: -1,
+                            value: ''
+                        },
+                        lastResult: {//最后
+                            action: -1,
+                            value: ''
+                        },
+                    };
                 }
                 this.doTaskWorkflowView = true;
             },
