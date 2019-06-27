@@ -144,40 +144,166 @@
         </a-tab-pane>
         <a-tab-pane key="4" forceRender>
              <span slot="tab">
-                <a-icon type="deployment-unit" />
+                <a-icon type="deployment-unit"/>
                  任务流转
              </span>
             <div class="config-content">
-                <div class="content-item">
+                <div class="content-item task-workflow">
                     <div class="infos" style="padding-right: 0">
-                        <p>
-                            <a-button type="primary" icon="plus">创建规则</a-button>
-                        </p>
-                        <a-list
-                                class="task-workflow-list"
-                                itemLayout="horizontal"
-                                :dataSource="taskWorkflowList"
-                        >
-                            <a-list-item slot="renderItem" slot-scope="item">
+                        <div v-show="!doTaskWorkflowView">
+                            <p>
+                                <a-button type="primary" icon="plus" @click="doTaskWorkflow(null)">创建规则</a-button>
+                            </p>
+                            <a-list
+                                    class="task-workflow-list"
+                                    itemLayout="horizontal"
+                                    :dataSource="taskWorkflowList"
+                            >
+                                <a-list-item slot="renderItem" slot-scope="item">
                                 <span slot="actions">
                                      <a-tooltip placement="top"
                                                 title="编辑">
-                                        <a class="muted"><a-icon class="m-r-sm" type="edit"></a-icon></a>
+                                        <a class="muted" @click="doTaskWorkflow(item)"><a-icon class="m-r-sm"
+                                                                                               type="edit"></a-icon></a>
                                     </a-tooltip>
                                      <a-tooltip placement="top"
                                                 title="删除">
-                                         <a class="muted">
+                                         <a class="muted" @click="delTaskWorkflow(item.code)">
                                              <a-icon type="delete"></a-icon>
                                          </a>
                                     </a-tooltip>
                                 </span>
-                                <a-list-item-meta
-                                        :description="item.code"
-                                >
-                                    <span slot="title">{{item.name}}</span>
-                                </a-list-item-meta>
-                            </a-list-item>
-                        </a-list>
+                                    <a-list-item-meta
+                                            :description="item.code"
+                                    >
+                                        <span slot="title">{{item.name}}</span>
+                                    </a-list-item-meta>
+                                </a-list-item>
+                            </a-list>
+                        </div>
+                        <div v-show="doTaskWorkflowView">
+                            <div class="header">
+                                <p>
+                                    <a-button size="large" class="middle-btn m-r-sm" @click="saveTaskWorkflow(false)">
+                                        取消
+                                    </a-button>
+                                    <a-button size="large" class="middle-btn" type="primary"
+                                              @click="saveTaskWorkflow(true)" :disabled="!canSaveTaskWorkflow">保存
+                                    </a-button>
+                                </p>
+                            </div>
+                            <div class="workflow-content">
+                                <template v-if="!loadingWorkflowRule">
+                                    <div class="workflow-rule-item">
+                                        <p>
+                                            规则名称
+                                        </p>
+                                        <a-input size="large" v-model="currentTaskWorkflowRule.taskWorkflowName"></a-input>
+                                    </div>
+                                    <div class="workflow-rule-item">
+                                        <p>选择任务列表</p>
+                                        <a-select size="large" v-model="currentTaskWorkflowRule.firstObj"
+                                                  @change="(value)=>workflowRuleChange(value,'firstObj')">
+                                            <a-select-option v-for="(taskStage, index) in taskStages"
+                                                             :value="taskStage.code" :key="taskStage.code">
+                                                {{taskStage.name}}
+                                            </a-select-option>
+                                        </a-select>
+                                    </div>
+
+                                    <template v-if="currentTaskWorkflowRule.firstObj">
+                                        <div class="workflow-rule-item">
+                                            <p>选择条件</p>
+                                            <a-select size="large" v-model="currentTaskWorkflowRule.firstAction.action"
+                                                      @change="(value)=>workflowRuleChange(value,'firstAction.action')">
+                                                <a-select-option v-for="(rule, index) in taskWorkflowRuleActions"
+                                                                 :value="rule.id" :key="rule.id">{{rule.name}}
+                                                </a-select-option>
+                                            </a-select>
+                                        </div>
+
+                                        <template v-if="currentTaskWorkflowRule.firstAction.action != -1">
+                                            <template v-if="currentTaskWorkflowRule.firstAction.action == 3">
+                                                <div class="workflow-rule-item">
+                                                    <p>选择执行者</p>
+                                                    <a-select size="large" v-model="currentTaskWorkflowRule.firstAction.value"
+                                                              @change="(value)=>workflowRuleChange(value,'firstAction.value')">
+                                                        <a-select-option v-for="(member, index) in projectMembers"
+                                                                         :value="member.code" :key="member.code">
+                                                            {{member.name}}
+                                                        </a-select-option>
+                                                    </a-select>
+                                                </div>
+                                            </template>
+
+                                            <div class="workflow-rule-item">
+                                                <p>选择结果</p>
+                                                <a-select size="large" v-model="currentTaskWorkflowRule.firstResult.action"
+                                                          @change="(value)=>workflowRuleChange(value,'firstResult.action')">
+                                                    <a-select-option v-for="(type, index) in taskWorkflowRuleTypes"
+                                                                     :value="type.id" :key="type.id">{{type.name}}
+                                                    </a-select-option>
+                                                </a-select>
+                                            </div>
+
+                                            <template v-if="currentTaskWorkflowRule.firstResult.action === 0">
+                                                <div class="workflow-rule-item">
+                                                    <p>流转任务列表</p>
+                                                    <a-select size="large" v-model="currentTaskWorkflowRule.firstResult.value"
+                                                              @change="(value)=>workflowRuleChange(value,'firstResult.value')">
+                                                        <a-select-option v-for="(taskStage, index) in taskStages"
+                                                                         :value="taskStage.code" :key="taskStage.code">
+                                                            {{taskStage.name}}
+                                                        </a-select-option>
+                                                    </a-select>
+                                                </div>
+                                                <template v-if="currentTaskWorkflowRule.firstResult.value">
+                                                    <div class="workflow-rule-item">
+                                                        <p>选择执行者</p>
+                                                        <a-select size="large" v-model="currentTaskWorkflowRule.lastResult.value"
+                                                                  @change="(value)=>workflowRuleChange(value,'lastResult.value')">
+                                                            <a-select-option v-for="(member, index) in projectMembers"
+                                                                             :value="member.code" :key="member.code">
+                                                                {{member.name}}
+                                                            </a-select-option>
+                                                        </a-select>
+                                                    </div>
+                                                </template>
+                                            </template>
+                                            <template v-if="currentTaskWorkflowRule.firstResult.action === 3">
+                                                <div class="workflow-rule-item">
+                                                    <p>选择执行者</p>
+                                                    <a-select size="large" v-model="currentTaskWorkflowRule.firstResult.value"
+                                                              @change="(value)=>workflowRuleChange(value,'firstAction.action')">
+                                                        <a-select-option v-for="(member, index) in projectMembers"
+                                                                         :value="member.code" :key="member.code">
+                                                            {{member.name}}
+                                                        </a-select-option>
+                                                    </a-select>
+                                                </div>
+
+                                                <template v-if="currentTaskWorkflowRule.firstResult.value">
+                                                    <div class="workflow-rule-item">
+                                                        <p>流转任务列表</p>
+                                                        <a-select size="large" v-model="currentTaskWorkflowRule.lastResult.value"
+                                                                  @change="(value)=>workflowRuleChange(value,'lastResult.value')">
+                                                            <a-select-option v-for="(taskStage, index) in taskStages"
+                                                                             :value="taskStage.code" :key="taskStage.code">
+                                                                {{taskStage.name}}
+                                                            </a-select-option>
+                                                        </a-select>
+                                                    </div>
+                                                </template>
+                                            </template>
+                                        </template>
+
+                                    </template>
+                                </template>
+                                <div class="text-center">
+                                    <a-spin :spinning="loadingWorkflowRule"></a-spin>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -210,7 +336,16 @@
 
 <script>
     import {read as getProject, doData, archive, recycle, recoveryArchive, recovery, quit} from "../../api/project";
-    import {list as getTaskWorkflowList} from "../../api/taskWorkflow";
+    import {
+        _getTaskWorkflowRules,
+        list as getTaskWorkflowList,
+        save as saveTaskWorkflow,
+        edit as EditTaskWorkflow,
+        del as delTaskWorkflow
+    } from "../../api/taskWorkflow";
+    import {_getAll as getTaskStages} from "../../api/taskStages";
+    import {list as getProjectMembers} from "../../api/projectMember";
+
     import {notice} from "../../assets/js/notice";
     import {checkResponse, getApiUrl, getAuthorization, getBase64} from "../../assets/js/utils";
 
@@ -231,6 +366,42 @@
                 tabKey: '1',
                 project: {},
                 taskWorkflowList: [],
+                doTaskWorkflowView: false,
+                loadingWorkflowRule: false,
+                taskWorkflow: null,
+                taskWorkflowRuleList: [],
+                currentTaskWorkflowRule: {
+                    taskWorkflowName: '',
+                    firstObj: '',//哪个列表任务
+                    firstAction: {//做什么
+                        action: -1,
+                        value: ''
+                    },
+                    firstResult: {//就
+                        action: -1,
+                        value: ''
+                    },
+                    lastResult: {//最后
+                        action: -1,
+                        value: ''
+                    },
+                },
+                taskWorkflowRuleActions: [
+                    {id: -1, name: "请选择"},
+                    {id: 0, name: "任何条件"},
+                    {id: 1, name: "被完成"},
+                    {id: 2, name: "被重做"},
+                    {id: 3, name: "设置执行人"},
+                    {id: 4, name: "截止时间"},
+                    {id: 5, name: "优先级"},
+                ],
+                taskWorkflowRuleTypes: [
+                    {id: -1, name: "请选择"},
+                    {id: 0, name: "自动流转到"},
+                    {id: 3, name: "默认指派给"},
+                ],
+                projectMembers: [],
+                taskStages: [],
                 uploadLoading: false,
                 uploadAction: getApiUrl('project/project/uploadCover'),
             }
@@ -238,6 +409,9 @@
         computed: {
             headers() {
                 return getAuthorization();
+            },
+            canSaveTaskWorkflow() {
+                return this.currentTaskWorkflowRule.taskWorkflowName.trim() && this.currentTaskWorkflowRule.firstObj && this.currentTaskWorkflowRule.firstAction.action != -1 && this.currentTaskWorkflowRule.firstResult.action != -1 && this.currentTaskWorkflowRule.firstResult.value;
             }
         },
         watch: {
@@ -385,6 +559,121 @@
                     }
                 });
             },
+            doTaskWorkflow(taskWorkflow = null) {
+                this.getTaskStages();
+                this.getProjectMembers();
+                this.taskWorkflow = taskWorkflow;
+                if (taskWorkflow) {
+                    this.loadingWorkflowRule = true;
+                    this.currentTaskWorkflowRule.taskWorkflowName = taskWorkflow.name;
+                    this.getTaskWorkflowRules(taskWorkflow.code);
+                }
+                this.doTaskWorkflowView = true;
+            },
+            saveTaskWorkflow(save = false) {
+                if (this.currentTaskWorkflowRule.firstResult.action) {
+                    this.currentTaskWorkflowRule.lastResult.action = 0;
+                } else {
+                    this.currentTaskWorkflowRule.lastResult.action = 3;
+                }
+                let submitData = {
+                    taskWorkflowName: this.currentTaskWorkflowRule.taskWorkflowName,
+                    taskWorkflowRules: JSON.stringify(this.currentTaskWorkflowRule)
+                };
+                if (save) {
+                    // save
+                    if (this.taskWorkflow) {
+                        submitData.taskWorkflowCode = this.taskWorkflow.code;
+                        EditTaskWorkflow(submitData).then(res => {
+                            this.getTaskWorkflowList();
+
+                        });
+                    } else {
+                        submitData.projectCode = this.code;
+                        saveTaskWorkflow(submitData).then(res => {
+                            this.getTaskWorkflowList();
+                        });
+                    }
+
+                }
+                this.doTaskWorkflowView = false;
+            },
+            getTaskStages() {
+                getTaskStages({projectCode: this.code}).then(res => {
+                    let list = [{
+                        code: '',
+                        name: '不选择'
+                    }];
+                    res.data.forEach(v => {
+                        list.push(v);
+                    });
+                    this.taskStages = list;
+                })
+            },
+            getTaskWorkflowRules(taskWorkflowCode) {
+                _getTaskWorkflowRules({taskWorkflowCode: taskWorkflowCode}).then(res => {
+                    this.loadingWorkflowRule = false;
+                    const rules = res.data;
+                    this.taskWorkflowRuleList = rules;
+                    if (rules) {
+                        this.currentTaskWorkflowRule.firstObj = rules[0].object_code;
+                        this.currentTaskWorkflowRule.firstAction.action = rules[1].action;
+                        this.currentTaskWorkflowRule.firstAction.value = rules[1].object_code;
+
+                        this.currentTaskWorkflowRule.firstResult.action = rules[2].action;
+                        this.currentTaskWorkflowRule.firstResult.value = rules[2].object_code;
+
+                        if (rules.length == 4) {
+                            this.currentTaskWorkflowRule.lastResult.action = rules[3].action;
+                            this.currentTaskWorkflowRule.lastResult.value = rules[3].object_code;
+                        }
+                    }
+                })
+            },
+            delTaskWorkflow(code) {
+                let app = this;
+                this.$confirm({
+                    title: '删除规则?',
+                    content: '您确定要删除该规则吗？',
+                    okText: '删除',
+                    okType: 'danger',
+                    cancelText: '再想想',
+                    onOk() {
+                        delTaskWorkflow({taskWorkflowCode: code}).then(res => {
+                            if (checkResponse(res)) {
+                                app.getTaskWorkflowList();
+                            }
+                        });
+                        return Promise.resolve();
+                    }
+                });
+            },
+            getProjectMembers() {
+                getProjectMembers({projectCode: this.code, pageSize: 100}).then((res) => {
+                    let list = [{
+                        code: '',
+                        name: '不选择'
+                    }];
+                    res.data.list.forEach(v => {
+                        list.push(v);
+                    });
+                    this.projectMembers = list;
+                });
+            },
+            workflowRuleChange(value, name) {
+                console.log(value);
+                console.log(name);
+                if (name == 'firstAction.action') {
+                    this.currentTaskWorkflowRule.firstAction.value = '';
+                }
+                if (name == 'firstResult.value') {
+                    this.currentTaskWorkflowRule.lastResult.value = '';
+                }
+                if (name == 'firstResult.action') {
+                    this.currentTaskWorkflowRule.firstResult.value = '';
+                    this.currentTaskWorkflowRule.lastResult.value = '';
+                }
+            },
             handleChange(info) {
                 if (info.file.status === 'uploading') {
                     this.uploadLoading = true;
@@ -500,6 +789,20 @@
                 .prefix-input {
                     width: 50%;
                     margin-right: 24px;
+                }
+            }
+
+            .task-workflow {
+                .workflow-content {
+                    margin-top: 12px;
+
+                    .workflow-rule-item {
+                        margin-bottom: 16px;
+
+                        p {
+                            color: rgba(0, 0, 0, 0.45);
+                        }
+                    }
                 }
             }
 

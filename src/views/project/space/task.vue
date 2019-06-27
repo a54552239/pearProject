@@ -477,6 +477,7 @@
         </a-drawer>
         <!--项目设置-->
         <a-modal
+                destroyOnClose
                 class="project-config-modal"
                 :width="800"
                 v-model="projectModal.modalStatus"
