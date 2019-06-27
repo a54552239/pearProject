@@ -658,21 +658,21 @@
                 if (from.name == 'taskdetail') {
                     const stageIndex = from.query.from;
                     // this.getTaskStages(false);
-                    // if (stageIndex != undefined) {
-                    //     getTasks({stageCode: this.taskStages[stageIndex].code}).then((res) => {
-                    //         this.taskStages[stageIndex].tasksLoading = false;
-                    //         this.taskStages[stageIndex].tasks = res.data;
-                    //         let doneTasks = this.taskStages[stageIndex].doneTasks = [];
-                    //         let unDoneTasks = this.taskStages[stageIndex].unDoneTasks = [];
-                    //         res.data.forEach((task) => {
-                    //             if (task.done) {
-                    //                 doneTasks.push(task);
-                    //             } else {
-                    //                 unDoneTasks.push(task);
-                    //             }
-                    //         });
-                    //     });
-                    // }
+                    if (stageIndex != undefined) {
+                        getTasks({stageCode: this.taskStages[stageIndex].code}).then((res) => {
+                            this.taskStages[stageIndex].tasksLoading = false;
+                            this.taskStages[stageIndex].tasks = res.data;
+                            let doneTasks = this.taskStages[stageIndex].doneTasks = [];
+                            let unDoneTasks = this.taskStages[stageIndex].unDoneTasks = [];
+                            res.data.forEach((task) => {
+                                if (task.done) {
+                                    doneTasks.push(task);
+                                } else {
+                                    unDoneTasks.push(task);
+                                }
+                            });
+                        });
+                    }
                 }
             },
             viewRefresh() {
