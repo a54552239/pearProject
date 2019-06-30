@@ -2,9 +2,7 @@
 
 **Pear，梨子项目管理系统**
 
-**相关资料：https://www.yuque.com/vilson**
-
-**社区站点：https://bbs.vilson.xyz**
+**相关资料：https://www.yuque.com/bzsxmz**
 
 需要配合[后端接口](https://github.com/a54552239/pearProjectApi)使用，链接：https://github.com/a54552239/pearProjectApi
 
