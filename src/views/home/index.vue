@@ -12,7 +12,9 @@
                     </div>
                     <div class="user-info">
                         <div class="title">{{helloTime}}{{ userInfo.name }}，祝你开心每一天！</div>
-                        <div class="team muted" v-if="userInfo.position">{{userInfo.position}} | {{ userInfo.department }}</div>
+                        <div class="team muted" v-if="userInfo.position">{{userInfo.position}}
+                            <template v-if="userInfo.department"> | {{ userInfo.department }}</template>
+                        </div>
                     </div>
                 </div>
                 <div class="right-content">
