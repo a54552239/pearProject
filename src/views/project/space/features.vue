@@ -59,11 +59,11 @@
                                         <div>
                                             <a class="muted">
                                                 <a-icon type="edit"
-                                                        @click="editFeatures(currentProjectFeatures)"></a-icon>
+                                                        @click.stop="editFeatures(projectFeatures)"></a-icon>
                                             </a>
                                             <a class="muted">
                                                 <a-icon type="delete" class="m-l"
-                                                        @click="deleteFeatures(currentProjectFeatures)"></a-icon>
+                                                        @click.stop="deleteFeatures(projectFeatures)"></a-icon>
                                             </a>
                                         </div>
                                     </div>
@@ -530,6 +530,7 @@
                             return;
                         }
                         app.form.resetFields();
+                        this.getProjectFeaturesList();
                         app.projectFeatures.modalStatus = false;
                     });
                 } else {
