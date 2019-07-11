@@ -1,4 +1,5 @@
 import $http from '@/assets/js/http'
+import {getApiUrl} from "../assets/js/utils";
 
 /* 查找用户 */
 export function searchInviteMember(keyword, departmentCode) {
@@ -13,3 +14,7 @@ export function removeMember(accountCode, departmentCode) {
 export function list(data) {
     return $http.post('project/department_member/index', data);
 }
+export function _downloadTemplate() {
+    return getApiUrl('project/department_member/_downloadTemplate');
+}
+

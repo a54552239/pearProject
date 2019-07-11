@@ -19,7 +19,7 @@
             <div class="member-info">
                 <template v-if="member">
                     <div class="base">
-                        <a-avatar size="large" class="m-r" :src="member.avatar"></a-avatar>
+                        <a-avatar size="large" class="m-r" icon="user" :src="member.avatar"></a-avatar>
                         <div class="title">
                             {{member.name}}
                         </div>

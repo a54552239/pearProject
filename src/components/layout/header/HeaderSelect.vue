@@ -38,10 +38,11 @@
                 app.$store.dispatch('setCurrentOrganization', app.organizationList[action.key]);
                 changeCurrentOrganization(app.organizationList[action.key].code).then(res=>{
                     if (checkResponse(res)) {
-                        app.$store.dispatch('SET_MENU', res.data);
+                        app.$store.dispatch('SET_MENU', res.data.menuList);
+                        app.$store.dispatch('SET_USER', res.data.member);
                         app.$store.dispatch('windowLoading', true);
                         setTimeout(function () {
-                            const menu = res.data;
+                            const menu = res.data.menuList;
                             if (menu) {
                                 let routes = app.$router.options.routes;
                                 menu.forEach(function (v) {
