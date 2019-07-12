@@ -699,7 +699,7 @@
                 }
             },
             socketAction(val) {
-                if (val.action === 'task') {
+                if (val.action === 'organization:task') {
                     const data = val.data.data;
                     if (data.projectCode == this.code) {
                         this.getTaskStages(false);

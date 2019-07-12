@@ -961,7 +961,7 @@
                 this.getTaskLog();
             },
             socketAction(val) {
-                if (val.action === 'task') {
+                if (val.action === 'organization:task') {
                     const data = val.data.data;
                     if (data.taskCode == this.code) {
                         this.init(null, false);
