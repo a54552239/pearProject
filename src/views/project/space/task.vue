@@ -708,7 +708,7 @@
             },
             viewRefresh() {
                 console.log('viewRefresh');
-                this.getTaskStages(false);
+                // this.getTaskStages(false);
             },
             inviteMemberDraw: {
                 handler(newVal) {
@@ -933,7 +933,7 @@
                         });
                     }
                     //可能会触发工作流，所以全部刷新
-                    this.getTaskStages(false);
+                    // this.getTaskStages(false);
                 });
             },
             showInputStrageName() {
