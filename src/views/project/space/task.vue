@@ -659,6 +659,7 @@
             ...mapState({
                 userInfo: state => state.userInfo,
                 viewRefresh: state => state.common.viewRefresh,
+                socketAction: state => state.socketAction,
             }),
             headers() {
                 return getAuthorization();
@@ -694,6 +695,14 @@
                                 }
                             });
                         });
+                    }
+                }
+            },
+            socketAction(val) {
+                if (val.action === 'task') {
+                    const data = val.data.data;
+                    if (data.projectCode == this.code) {
+                        this.getTaskStages(false);
                     }
                 }
             },

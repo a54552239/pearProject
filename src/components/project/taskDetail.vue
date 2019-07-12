@@ -917,7 +917,7 @@
             ...mapState({
                 userInfo: state => state.userInfo,
                 uploader: state => state.common.uploader,
-
+                socketAction: state => state.socketAction,
             }),
             childTaskDoneNum() {
                 const list = this.childTaskList.filter(item => item.done == 1);
@@ -959,6 +959,14 @@
             },
             taskLogType() {
                 this.getTaskLog();
+            },
+            socketAction(val) {
+                if (val.action === 'task') {
+                    const data = val.data.data;
+                    if (data.taskCode == this.code) {
+                        this.init(null, false);
+                    }
+                }
             },
             uploader: {
                 handler(newVal, oldVal) {
@@ -1002,11 +1010,13 @@
             }
         },
         methods: {
-            init(code) {
+            init(code = null, loading = true) {
                 if (code) {
                     this.code = code;//子任务
                 }
-                this.loading = true;
+                if (loading) {
+                    this.loading = true;
+                }
                 this.clearMemberMenu();
                 this.getTask();
                 this.getChildTasks();
