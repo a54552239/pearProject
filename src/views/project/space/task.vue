@@ -448,21 +448,35 @@
                         </a>
                     </li>
                     <li class="menu-item">
-                        <a>
+                        <a :href="downLoadUrl" target="_blank">
                             <a-icon type="copy"/>
-                            复制项目 *
+                            下载导入任务模板
                         </a>
                     </li>
                     <li class="menu-item">
-                        <a>
-                            <a-icon type="login"/>
-                            导入任务 *
-                        </a>
+                        <a-upload name="file"
+                                  :showUploadList="false"
+                                  :action="uploadAction"
+                                  :beforeUpload="beforeUpload"
+                                  :data="{projectCode: code}"
+                                  :headers="headers"
+                                  @change="handleChange">
+                            <a class="text-default" :loading="uploadLoading" :disabled="uploadLoading">
+                                <a-icon type="upload" v-show="!uploadLoading"/>
+                                上传文件导入任务
+                            </a>
+                        </a-upload>
                     </li>
                     <li class="menu-item">
                         <a>
                             <a-icon type="logout"/>
                             导出任务 *
+                        </a>
+                    </li>
+                    <li class="menu-item">
+                        <a>
+                            <a-icon type="copy"/>
+                            复制项目 *
                         </a>
                     </li>
                     <li class="menu-item">
@@ -558,7 +572,7 @@
     import {inviteMember, list as getProjectMembers, removeMember} from "../../../api/projectMember";
     import {save as createTask, taskDone, sort as sortTask, recycleBatch, batchAssignTask} from "../../../api/task";
     import {save as createState, edit as editStage, del as delStage} from "../../../api/taskStages";
-    import {checkResponse} from "../../../assets/js/utils";
+    import {checkResponse, getApiUrl, getAuthorization, getUploadUrl} from "../../../assets/js/utils";
     import {formatTaskTime} from "../../../assets/js/dateTime";
     import {collect} from "../../../api/projectCollect";
     import {notice} from "../../../assets/js/notice";
@@ -611,6 +625,11 @@
                     visible: false,
                 },
 
+
+                downLoadUrl: getUploadUrl('project/task/_downloadTemplate'),
+                uploadLoading: false,
+                uploadAction: getApiUrl('project/task/uploadFile'),
+
                 /*项目设置*/
                 projectModal: {
                     modalStatus: false,
@@ -641,6 +660,9 @@
                 userInfo: state => state.userInfo,
                 viewRefresh: state => state.common.viewRefresh,
             }),
+            headers() {
+                return getAuthorization();
+            },
             scrollOps() {
                 return {
                     rail: {
@@ -1160,6 +1182,33 @@
                     }
                     this.project.collected = !this.project.collected;
                 })
+            },
+            handleChange(info) {
+                if (info.file.status === 'uploading') {
+                    notice(`正在导入，请稍后...`, 'message', 'loading', 0);
+                    this.uploadLoading = true;
+                    return
+                }
+                if (info.file.status === 'done') {
+                    console.log(info);
+                    this.uploadLoading = false;
+                    if (checkResponse(info.file.response, true)) {
+                        const count = info.file.response.data;
+                        if (count) {
+                            notice(`成功导入${count}个任务`, 'message', 'success');
+                        } else {
+                            notice(`没有成功导入任何任务`, 'message', 'warning');
+                        }
+                        this.getTaskStages(false);
+                    }
+                }
+            },
+            beforeUpload(file) {
+                const isLt2M = file.size / 1024 / 1024 < 2;
+                if (!isLt2M) {
+                    this.$message.error('文件不能超过2MB!')
+                }
+                return isLt2M
             },
         }
     }

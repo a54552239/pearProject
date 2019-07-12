@@ -474,6 +474,7 @@
             },
             handleChange(info) {
                 if (info.file.status === 'uploading') {
+                    notice(`正在导入，请稍后...`, 'message', 'loading', 0);
                     this.uploadLoading = true;
                     return
                 }
@@ -482,7 +483,7 @@
                     this.uploadLoading = false;
                     if (checkResponse(info.file.response, true)) {
                         const count = info.file.response.data;
-                        this.$message.success('导入成功');
+                        notice(`导入成功`, 'message', 'success');
                         this.getMembers();
                     }
                 }
