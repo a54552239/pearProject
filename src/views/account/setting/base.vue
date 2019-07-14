@@ -14,16 +14,16 @@
                                     :form="form"
                                     hideRequiredMark
                                     @submit.prevent="handleSubmit">
-                               <!-- <a-form-item
-                                        label='邮箱'
-                                >
-                                    <a-input
-                                            v-decorator="[
-                                            'email',
-                                            {rules: [{ required: true, message: '请输入您的邮箱' }]}
-                                            ]"
-                                    />
-                                </a-form-item>-->
+                                <!-- <a-form-item
+                                         label='邮箱'
+                                 >
+                                     <a-input
+                                             v-decorator="[
+                                             'email',
+                                             {rules: [{ required: true, message: '请输入您的邮箱' }]}
+                                             ]"
+                                     />
+                                 </a-form-item>-->
                                 <a-form-item
                                         label='昵称'
                                 >
@@ -76,6 +76,7 @@
     import {checkResponse, getApiUrl, getAuthorization, getBase64} from "../../../assets/js/utils";
     import {editPersonal} from "../../../api/user";
     import {getStore} from "../../../assets/js/storage";
+    import {destroyNotice, notice} from "../../../assets/js/notice";
 
     export default {
         name: "settingBase",
@@ -132,6 +133,7 @@
             },
             handleChange(info) {
                 if (info.file.status === 'uploading') {
+                    notice(`正在上传，请稍后...`, 'message', 'loading', 0);
                     this.uploadLoading = true;
                     return
                 }
@@ -140,6 +142,9 @@
                         this.userInfo.avatar = info.file.response.data.url;
                         this.$store.dispatch('SET_USER', this.userInfo);
                         this.uploadLoading = false;
+                        setTimeout(function () {
+                            destroyNotice()
+                        }, 500)
                         // this.$store.dispatch('SET_USER', this.userInfo);
                     })
                 }
