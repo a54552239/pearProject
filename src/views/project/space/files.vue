@@ -178,7 +178,7 @@
                 loading: true,
                 showLoadingMore: false,
                 loadingMore: false,
-                project: {},
+                project: {task_board_theme: 'simple'},
                 currentFileIndex: {},
                 files: [],
             }

@@ -590,7 +590,7 @@
             return {
                 code: this.$route.params.code,
                 loading: true,
-                project: {},
+                project: {task_board_theme: 'simple'},
                 stageName: '',
                 task: {}, //当前任务
                 taskStages: [], //任务列表

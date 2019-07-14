@@ -135,7 +135,7 @@
             return {
                 code: this.$route.params.code,
                 loading: true,
-                project: {},
+                project: {task_board_theme: 'simple'},
                 activities: [],
                 showLoadingMore: false,
                 loadingMore: false,

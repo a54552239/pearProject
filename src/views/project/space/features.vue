@@ -320,7 +320,7 @@
         data() {
             return {
                 code: this.$route.params.code,
-                project: {},
+                project: {task_board_theme: 'simple'},
                 loading: true,
                 form: this.$form.createForm(this),
                 projectVersionForm: this.$form.createForm(this),
