@@ -38,76 +38,90 @@
             </section>
         </div>
         <wrapper-content :showHeader="false">
-            <div class="content-left">
-                <div class="content-item log-list">
-                    <div class="title">
-                        项目动态
-                    </div>
-                    <div class="list-content">
-                        <a-list>
-                            <div v-if="showLoadingMore" slot="loadMore"
-                                 :style="{ textAlign: 'center', marginTop: '12px', height: '32px', lineHeight: '32px' }">
-                                <a-spin v-if="loadingMore"/>
-                                <a-button v-else @click="onLoadMore">查看更多动态</a-button>
-                            </div>
-                            <a-list-item :key="index" v-for="(item, index) in activities">
-                                <a-list-item-meta>
-                                    <a-avatar slot="avatar" :src="item.member_avatar"/>
-                                    <div slot="title">
-                                        <span>{{ item.member_name }} </span>
-                                        <span v-if="item.is_comment == 0"> <span v-html="item.remark "></span></span>&nbsp;
-                                        <template v-if="item.is_comment == 1">发表了评论
-                                            <p class="comment-text">{{ item.content }}</p>
-                                        </template>
-                                        <span class="right-item muted"> {{ formatTime(item.create_time) }}
-                                        </span>
-                                    </div>
-                                    <div slot="description">
-                                        <template v-if="item.action_type == 'task'">
-                                            <router-link class="muted"
-                                                         :to="`/project/space/task/${item.project_code}/detail/${item.source_code}`"
-                                            >
-                                                {{ item.sourceInfo.name }}
-                                            </router-link>
-                                        </template>
-                                        <template v-if="item.action_type == 'project'">
-                                            <span v-html="item.content"></span>
-                                        </template>
-                                    </div>
-                                </a-list-item-meta>
-                            </a-list-item>
-                        </a-list>
-                    </div>
-                </div>
+            <div class="overview-item m-b" >
+               <div class="content-item">
+                   <ve-line
+                           :data="chartData"
+                           :settings="chartSettings"
+                           :extend="chartExtend"
+                           :legend-visible="false"
+                           height="200px"
+                   ></ve-line>
+               </div>
             </div>
-            <div class="content-right">
-                <div class="content-item">
-                    <div class="list-content">
-                        <div class="default-list">
+            <div class="overview-item">
+                <div class="content-left">
+                    <div class="content-item log-list">
+                        <div class="title">
+                            项目动态
+                        </div>
+                        <div class="list-content">
                             <a-list>
-                                <a-list-item :key="index" v-for="(item, index) in [project]">
+                                <div v-if="showLoadingMore" slot="loadMore"
+                                     :style="{ textAlign: 'center', marginTop: '12px', height: '32px', lineHeight: '32px' }">
+                                    <a-spin v-if="loadingMore"/>
+                                    <a-button v-else @click="onLoadMore">查看更多动态</a-button>
+                                </div>
+                                <a-list-item :key="index" v-for="(item, index) in activities">
                                     <a-list-item-meta>
-                                        <a-avatar slot="avatar" :src="item.cover"/>
+                                        <a-avatar slot="avatar" :src="item.member_avatar"/>
                                         <div slot="title">
-                                            <span>{{ item.name }}</span>
+                                            <span>{{ item.member_name }} </span>
+                                            <span v-if="item.is_comment == 0"> <span
+                                                    v-html="item.remark "></span></span>&nbsp;
+                                            <template v-if="item.is_comment == 1">发表了评论
+                                                <p class="comment-text">{{ item.content }}</p>
+                                            </template>
+                                            <span class="right-item muted"> {{ formatTime(item.create_time) }}
+                                        </span>
                                         </div>
                                         <div slot="description">
-                                            {{item.owner_name}}
+                                            <template v-if="item.action_type == 'task'">
+                                                <router-link class="muted"
+                                                             :to="`/project/space/task/${item.project_code}/detail/${item.source_code}`"
+                                                >
+                                                    {{ item.sourceInfo.name }}
+                                                </router-link>
+                                            </template>
+                                            <template v-if="item.action_type == 'project'">
+                                                <span v-html="item.content"></span>
+                                            </template>
                                         </div>
                                     </a-list-item-meta>
                                 </a-list-item>
                             </a-list>
                         </div>
                     </div>
-                    <p class="muted">{{project.description}}</p>
-                    <div>
-                        <ve-line
-                                :data="chartData"
-                                :settings="chartSettings"
-                                :extend="chartExtend"
-                                :legend-visible="false"
-                                height="200px"
-                        ></ve-line>
+                </div>
+                <div class="content-right">
+                    <div class="content-item">
+                        <div class="list-content">
+                            <div class="default-list">
+                                <a-list>
+                                    <a-list-item :key="index" v-for="(item, index) in [project]">
+                                        <a-list-item-meta>
+                                            <a-avatar slot="avatar" :src="item.cover"/>
+                                            <div slot="title">
+                                                <span>{{ item.name }}</span>
+                                            </div>
+                                            <div slot="description">
+                                                {{item.owner_name}}
+                                            </div>
+                                        </a-list-item-meta>
+                                    </a-list-item>
+                                </a-list>
+                            </div>
+                        </div>
+                        <p class="muted">{{project.description}}</p>
+                        <div>
+                            <ve-line
+                                    :data="chartData"
+                                    :settings="chartSettings"
+                                    :extend="chartExtend"
+                                    :legend-visible="false"
+                                    height="200px"
+                            ></ve-line>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -280,14 +294,18 @@
             width: 1100px;
             margin: 12px auto auto;
             background: initial;
-            display: flex;
-            flex-direction: row;
-            justify-content: space-between;
+
+            .overview-item {
+                display: flex;
+                flex-direction: row;
+                justify-content: space-between;
+            }
 
             .content-item {
                 background: #fff;
                 padding: 6px 18px 18px 18px;
                 border-radius: 4px;
+                width: 100%;
 
                 .title {
                     font-size: 16px;
