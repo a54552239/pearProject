@@ -36,3 +36,6 @@ export function del(code) {
 export function read(code) {
     return $http.post('project/project/read', {projectCode: code});
 }
+export function _projectStats(data) {
+    return $http.post('project/project/_projectStats', data);
+}
