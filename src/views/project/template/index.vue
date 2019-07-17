@@ -37,7 +37,7 @@
                     <a-list-item-meta
                             :description="item.description"
                     >
-                        <router-link slot="title" :to="'/project/space/task/' + item.code">{{item.name}}</router-link>
+                        <span slot="title">{{item.name}}</span>
                         <a-avatar slot="avatar" icon="user" :src="item.cover"/>
                     </a-list-item-meta>
                     <div class="other-info muted">
