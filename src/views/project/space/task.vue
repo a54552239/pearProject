@@ -905,32 +905,32 @@
                 if (task.hasUnDone) {
                     return false;
                 }
+                task.done = done;
+                if (done) {
+                    unDoneTasks.splice(taskIndex, 1);
+                    doneTasks.push(task);
+                    doneTasks = doneTasks.sort(function (a, b) {
+                        if (a.sort === b.sort) {
+                            return a.id_num - b.id_num;
+                        } else {
+                            return a.sort - b.sort;
+                        }
+                    });
+                } else {
+                    doneTasks.splice(taskIndex, 1);
+                    unDoneTasks.push(task);
+                    unDoneTasks = unDoneTasks.sort(function (a, b) {
+                        if (a.sort === b.sort) {
+                            return a.id_num - b.id_num;
+                        } else {
+                            return a.sort - b.sort;
+                        }
+                    });
+                }
                 taskDone(taskCode, done).then((res) => {
                     const result = checkResponse(res);
                     if (!result) {
                         return false;
-                    }
-                    task.done = done;
-                    if (done) {
-                        unDoneTasks.splice(taskIndex, 1);
-                        doneTasks.push(task);
-                        doneTasks = doneTasks.sort(function (a, b) {
-                            if (a.sort === b.sort) {
-                                return a.id_num - b.id_num;
-                            } else {
-                                return a.sort - b.sort;
-                            }
-                        });
-                    } else {
-                        doneTasks.splice(taskIndex, 1);
-                        unDoneTasks.push(task);
-                        unDoneTasks = unDoneTasks.sort(function (a, b) {
-                            if (a.sort === b.sort) {
-                                return a.id_num - b.id_num;
-                            } else {
-                                return a.sort - b.sort;
-                            }
-                        });
                     }
                     //可能会触发工作流，所以全部刷新
                     this.getTaskStages(false);
