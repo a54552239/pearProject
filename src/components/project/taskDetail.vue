@@ -593,13 +593,12 @@
                                             <div class="field-left" style="width: 100%">
                                                 <a-icon type="clock-circle"/>
                                                 <span class="field-name">工时
-                                                    <span v-show="workTimeList.length"> · 实际工时 {{workTimeTotal}} 小时，预估工时 {{task.work_time}} 小时   <a class="muted m-l-sm" @click="doPlainWorkTime">
+                                                    <span v-show="workTimeList.length"> · 实际工时 {{workTimeTotal}} 小时，工时记录 {{workTimeList.length}} 条，预估工时 {{task.work_time}} 小时   <a
+                                                            class="muted m-l-sm" @click="doPlainWorkTime">
                                                                     <a-icon class="task-item" type="edit"/>
                                                                 </a>
                                                     </span>
                                                 </span>
-                                            </div>
-                                            <div class="field-right width-block">
                                             </div>
                                         </div>
                                     </div>
@@ -612,7 +611,7 @@
                                                                 v-for="(workTime, index) in workTimeList"
                                                                 :key="workTime.code">
                                                             <div class="list-item task m-l-xs">
-                                                                <div class="task-item task-title">
+                                                                <div class="task-item task-title hover-none">
                                                                     <div class="title-text"
                                                                     >
                                                                         <a-tooltip :mouseEnterDelay="0.5">
@@ -628,9 +627,10 @@
                                                                             ></a-avatar>
                                                                         </a-tooltip>
                                                                         {{workTime.member.name}}
-                                                                        {{moment(workTime.begin_time).format('MM月DD日')}}实际工时为
+                                                                        {{moment(workTime.begin_time).format('MM月DD日 HH:mm')}}开始 工时为
                                                                         {{workTime.num}} 小时
                                                                         <div class="muted"
+                                                                             v-show="workTime.content"
                                                                              style="padding-left: 40px;margin-top: 6px;">
                                                                             {{workTime.content}}
                                                                         </div>
@@ -639,7 +639,8 @@
                                                                 <a class="muted" @click="doWorkTime(workTime)">
                                                                     <a-icon class="task-item" type="edit"/>
                                                                 </a>
-                                                                <a class="muted" @click="deleteWorkTime(workTime, index)">
+                                                                <a class="muted"
+                                                                   @click="deleteWorkTime(workTime, index)">
                                                                     <a-icon class="task-item" type="delete"/>
                                                                 </a>
                                                             </div>
@@ -855,16 +856,37 @@
         <invite-project-member v-model="showInviteMember" :project-code="projectCodeCurrent"
                                v-if="showInviteMember"></invite-project-member>
         <a-modal
+                class="work-time-modal"
                 v-model="workTimeDo.modalStatus"
-                :width="600"
                 :title="workTimeDo.modalTitle"
                 :bodyStyle="{paddingBottom:'1px'}"
                 @ok="workTimeHandleSubmit"
+                :confirmLoading="workTimeDo.confirmLoading"
         >
             <a-form
                     layout="vertical"
                     @submit.prevent="workTimeHandleSubmit"
                     :form="workTimeDo.form">
+                <div>
+                    <div style="font-size: 15px;">登记任务</div>
+                    <div>{{task.name}}</div>
+                    <a-divider class="m-t-xs m-b-md"></a-divider>
+                </div>
+                <div class="work-time-stats">
+                    <div class="work-time-item">
+                        <div class="muted title">预估工时</div>
+                        <span class="work-time-num">{{task.work_time}}</span>
+                        <span>小时</span>
+                    </div>
+                    <div class="work-time-item">
+                        <div class="muted title">剩余工时</div>
+                        <span class="work-time-num">
+                            <template v-if="task.work_time - workTimeTotal < 0">0</template>
+                            <template v-else>{{task.work_time - workTimeTotal}}</template>
+                        </span>
+                        <span>小时</span>
+                    </div>
+                </div>
                 <a-row :gutter="24">
                     <a-col :span="12">
                         <a-form-item
@@ -872,7 +894,7 @@
                         >
                             <a-date-picker
                                     showTime
-                                    format="MM月DD日 HH:mm"
+                                    format="YYYY年MM月DD日 HH:mm"
                                     allowClear
                                     placeholder="请选择日期"
                                     v-decorator="[
@@ -919,29 +941,29 @@
         </a-modal>
         <a-modal
                 v-model="plainWorkTime.modalStatus"
-                :width="600"
                 :title="plainWorkTime.modalTitle"
                 :bodyStyle="{paddingBottom:'1px'}"
                 @ok="workTimePlainHandleSubmit"
+                :confirmLoading="plainWorkTime.confirmLoading"
         >
             <a-form
                     layout="vertical"
                     @submit.prevent="workTimePlainHandleSubmit"
                     :form="plainWorkTime.form">
-                    <a-form-item
-                            label=""
-                    >
-                        <a-input
-                                type="text"
-                                placeholder="请输入数字"
-                                addonAfter="小时"
-                                v-decorator="[
+                <a-form-item
+                        label=""
+                >
+                    <a-input
+                            type="text"
+                            placeholder="请输入数字"
+                            addonAfter="小时"
+                            v-decorator="[
                                 'work_time',
                                 {rules: [{ required: true, message: '请输入预估工时' }], validateTrigger: 'change'}
                             ]"
-                        >
-                        </a-input>
-                    </a-form-item>
+                    >
+                    </a-input>
+                </a-form-item>
             </a-form>
         </a-modal>
     </div>
@@ -1650,14 +1672,15 @@
                             content: workTime.content,
                         });
                     })
-                }else{
+                } else {
+                    this.workTimeDo.form.resetFields();
                     this.workTimeDo.info = null;
                 }
             },
-            deleteWorkTime(workTime,index) {
+            deleteWorkTime(workTime, index) {
                 let app = this;
                 this.$confirm({
-                    title: '删除删除工时记录',
+                    title: '删除工时记录',
                     content: `确定要删除工时记录吗？`,
                     okText: '确定',
                     okType: 'danger',
@@ -1666,6 +1689,7 @@
                         delTaskWorkTime({code: workTime.code}).then((res) => {
                             if (checkResponse(res)) {
                                 app.workTimeList.splice(index, 1);
+                                app.workTimeTotal -= workTime.num;
                             }
                         });
                         return Promise.resolve();
@@ -1688,15 +1712,17 @@
                 this.workTimeDo.form.validateFields(
                     (err, values) => {
                         if (!err) {
+                            app.workTimeDo.confirmLoading = true;
                             let data = {
                                 beginTime: values.begin_time.format('YYYY-MM-DD HH:mm'),
                                 num: values.num,
                                 content: values.content,
                                 taskCode: app.code,
-                            }
+                            };
                             if (app.workTimeDo.info) {
                                 data.code = app.workTimeDo.info.code;
                                 editTaskWorkTime(data).then(res => {
+                                    app.workTimeDo.confirmLoading = false;
                                     if (checkResponse(res)) {
                                         app.workTimeDo.modalStatus = false;
                                         app.getTaskWorkTimeList();
@@ -1704,6 +1730,7 @@
                                 })
                             } else {
                                 saveTaskWorkTime(data).then(res => {
+                                    app.workTimeDo.confirmLoading = false;
                                     if (checkResponse(res)) {
                                         app.workTimeDo.modalStatus = false;
                                         app.getTaskWorkTimeList();
@@ -1875,6 +1902,9 @@
 
                         &:hover {
                             background: #f5f5f5;
+                        }
+                        &.hover-none{
+                            background: initial;
                         }
 
                         .title-text {
@@ -2165,6 +2195,28 @@
                         padding: 20px 20px 0 20px;
                         display: flex;
                     }
+                }
+            }
+        }
+    }
+
+    .work-time-modal {
+        .work-time-stats {
+            display: flex;
+            margin-bottom: 18px;
+
+            .work-time-item {
+                margin-right: 36px;
+
+                .title {
+                    font-size: 12px;
+                }
+
+                .work-time-num {
+                    font-size: 22px;
+                    font-weight: 500;
+                    margin-right: 5px;
+                    font-family: dinmedium;
                 }
             }
         }
