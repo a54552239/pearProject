@@ -66,7 +66,7 @@ $http.interceptors.response.use(
                 }, 'notice', 'error', 5);
                 $router.replace(HOME_PAGE);
                 return Promise.resolve(response);
-            case 404:
+            case 4041:
                 //资源不存在
                 notice({
                     title: response.msg !== '' ? response.msg : '资源不存在',

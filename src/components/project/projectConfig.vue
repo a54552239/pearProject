@@ -268,6 +268,18 @@
                                                         </a-select>
                                                     </div>
                                                 </template>
+                                                <template>
+                                                    <div class="workflow-rule-item">
+                                                        <p>修改任务状态</p>
+                                                        <a-select size="large" v-model="currentTaskWorkflowRule.state.value"
+                                                                  @change="(value)=>workflowRuleChange(value,'state.value')">
+                                                            <a-select-option v-for="(state, index) in taskStates"
+                                                                             :value="state.id" :key="state.id">
+                                                                {{state.name}}
+                                                            </a-select-option>
+                                                        </a-select>
+                                                    </div>
+                                                </template>
                                             </template>
                                             <template v-if="currentTaskWorkflowRule.firstResult.action === 3">
                                                 <div class="workflow-rule-item">
@@ -289,6 +301,18 @@
                                                             <a-select-option v-for="(taskStage, index) in taskStages"
                                                                              :value="taskStage.code" :key="taskStage.code">
                                                                 {{taskStage.name}}
+                                                            </a-select-option>
+                                                        </a-select>
+                                                    </div>
+                                                </template>
+                                                <template>
+                                                    <div class="workflow-rule-item">
+                                                        <p>修改任务状态</p>
+                                                        <a-select size="large" v-model="currentTaskWorkflowRule.state.value"
+                                                                  @change="(value)=>workflowRuleChange(value,'state.value')">
+                                                            <a-select-option v-for="(state, index) in taskStates"
+                                                                             :value="state.id" :key="state.id">
+                                                                {{state.name}}
                                                             </a-select-option>
                                                         </a-select>
                                                     </div>
@@ -384,6 +408,10 @@
                         action: -1,
                         value: ''
                     },
+                    state: {//任务状态
+                        action: -1,
+                        value: -1
+                    },
                 },
                 taskWorkflowRuleActions: [
                     {id: -1, name: "请选择"},
@@ -398,6 +426,11 @@
                     {id: -1, name: "请选择"},
                     {id: 0, name: "自动流转到"},
                     {id: 3, name: "默认指派给"},
+                ],
+                taskStates: [
+                    {id: -1, name: "不做修改"},
+                    {id: 1, name: "已完成"},
+                    {id: 2, name: "未完成"},
                 ],
                 projectMembers: [],
                 taskStages: [],
@@ -582,6 +615,11 @@
                             action: -1,
                             value: ''
                         },
+                        taskStates: [
+                            {id: -1, name: "不做修改"},
+                            {id: 1, name: "已完成"},
+                            {id: 2, name: "未完成"},
+                        ],
                     };
                 }
                 this.doTaskWorkflowView = true;
@@ -639,9 +677,23 @@
                         this.currentTaskWorkflowRule.firstResult.action = rules[2].action;
                         this.currentTaskWorkflowRule.firstResult.value = rules[2].object_code;
 
-                        if (rules.length == 4) {
-                            this.currentTaskWorkflowRule.lastResult.action = rules[3].action;
-                            this.currentTaskWorkflowRule.lastResult.value = rules[3].object_code;
+                        if (rules.length >= 4) {
+                            if (!rules[3].object_code) {
+                                this.currentTaskWorkflowRule.state.action = rules[3].action;
+                                this.currentTaskWorkflowRule.state.value = rules[3].action;
+                            }else{
+                                this.currentTaskWorkflowRule.lastResult.action = rules[3].action;
+                                this.currentTaskWorkflowRule.lastResult.value = rules[3].object_code;
+                            }
+                            if (rules.length >= 5) {
+                                if (!rules[4].object_code) {
+                                    this.currentTaskWorkflowRule.state.action = rules[4].action;
+                                    this.currentTaskWorkflowRule.state.value = rules[4].action;
+                                }else{
+                                    this.currentTaskWorkflowRule.lastResult.action = rules[4].action;
+                                    this.currentTaskWorkflowRule.lastResult.value = rules[4].object_code;
+                                }
+                            }
                         }
                     }
                 })
