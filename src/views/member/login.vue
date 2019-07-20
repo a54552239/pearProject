@@ -80,6 +80,7 @@
                 <a
                         class="forge-password"
                         style="float: right;"
+                        @click="routerLink('/member/forgot')"
                 >忘记密码
                 </a>
             </a-form-item>

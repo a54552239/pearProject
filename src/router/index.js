@@ -63,6 +63,12 @@ const router = new Router({
                     component: () => import(/* webpackChunkName: "user" */ '@/views/member/Register'),
                     meta: {model: 'Login'},
                 },
+                {
+                    path: 'forgot',
+                    name: 'forgot',
+                    component: () => import(/* webpackChunkName: "user" */ '@/views/member/forgot'),
+                    meta: {model: 'Login'},
+                },
                 // {
                 //     path: 'register-result',
                 //     name: 'registerResult',

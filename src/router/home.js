@@ -19,7 +19,7 @@ export default [
         ]
     },
     {
-        //任务看板
+        //邀请链接
         name: 'inviteFromLink',
         path: '/invite_from_link/:code',
         component: resolve => require(['@/views/common/inviteFromLink'], resolve),

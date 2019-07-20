@@ -12,6 +12,14 @@ export function getCaptcha(mobile) {
     return $http.post('project/login/getCaptcha', {mobile: mobile});
 }
 
+export function _getMailCaptcha(email) {
+    return $http.post('project/login/_getMailCaptcha', {email: email});
+}
+
+export function _resetPasswordByMail(data) {
+    return $http.post('project/login/_resetPasswordByMail', data);
+}
+
 export function changeCurrentOrganization(organizationCode) {
     return $http.post('project/index/changeCurrentOrganization', {organizationCode: organizationCode});
 }
@@ -71,9 +79,11 @@ export function _bindMobile(data) {
 export function _bindMail(data) {
     return $http.post('project/login/_bindMail', data);
 }
+
 export function _unbindDingtalk(data) {
     return $http.post('project/login/_unbindDingtalk', data);
 }
+
 export function _currentMember(data) {
     return $http.post('project/login/_currentMember', data);
 }
@@ -89,6 +99,7 @@ export function _joinByInviteLink(inviteCode) {
 export function _checkLogin(data) {
     return $http.post('project/login/_checkLogin', data);
 }
+
 export function _out(data) {
     return $http.post('project/login/_out', data);
 }
