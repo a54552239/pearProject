@@ -148,7 +148,7 @@
                         if (success) {
                             this.linkInfo.modalStatus = true;
                             this.linkInfo.link = window.location.href.split('#')[0] + '#/invite_from_link/' + res.data.code;
-                            this.linkInfo.overTime = moment(res.data.code.over_time).format('YYYY年M月D日 HH:mm');
+                            this.linkInfo.overTime = moment(res.data.over_time).format('YYYY年M月D日 HH:mm');
                         }
                     });
                 } else {
