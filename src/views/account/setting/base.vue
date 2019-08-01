@@ -126,6 +126,7 @@
                                 app.userInfo.name = obj.name;
                                 app.userInfo.name = obj.name;
                                 app.userInfo.description = obj.description;
+                                app.$store.dispatch('SET_USER', app.userInfo);
                             });
                         }
                     },
