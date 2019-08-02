@@ -187,8 +187,10 @@
                         return false;
                     }
                     info().then(res => {
-                        this.$store.dispatch('setSystem', res.data);
-                        this.dingTalkLogin();
+                        if (checkResponse(res)) {
+                            this.$store.dispatch('setSystem', res.data);
+                            this.dingTalkLogin();
+                        }
                     });
                 });
             },
