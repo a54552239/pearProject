@@ -615,6 +615,10 @@
                             action: -1,
                             value: ''
                         },
+                        state: {//任务状态
+                            action: -1,
+                            value: -1
+                        },
                         taskStates: [
                             {id: -1, name: "不做修改"},
                             {id: 1, name: "已完成"},
