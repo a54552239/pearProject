@@ -77,10 +77,10 @@
                                     通过邮箱邀请
                                 </a>
                             </a-menu-item>
-                            <a-menu-divider />
+                            <a-menu-divider/>
                             <a-menu-item>
                                 <a :href="downLoadUrl" target="_blank" class="m-l">
-                                    <a-icon type="copy" />
+                                    <a-icon type="copy"/>
                                     下载批量导入成员模板
                                 </a>
                             </a-menu-item>
@@ -143,14 +143,16 @@
                     <a-list class="member-list" :loading="loading">
                         <div v-if="showLoadingMore" slot="loadMore"
                              :style="{ textAlign: 'center', marginTop: '12px', height: '32px', lineHeight: '32px' }">
-                            <a-spin v-if="loadingMore"/>
-                            <a-button v-else @click="onLoadMore">加载更多</a-button>
+                            <!--                            <a-spin v-if="loadingMore"/>-->
+                            <a-button @click="onLoadMore">加载更多</a-button>
                         </div>
                         <a-list-item :key="index" v-for="(item, index) in members">
                             <a-list-item-meta>
                                 <a-avatar slot="avatar" :src="item.avatar"/>
                                 <div slot="title">
-                                    <router-link :to="`/members/profile/${item.code}`" class="text-default">{{ item.name }}</router-link>
+                                    <router-link :to="`/members/profile/${item.code}`" class="text-default">{{ item.name
+                                        }}
+                                    </router-link>
                                     <a-tag class="m-l-sm" v-if="item.is_owner">拥有者</a-tag>
                                 </div>
                                 <div slot="description">
@@ -277,7 +279,7 @@
                     this.departmentLoading = false;
                 });
             },
-            getMembers({key} = {}) {
+            getMembers({key} = {}, reload = true) {
                 let app = this;
                 if (key != undefined) {
                     this.currentDepartmentCode = '';
@@ -286,8 +288,15 @@
                     this.requestData.searchType = key;
                 }
                 app.loading = true;
+                if (reload) {
+                    this.pagination.page = 1;
+                }
                 getMembers(this.requestData).then(res => {
-                    app.members = res.data.list;
+                    if (reload) {
+                        app.members = res.data.list;
+                    } else {
+                        app.members = app.members.concat(res.data.list);
+                    }
                     app.pagination.total = res.data.total;
                     app.showLoadingMore = app.pagination.total > app.members.length;
                     app.loading = false;
@@ -309,7 +318,7 @@
             onLoadMore() {
                 this.loadingMore = true;
                 this.pagination.page++;
-                this.init(false);
+                this.getMembers({}, false);
             },
             onSelect(selectedKeys, e) {
                 // this.onLoadData(e.node);
@@ -618,7 +627,8 @@
 
             .members-content {
                 height: 75vh;
-                .member-list{
+
+                .member-list {
                     margin-right: 12px;
                 }
             }
