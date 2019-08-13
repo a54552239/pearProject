@@ -131,9 +131,10 @@
                                             </a>
                                         </a-tooltip>
                                         <a-menu class="field-right-menu"
+                                                v-clipboard="item.file_url"
                                                 @click="doFile($event,item.code)"
                                                 slot="overlay">
-                                            <a-menu-item key="copy" v-clipboard="item.file_url">
+                                            <a-menu-item key="copy">
                                                 <a-icon type="link"/>
                                                 <span>复制链接</span>
                                             </a-menu-item>
