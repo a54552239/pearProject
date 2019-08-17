@@ -1604,12 +1604,15 @@
                 }
                 comment += ' ';
                 const regx = /(@[^@]+) /g;
-                comment.match(regx).forEach((v) => {
-                    let str = v.substring(1, v.length - 1);
-                    if (this.mentionsList.findIndex(item => item == str) === -1) {
-                        this.mentionsList.push(str);
-                    }
-                });
+                const res = comment.match(regx);
+                if (res) {
+                    res.forEach((v) => {
+                        let str = v.substring(1, v.length - 1);
+                        if (this.mentionsList.findIndex(item => item == str) === -1) {
+                            this.mentionsList.push(str);
+                        }
+                    });
+                }
                 createComment(this.code, this.comment, JSON.stringify(this.mentionsList)).then(() => {
                     this.comment = '';
                     this.mentionsList = [];
