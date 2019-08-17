@@ -837,7 +837,7 @@
                                                     <template slot="title">
                                                         <span>{{log.create_time}}</span>
                                                     </template>
-                                                    <span>{{log.create_time | formatLogTime}}</span>
+                                                    <span class="muted">{{log.create_time | formatLogTime}}</span>
                                                 </a-tooltip>
                                             </div>
                                             <div class="log-txt text-default" style="padding: 0 0 0 30px;">
@@ -2216,8 +2216,9 @@
                             }
 
                             .log-comment {
-                                max-width: 400px;
+                                max-width: 405px;
                                 align-items: end;
+                                margin-bottom: 15px;
                             }
 
                             .list-item {
