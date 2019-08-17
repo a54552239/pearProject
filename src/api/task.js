@@ -42,8 +42,8 @@ export function star(code, star) {
     return $http.post('project/task/star', {star: star, taskCode: code});
 }
 
-export function createComment(code, comment) {
-    return $http.post('project/task/createComment', {taskCode: code, comment: comment});
+export function createComment(code, comment, mentions) {
+    return $http.post('project/task/createComment', {taskCode: code, comment: comment, mentions: mentions});
 }
 
 export function assignTask(data) {

@@ -854,9 +854,20 @@
                                 </div>
                             </vue-scroll>
                         </div>
-                        <div class="footer">
-                            <a-textarea v-model="comment" :rows="1" placeholder="按 Ctrl+Enter 快速发表评论"
-                                        style="margin-right: 24px;"/>
+                        <div class="footer" id="footer">
+                            <a-popover trigger="click" placement="top" :visible="showMentions" arrowPointAtCenter :getPopupContainer="getPopup">
+                                <template slot="content">
+                                    <div class="mentions-content" style="width: 200px;">
+                                        <div class="mentions-wrapper" v-for="member in taskMemberList" :key="member.id" @click="selectMentionMember(member)">
+                                            <a-avatar :src="member.avatar" icon="user" :size="28"/>
+                                            <span class="muted name m-l-xs">{{member.name}}</span>
+                                        </div>
+                                    </div>
+                                </template>
+<!--                                <span slot="title">Title</span>-->
+                                <a-textarea ref="commentText" v-model="comment" :rows="1" placeholder="支持@提及任务成员，Ctrl+Enter发表评论"
+                                            style="margin-right: 24px;"/>
+                            </a-popover>
                             <a-button class="middle-btn" type="primary" @click="createComment">评论</a-button>
                         </div>
                     </div>
@@ -1126,7 +1137,10 @@
                     modalTitle: '设置预估工时',
                     modalStatus: false,
                     confirmLoading: false,
-                }
+                },
+                //显示评论提及
+                showMentions: false,
+                mentionsList: []
             }
         },
         computed: {
@@ -1210,10 +1224,16 @@
                 })()
             };
             document.onkeydown = (event) => {
+                console.log(event);
                 var e = event || window.event || arguments.callee.caller.arguments[0];
                 if (13 == e.keyCode && e.ctrlKey) {
                     //处理的部分
                     this.createComment();
+                }
+                if ('Digit2' == e.code) {
+                    this.showMentions = true;
+                }else{
+                    this.showMentions = false;
                 }
             };
             setTimeout(() => {
@@ -1578,11 +1598,21 @@
                 });
             },
             createComment() {
-                if (!this.comment.trim()) {
+                let comment = this.comment.trim();
+                if (!comment) {
                     return false;
                 }
-                createComment(this.code, this.comment).then(() => {
+                comment += ' ';
+                const regx = /(@[^@]+) /g;
+                comment.match(regx).forEach((v) => {
+                    let str = v.substring(1, v.length - 1);
+                    if (this.mentionsList.findIndex(item => item == str) === -1) {
+                        this.mentionsList.push(str);
+                    }
+                });
+                createComment(this.code, this.comment, JSON.stringify(this.mentionsList)).then(() => {
                     this.comment = '';
+                    this.mentionsList = [];
                     this.getTaskLog();
                 });
             },
@@ -1763,6 +1793,16 @@
             updateChildExecutor(member) {
                 this.visibleChildTaskMemberMenu = false;
                 this.childExecutor = member;
+            },
+            getPopup() {
+                return document.getElementById('footer');
+            },
+            selectMentionMember(member) {
+                this.showMentions = false;
+                this.comment += member.name + ' ';
+                this.$nextTick(() => {
+                    this.$refs.commentText.focus();
+                });
             },
             changeModalHeight() {
                 const defaultWidth = this.width;
@@ -2236,6 +2276,25 @@
                     font-weight: 500;
                     margin-right: 5px;
                     font-family: dinmedium;
+                }
+            }
+        }
+    }
+    .footer{
+        .ant-popover-inner-content{
+            padding: 0;
+            .mentions-content {
+                width: 200px;
+                padding: 12px 0;
+                .mentions-wrapper {
+                    width: 100%;
+                    display: flex;
+                    align-items: center;
+                    padding: 6px 12px;
+                    &:hover{
+                        cursor: pointer;
+                        background: rgba(51, 143, 229, 0.1);
+                    }
                 }
             }
         }

@@ -42,7 +42,9 @@
                                     <a-list-item :key="item.id">
                                         <a-list-item-meta :description="item.create_time">
                                              <span slot="title">
-                                                    <p v-html="item.title"></p>
+                                                 <p v-html="item.title"></p>
+                                                 <p class="ant-list-item-meta-description" v-html="item.content"></p>
+
                                              </span>
                                             <a-avatar style="background-color: white" slot="avatar"
                                                       src="https://gw.alipayobjects.com/zos/rmsportal/ThXAXghbEsBCCSDihZxY.png"/>
