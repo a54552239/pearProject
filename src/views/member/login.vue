@@ -363,9 +363,19 @@
                         userInfo: res.data.member,
                         tokenList: res.data.tokenList
                     };
+                    let currentOrganization = getStore('currentOrganization', true);
+                    const organizationList = res.data.organizationList;
                     app.$store.dispatch('SET_LOGGED', obj);
-                    app.$store.dispatch('setOrganizationList', res.data.organizationList);
-                    app.$store.dispatch('setCurrentOrganization', res.data.organizationList[0]);
+                    app.$store.dispatch('setOrganizationList', organizationList);
+                    if (!currentOrganization) {
+                        currentOrganization = organizationList[0];
+                    } else {
+                        const has = organizationList.findIndex(item => item.id == currentOrganization.id);
+                        if (has === -1) {
+                            currentOrganization = organizationList[0];
+                        }
+                    }
+                    app.$store.dispatch('setCurrentOrganization', currentOrganization);
                     app.$store.dispatch('GET_MENU').then(() => {
                         app.loginSuccess(res);
                     });
