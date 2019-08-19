@@ -136,7 +136,7 @@
             init() {
                 if (this.projectCode) {
                     this.listLoading = true;
-                    list({projectCode: this.projectCode, pageSize: 30}).then(res => {
+                    list({projectCode: this.projectCode, pageSize: 300}).then(res => {
                         this.list = res.data.list;
                         this.listTemp = res.data.list;
                         this.listLoading = false;
@@ -144,7 +144,7 @@
                 }
                 if (this.taskCode) {
                     this.doListLoading = true;
-                    getTaskMembers({taskCode: this.taskCode, pageSize: 30}).then(res => {
+                    getTaskMembers({taskCode: this.taskCode, pageSize: 300}).then(res => {
                         this.doList = res.data.list.filter(item => item.is_executor);
                         this.doListLoading = false;
                     });

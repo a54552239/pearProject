@@ -130,14 +130,14 @@
                 this.projectMemberLoading = true;
                 this.taskMemberLoading = true;
                 if (this.projectCode) {
-                    list({projectCode: this.projectCode, pageSize: 30}).then(res => {
+                    list({projectCode: this.projectCode, pageSize: 300}).then(res => {
                         this.projectMemberList = res.data.list;
                         this.projectMemberListCopy = res.data.list;
                         this.projectMemberLoading = false;
                     });
                 }
                 if (this.taskCode) {
-                    getTaskMembers({taskCode: this.taskCode, pageSize: 30}).then(res => {
+                    getTaskMembers({taskCode: this.taskCode, pageSize: 300}).then(res => {
                         this.taskMemberList = res.data.list;
                         res.data.list.forEach((v) => {
                             this.listTemp.push(v.code);
