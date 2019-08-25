@@ -764,7 +764,7 @@
             },
             getTaskStages(showLoading = true) {
                 let app = this;
-                getTaskStages({projectCode: this.code, pageSize: 30}).then(async (res) => {
+                getTaskStages({projectCode: this.code, pageSize: 30}).then((res) => {
                     let taskStages = [];
                     if (!showLoading) {
                         res.data.list.forEach((v) => {
@@ -777,9 +777,8 @@
                         this.taskStages = taskStages = res.data.list;
                     }
                     if (taskStages) {
-                        for (const v of taskStages) {
-                            await getTasks({stageCode: v.code}).then((res) => {
-                                console.log(0);
+                        taskStages.forEach((v, k) => {
+                            getTasks({stageCode: v.code}).then((res) => {
                                 let canNotReadCount = 0;
                                 res.data.forEach((task) => {
                                     if (!task.canRead) {
@@ -794,13 +793,12 @@
                                 v.canNotReadCount = canNotReadCount;
                                 v.tasksLoading = false;
                                 v.tasks = res.data;
+                                if (!showLoading) {
+                                    app.$set(app.taskStages, k, v);
+                                }
                             })
-                        }
+                        });
                     }
-                    if (!showLoading) {
-                        app.taskStages = taskStages;
-                    }
-                    console.log(11);
                 })
             },
             filterTask(tasks, done) {
