@@ -1,5 +1,5 @@
 <template>
-    <div class="task-detail">
+    <div class="task-detail" id="task-detail">
         <a-spin class="task-detail-spin" :spinning="loading">
             <div class="task-header" :class="{'disabled': task.deleted}">
                     <span class="head-title" v-if="!task.deleted">
@@ -758,6 +758,7 @@
                                             icon="user"
                                             size="small"
                                             :src="member.avatar"
+                                            @click="routerLink('/members/profile/' + member.membar_account_code + '?key=3')"
                                     />
                                 </a-tooltip>
                                 <a-dropdown :trigger="['click']" placement="bottomCenter"
@@ -1017,6 +1018,7 @@
         taskSources
     } from "../../api/task";
     import ATextarea from "ant-design-vue/es/input/TextArea";
+    import {detail} from "../../api/departmentMember";
 
     let tokenList = getStore('tokenList', true);
     let authorization = '';
@@ -1103,6 +1105,8 @@
                         'fullscreen'	// 全屏
                     ],
                 },
+
+                departmentMemberInfo: null,
 
                 /*子任务*/
                 childTaskList: [],
@@ -1800,6 +1804,14 @@
             getPopup() {
                 return document.getElementById('footer');
             },
+            getTaskMemberPopup() {
+                return document.getElementById('task-detail');
+            },
+            departmentMemberDetail(code) {
+                detail({code: code,organization: this.$store.state.currentOrganization.code}).then(res=>{
+                    this.departmentMemberInfo = res.data;
+                })
+            },
             selectMentionMember(member) {
                 this.showMentions = false;
                 this.comment += member.name + ' ';
@@ -2193,6 +2205,7 @@
 
                         .member-item {
                             margin-right: 10px;
+                            cursor: pointer;
 
                             &.invite {
                                 cursor: pointer;

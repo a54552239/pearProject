@@ -176,7 +176,8 @@
                         <div class="members">
                             <a-row>
                                 <a-col :span="12" v-for="(item, index) in accounts" :key="index">
-                                    <a>
+                                    <a @click="routerLink('/members/profile/' + item.membar_account_code + '?key=3')" style="display: flex;align-items: center"
+                                    >
                                         <a-avatar size="small" :src="item.avatar"/>
                                         <span class="member">{{ item.name }}</span>
                                     </a>
@@ -481,7 +482,7 @@
                         line-height: 24px;
                         max-width: 100px;
                         vertical-align: top;
-                        margin-left: 12px;
+                        margin-left: 6px;
                         transition: all 0.3s;
                         display: inline-block;
                     }

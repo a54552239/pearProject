@@ -32,7 +32,7 @@
             </div>
         </div>
         <div class="actions">
-            <a-tabs :animated="false" defaultActiveKey="1" @change="tabChange">
+            <a-tabs :animated="false" defaultActiveKey="1" v-model="tabKey" @change="tabChange">
                 <a-tab-pane class="info-content base-info" tab="详细资料" key="1">
                     <p class="action-wrapper">
                         <span class="title">详细资料</span>
@@ -120,8 +120,15 @@
                                     <span class="m-l-sm">{{item.name}}</span>
                                     <span class="muted m-l tips">
                                         <a-icon type="project"/>
-                                        {{item.projectInfo.name}}
+                                        <router-link target="_blank" class="muted m-l-xs"
+                                                     :to="'/project/space/task/' + item.projectInfo.code">{{ item.projectInfo.name }}
+                                    </router-link>
                                     </span>
+                                    <span class="label m-r-xs pull-right" :class="showTimeLabel(item.end_time)"
+                                          v-if="item.end_time">{{showTaskTime(item.begin_time, item.end_time)}}</span>
+                                </div>
+                                <div slot="description">
+
                                 </div>
                             </a-list-item-meta>
                         </a-list-item>
@@ -137,6 +144,11 @@
                                 <a-avatar slot="avatar" icon="user" :src="item.cover"/>
                                 <div slot="title">
                                     <span class="m-l-sm">{{item.name}}</span>
+                                    <a-tag color="green" class="m-l" v-show="!item.private">公开</a-tag>
+                                </div>
+                                <div slot="description">
+                                    <span class="m-l-sm">{{item.description}}</span>
+<!--                                    <a-progress :strokeWidth="5" :percent="item.schedule"/>-->
                                 </div>
                             </a-list-item-meta>
                         </a-list-item>
@@ -233,12 +245,14 @@
 </template>
 
 <script>
+    import moment from "moment";
     import taskDetail from '@/components/project/taskDetail'
     import pagination from "../../mixins/pagination";
     import {checkResponse} from "../../assets/js/utils";
     import {editAccount, read} from "../../api/user";
     import {selfList} from "../../api/task";
     import {selfList as getProjectList} from "../../api/project";
+    import {formatTaskTime} from "../../assets/js/dateTime";
 
     export default {
         name: "memberProfile",
@@ -249,6 +263,7 @@
         data() {
             return {
                 code: this.$route.params.code,
+                tabKey: this.$route.query.key ? this.$route.query.key : '1',
                 member: {},
                 task: {
                     page: 1,
@@ -283,6 +298,7 @@
         methods: {
             init() {
                 this.getMember();
+                this.tabChange(this.tabKey)
             },
             tabChange(key) {
                 switch (key) {
@@ -366,6 +382,24 @@
                         }
                     })
             },
+            showTaskTime(time, timeEnd) {
+                return formatTaskTime(time, timeEnd);
+            },
+            showTimeLabel(time) {
+                let str = 'label-primary';
+                if (time == null) {
+                    return str;
+                }
+                let cha = moment(moment(time).format("YYYY-MM-DD")).diff(moment().format("YYYY-MM-DD"), 'days');
+                if (cha < 0) {
+                    str = 'label-danger';
+                } else if (cha == 0) {
+                    str = 'label-warning';
+                } else if (cha > 7) {
+                    str = 'label-normal'
+                }
+                return str;
+            },
         }
     }
 </script>
@@ -426,6 +460,7 @@
                         .ant-list-item {
                             padding: 12px;
                             border-bottom: none;
+                            margin: 0 12px;
 
                             .tips {
                                 font-size: 12px;
