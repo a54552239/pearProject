@@ -55,6 +55,7 @@
                                     name="avatar"
                                     class="avatar-uploader"
                                     :showUploadList="false"
+                                    :data="{code: userInfo.code}"
                                     :headers="headers"
                                     :action="uploadAction"
                                     :beforeUpload="beforeUpload"
@@ -115,7 +116,7 @@
                     (err, values) => {
                         if (!err) {
                             let obj = app.form.getFieldsValue();
-                            obj.id = app.userInfo.id;
+                            obj.code = app.userInfo.code;
                             obj.avatar = app.userInfo.avatar;
                             editPersonal(obj).then(res => {
                                 app.loading = false;

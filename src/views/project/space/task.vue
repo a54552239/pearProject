@@ -4,9 +4,13 @@
             <div class="project-nav-header">
                 <a-breadcrumb>
                     <a-breadcrumb-item>
-                        <a-tooltip :mouseEnterDelay="0.3" :title="project.name">
-                            <span class="nav-title">{{ project.name }}</span>
-                        </a-tooltip>
+                        <router-link to="/home">
+                            <a-icon type="home"/>
+                            首页
+                        </router-link>
+                    </a-breadcrumb-item>
+                    <a-breadcrumb-item>
+                        <project-select class="nav-title" style="display: inline-block" :code="code"></project-select>
                         <span class="actions">
                              <a-tooltip :mouseEnterDelay="0.3" :title="project.collected ? '取消收藏' : '加入收藏'"
                                         @click="collectProject">
@@ -562,6 +566,7 @@
     import _ from 'lodash'
     import moment from 'moment'
     import draggable from 'vuedraggable'
+    import projectSelect from '@/components/project/projectSelect'
     import inviteProjectMember from '@/components/project/inviteProjectMember'
     import projectConfig from '@/components/project/projectConfig'
     import RecycleBin from '@/components/project/recycleBin'
@@ -583,6 +588,7 @@
             RecycleBin,
             TaskTag,
             draggable,
+            projectSelect,
             inviteProjectMember,
             projectConfig
         },
@@ -678,6 +684,11 @@
         },
         watch: {
             $route(to, from) {
+                this.code = to.params.code;
+                this.defaultExecutor = this.userInfo;
+                this.getProject();
+                this.getProjectMembers();
+                this.init();
                 if (from.name == 'taskdetail') {
                     const stageIndex = from.query.from;
                     // this.getTaskStages(false);

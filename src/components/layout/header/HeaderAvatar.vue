@@ -11,11 +11,11 @@
                         <a-icon type="user"></a-icon>
                         个人设置</a>
                 </a-menu-item>
-                <a-menu-item key="edit" disabled>
+               <!-- <a-menu-item key="edit" disabled>
                     <a href="javascript:;">
                         <a-icon type="setting"></a-icon>
                         偏好设置</a>
-                </a-menu-item>
+                </a-menu-item>-->
                 <a-menu-item key="theme">
                     <a href="javascript:;">
                         <a-icon type="swap"/>

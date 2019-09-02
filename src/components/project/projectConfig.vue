@@ -105,6 +105,13 @@
                         </a-radio-group>
                     </div>
                 </div>
+                <div class="content-item">
+                    <div class="infos">
+                        <p class="item-title">自动更新项目进度</p>
+                        <div class="item-tips muted">根据当前任务的完成情况自动计算项目进度。</div>
+                    </div>
+                    <a-switch v-model="project.auto_update_schedule" @change="saveProject"/>
+                </div>
             </div>
         </a-tab-pane>
         <a-tab-pane key="3">
@@ -485,6 +492,7 @@
                     open_begin_time: Number(project.open_begin_time),
                     open_task_private: Number(project.open_task_private),
                     schedule: Number(project.schedule),
+                    auto_update_schedule: Number(project.auto_update_schedule),
                 }).then((res) => {
                     if (!checkResponse(res)) {
                         return;

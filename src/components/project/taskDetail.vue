@@ -475,7 +475,49 @@
                                                                                     v-show="childTask.done"/>
                                                                         </a>-->
                                                                     </a-tooltip>
-                                                                    <a-tooltip :mouseEnterDelay="0.5">
+                                                                    <a-dropdown :trigger="['click']"
+                                                                                v-model="childTask.visibleChildTaskMemberMenu"
+                                                                                :disabled="!!task.deleted"
+                                                                                placement="bottomCenter"
+
+                                                                    >
+                                                                        <a-tooltip :mouseEnterDelay="0.5">
+                                                                            <template slot="title">
+                                                                                <span v-if="childTask.executor">{{childTask.executor.name}}</span>
+                                                                                <span v-else>待认领</span>
+                                                                            </template>
+                                                                            <a-avatar
+                                                                                    v-if="childTask.executor"
+                                                                                    class="task-item"
+                                                                                    :class="{'disabled': task.deleted}"
+
+                                                                                    size="small"
+                                                                                    icon="user"
+                                                                                    :src="childTask.executor.avatar"
+                                                                            ></a-avatar>
+                                                                            <a-avatar
+                                                                                    v-else
+                                                                                    class="task-item"
+                                                                                    :class="{'disabled': task.deleted}"
+
+                                                                                    size="small"
+                                                                                    icon="user"
+                                                                            ></a-avatar>
+                                                                        </a-tooltip>
+                                                                        <div slot="overlay">
+                                                                            <task-member-menu
+                                                                                    v-if="childTask.visibleChildTaskMemberMenu"
+                                                                                    :projectCode="projectCodeCurrent"
+                                                                                    :taskCode="childTask.code"
+                                                                                    :isCommit="true"
+                                                                                    @close="childTask.visibleChildTaskMemberMenu = false;getChildTasks();"
+                                                                                    @inviteProjectMember="
+                                                                                    showInviteMember = true,
+                                                                                    childTask.visibleChildTaskMemberMenu = false"
+                                                                            ></task-member-menu>
+                                                                        </div>
+                                                                    </a-dropdown>
+                                                                 <!--   <a-tooltip :mouseEnterDelay="0.5">
                                                                         <template slot="title">
                                                                             <span v-if="childTask.executor">{{childTask.executor.name}}</span>
                                                                             <span v-else>待认领</span>
@@ -497,7 +539,7 @@
                                                                                 size="small"
                                                                                 icon="user"
                                                                         ></a-avatar>
-                                                                    </a-tooltip>
+                                                                    </a-tooltip>-->
                                                                     <div class="task-item task-title"
                                                                          @click.stop="init(childTask.code)">
                                                                         <div class="title-text"
@@ -593,10 +635,21 @@
                                             <div class="field-left" style="width: 100%">
                                                 <a-icon type="clock-circle"/>
                                                 <span class="field-name">工时
-                                                    <span v-show="workTimeList.length"> · 实际工时 {{workTimeTotal}} 小时，工时记录 {{workTimeList.length}} 条，预估工时 {{task.work_time}} 小时   <a
+                                                    <span v-if="workTimeList.length"> · 实际工时 {{workTimeTotal}} 小时，工时记录 {{workTimeList.length}} 条，预估工时 {{task.work_time}} 小时   <a
                                                             class="muted m-l-sm" @click="doPlainWorkTime">
                                                                     <a-icon class="task-item" type="edit"/>
                                                                 </a>
+                                                    </span>
+                                                    <span v-else>
+                                                         <span v-if="task.work_time"> · 预估工时 {{task.work_time}} 小时</span>
+                                                         <a-tooltip>
+                                                            <template slot="title">
+                                                                <span>设置预估工时</span>
+                                                            </template>
+                                                           <a class="muted m-l-sm" @click="doPlainWorkTime">
+                                                               <a-icon class="task-item" type="edit"/>
+                                                           </a>
+                                                         </a-tooltip>
                                                     </span>
                                                 </span>
                                             </div>
@@ -670,8 +723,7 @@
                                         <div class="field">
                                             <div class="block-field width-block">
                                                 <div class="task-child">
-                                                    <a class="add-handler" id="upload-file"
-                                                       v-show="!showChildTask">
+                                                    <a class="add-handler" id="upload-file">
                                                         <a-icon type="plus" style="margin-right: 6px;"/>
                                                         上传文件
                                                     </a>
@@ -1271,7 +1323,7 @@
                 this.visibleTaskTagMenu = false;
                 this.visibleTaskMemberMenu = false;
                 this.visibleProjectMemberMenu = false;
-                this.showChildTask = false;
+                // this.showChildTask = false;
             },
             getTask() {
                 this.$store.commit('viewRefresh');
@@ -1299,7 +1351,7 @@
                     }
                     this.task.begin_time_format = relativelyTaskTime(this.task.begin_time, true);
                     this.initContent(this.task.description);
-                    if (this.task.executor) {
+                    if (this.task.executor && !this.childExecutor) {
                         this.childExecutor = this.task.executor;
                     }
                     this.loading = false;
@@ -1667,7 +1719,12 @@
             },
             getChildTasks() {
                 getTasks({pcode: this.code, pageSize: 100, deleted: 0}).then((res) => {
-                    this.childTaskList = res.data.list;
+                    let list = [];
+                    res.data.list.forEach(v => {
+                        v.visibleChildTaskMemberMenu = false;
+                        list.push(v);
+                    });
+                    this.childTaskList = list;
                 })
             },
             taskTagChange(tag) {

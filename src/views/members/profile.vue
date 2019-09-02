@@ -88,7 +88,7 @@
                     <p class="action-wrapper">
                         <span class="title">
                             任务安排
-                             <a-dropdown :trigger="['click']">
+                             <a-dropdown` :trigger="['click']"`>
                                     <a class="muted m-l-sm" style="font-size: 14px;">
                                         <span v-if="task.type[0] == 0">未完成的任务 </span>
                                         <span v-else>全部 </span>
