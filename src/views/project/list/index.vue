@@ -234,7 +234,7 @@
                 });
             },
             projectTemplates() {
-                projectTemplates({pageSize: 100}).then(res => {
+                projectTemplates({pageSize: 100, viewType: 0}).then(res => {
                     this.templateList = res.data.list;
                 });
             },
