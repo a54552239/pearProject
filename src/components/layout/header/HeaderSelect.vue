@@ -3,7 +3,7 @@
         <a-dropdown class="action-item" placement="bottomCenter">
             <div class="organization-select">
                 <span>{{currentOrganization.name}}</span>
-                <span><a-icon type="down" /></span>
+               <a-icon :style="{fontSize: '14px'}" type="down" />
             </div>
             <a-menu slot="overlay" class="middle-menu organization-menu" :selectable="false" @click="organizationAction">
                 <a-menu-item v-for="(organization,index) in organizationList" :key="index">
