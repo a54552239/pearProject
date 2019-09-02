@@ -684,11 +684,13 @@
         },
         watch: {
             $route(to, from) {
-                this.code = to.params.code;
-                this.defaultExecutor = this.userInfo;
-                this.getProject();
-                this.getProjectMembers();
-                this.init();
+                if (this.code != to.params.code) {
+                    this.code = to.params.code;
+                    this.defaultExecutor = this.userInfo;
+                    this.getProject();
+                    this.getProjectMembers();
+                    this.init();
+                }
                 if (from.name == 'taskdetail') {
                     const stageIndex = from.query.from;
                     // this.getTaskStages(false);
