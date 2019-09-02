@@ -146,7 +146,7 @@
 
     .project-select-menu {
         .member-list {
-            height: 375px;
+            height: 290px;
         }
     }
 </style>
