@@ -918,7 +918,7 @@
                                     </div>
                                 </template>
 <!--                                <span slot="title">Title</span>-->
-                                <a-textarea ref="commentText" v-model="comment" :rows="1" placeholder="支持@提及任务成员，Ctrl+Enter发表评论"
+                                <a-textarea @focus="commenting = true" @blur="commenting = false" ref="commentText" v-model="comment" :rows="1" placeholder="支持@提及任务成员，Ctrl+Enter发表评论"
                                             style="margin-right: 24px;"/>
                             </a-popover>
                             <a-button class="middle-btn" type="primary" @click="createComment">评论</a-button>
@@ -1179,6 +1179,7 @@
 
                 /*评论*/
                 comment: '',
+                commenting: false,
 
                 /*工时*/
                 workTimeDo: {
@@ -1286,7 +1287,7 @@
                     //处理的部分
                     this.createComment();
                 }
-                if ('Digit2' == e.code) {
+                if ('@' == e.key && this.commenting) {
                     this.showMentions = true;
                 }else{
                     this.showMentions = false;
