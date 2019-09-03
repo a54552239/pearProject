@@ -145,6 +145,8 @@
     }
 
     .project-select-menu {
+        margin-left: 10px;
+
         .member-list {
             height: 290px;
         }
