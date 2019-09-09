@@ -1436,9 +1436,14 @@
                         star(app.code, this.task.stared);
                         return true;
                     case 'open':
-                        window.open(window.location.href + '&full-screen');
+                        var url = window.location.href;
+                        if (url.indexOf('?') !== -1) {
+                            url += '&full-screen';
+                        }else{
+                            url += '?full-screen';
+                        }
+                        window.open(url);
                         break;
-
                     case 'private':
                         setPrivate(app.code, Number(!this.task.private)).then(res => {
                             const result = checkResponse(res);
