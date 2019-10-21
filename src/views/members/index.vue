@@ -204,6 +204,7 @@
     import {notice} from "../../assets/js/notice";
     import {removeMember} from "../../api/departmentMember";
     import {del as deleteDepartment} from "../../api/department";
+    import {getStore} from "../../assets/js/storage";
 
     export default {
         name: "members",
@@ -247,7 +248,12 @@
                 return this.currentDepartmentCode ? '部门' : '组织'
             },
             headers() {
-                return getAuthorization();
+                let headers = getAuthorization();
+                let organization = getStore('currentOrganization', true);
+                if (organization) {
+                    headers.organizationCode = organization.code;
+                }
+                return headers;
             }
         },
         watch: {
