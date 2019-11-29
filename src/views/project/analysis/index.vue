@@ -180,6 +180,7 @@
     import MiniProgress from '@/components/chart/MiniProgress'
     import RankList from '@/components/chart/RankList'
     import pagination from "@/mixins/pagination";
+    import {analysis} from "../../../api/project";
 
     const rankList = [];
     for (let i = 0; i < 7; i++) {
@@ -306,6 +307,7 @@
         },
         methods: {
             init(reset = true) {
+                analysis({type: 1});
                 if (reset) {
                     this.pagination.page = 1;
                     this.pagination.pageSize = 9;
