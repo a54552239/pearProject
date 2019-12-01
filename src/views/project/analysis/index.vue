@@ -3,7 +3,7 @@
         <div class="page-wrapper">
             <a-row :gutter="24">
                 <a-col :sm="24" :md="12" :xl="6" :style="{ marginBottom: '24px' }">
-                    <chart-card :loading="loading" title="项目总数" :total="12 | NumberFormat">
+                    <chart-card :loading="loading" title="项目总数" :total="projectData.count | NumberFormat">
                         <a-tooltip title="指标说明" slot="action">
                             <a-icon type="info-circle-o"/>
                         </a-tooltip>
@@ -19,7 +19,7 @@
                     </chart-card>
                 </a-col>
                 <a-col :sm="24" :md="12" :xl="6" :style="{ marginBottom: '24px' }">
-                    <chart-card :loading="loading" title="任务总数" :total="135 | NumberFormat">
+                    <chart-card :loading="loading" title="任务总数" :total="taskData.count | NumberFormat">
                         <a-tooltip title="指标说明" slot="action">
                             <a-icon type="info-circle-o"/>
                         </a-tooltip>
@@ -37,7 +37,7 @@
                     </chart-card>
                 </a-col>
                 <a-col :sm="24" :md="12" :xl="6" :style="{ marginBottom: '24px' }">
-                    <chart-card :loading="loading" title="逾期任务" total="6">
+                    <chart-card :loading="loading" title="逾期任务" :total="taskData.taskOverdueCount | NumberFormat">
                         <a-tooltip title="指标说明" slot="action">
                             <a-icon type="info-circle-o"/>
                         </a-tooltip>
@@ -51,16 +51,16 @@
                                 11%
                             </trend>
                         </div>
-                        <template slot="footer">逾期率 <span>26%</span></template>
+                        <template slot="footer">逾期率 <span>{{taskData.taskOverduePercent}}%</span></template>
                     </chart-card>
                 </a-col>
                 <a-col :sm="24" :md="12" :xl="6" :style="{ marginBottom: '24px' }">
-                    <chart-card :loading="loading" title="整体进度" total="78%">
+                    <chart-card :loading="loading" title="整体进度" :total="`${projectData.projectSchedule}%`">
                         <a-tooltip title="指标说明" slot="action">
                             <a-icon type="info-circle-o"/>
                         </a-tooltip>
                         <div>
-                            <mini-progress color="#ffd401" :target="80" :percentage="78" height="8px"/>
+                            <mini-progress color="#ffd401" :target="80" :percentage="projectData.projectSchedule" height="8px"/>
                         </div>
                         <template slot="footer">
                             <trend flag="down" style="margin-right: 16px;">
@@ -141,9 +141,8 @@
                                 </a-menu-item>
                             </a-menu>
                         </a-dropdown>
-                        <p>项目名称</p>
-                        <p>项目名称</p>
-                        <p>项目名称</p>
+                        <p v-for="project in projectList" :key="project.id">{{project.name}}</p>
+                        <a-pagination v-model="pagination.page" :total="projectTotal"  size="small" @change="pageChange"/>
                     </a-card>
                 </a-col>
                 <a-col :xl="12" :lg="24" :md="24" :sm="24" :xs="24">
@@ -180,7 +179,7 @@
     import MiniProgress from '@/components/chart/MiniProgress'
     import RankList from '@/components/chart/RankList'
     import pagination from "@/mixins/pagination";
-    import {analysis} from "../../../api/project";
+    import {analysis, selfList as getProjectList} from "../../../api/project";
 
     const rankList = [];
     for (let i = 0; i < 7; i++) {
@@ -248,6 +247,8 @@
                     }
                 },
                 projectData: {
+                    count: 0,
+                    projectSchedule: 0,
                     chartData: {
                         columns: ['日期', '数量'],
                         rows: projectList
@@ -259,6 +260,9 @@
                     },
                 },
                 taskData: {
+                    count: 0,
+                    taskOverdueCount: 0,
+                    taskOverduePercent: 0,
                     chartData: {
                         columns: ['日期', '任务'],
                         rows: taskList
@@ -295,6 +299,9 @@
                         },
                     }
                 },
+                projectList: [],
+                projectTotal: 0,
+                projectLoading: false,
             }
         },
         computed: {
@@ -307,12 +314,37 @@
         },
         methods: {
             init(reset = true) {
-                analysis({type: 1});
+                analysis({type: 1}).then(res => {
+                    this.projectData.count = res.data.projectCount;
+                    this.projectData.projectSchedule = res.data.projectSchedule;
+                    this.projectData.chartData.rows = res.data.projectList;
+                    this.projectTotalData.chartData.rows = res.data.projectList;
+
+                    this.taskData.count = res.data.taskCount;
+                    this.taskData.taskOverdueCount = res.data.taskOverdueCount;
+                    this.taskData.taskOverduePercent = res.data.taskOverduePercent;
+                    this.taskData.chartData.rows = res.data.taskList;
+                });
                 if (reset) {
                     this.pagination.page = 1;
-                    this.pagination.pageSize = 9;
+                    this.pagination.pageSize = 10;
                 }
+                this.getProjectList(true);
             },
+            getProjectList(loading) {
+                if (loading) {
+                    this.projectLoading = true;
+                }
+                getProjectList(this.requestData).then(res => {
+                    this.projectList = res.data.list;
+                    this.projectTotal = res.data.total;
+                    this.projectLoading = false;
+                });
+            },
+            pageChange(page, pageSize) {
+                this.pagination.page = page;
+                this.getProjectList(true);
+            }
         }
     }
 </script>
@@ -340,9 +372,11 @@
                 bottom: -10px;
                 width: 100%;
             }
-            .chart-wrappers-single{
+
+            .chart-wrappers-single {
                 /*width: 500px;*/
-                div{
+
+                div {
                     width: auto !important;
                 }
             }
