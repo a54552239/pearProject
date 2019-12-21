@@ -3,7 +3,7 @@
         <div class="container">
             <div class="top">
                 <div class="header">
-                    <a-badge :count="'Beta 2.0'">
+                    <a-badge>
                         <a href="/">
                             <img src="../../assets/image/common/logo.png" class="logo" alt="logo">
                             <span class="title">Pear Project</span>
@@ -93,11 +93,11 @@
                         vertical-align: top;
                         margin-right: 12px;
                         border-style: none;
-                        transform: rotate(-25deg);
-                        -ms-transform: rotate(-25deg); /* IE 9 */
-                        -moz-transform: rotate(-25deg); /* Firefox */
-                        -webkit-transform: rotate(-25deg); /* Safari 和 Chrome */
-                        -o-transform: rotate(-25deg);
+                        /*transform: rotate(-25deg);*/
+                        /*-ms-transform: rotate(-25deg); !* IE 9 *!*/
+                        /*-moz-transform: rotate(-25deg); !* Firefox *!*/
+                        /*-webkit-transform: rotate(-25deg); !* Safari 和 Chrome *!*/
+                        /*-o-transform: rotate(-25deg);*/
                     }
 
                     .title {
