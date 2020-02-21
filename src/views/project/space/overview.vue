@@ -43,8 +43,10 @@
         <wrapper-content :showHeader="false">
             <div class="overview-item m-b">
                 <div class="content-item">
-                    <h3 class="m-sm m-b text-center">任务燃尽图*</h3>
+                    <h3 class="m-sm m-b text-center">任务燃尽图</h3>
+                    <a-spin :spinning="burnoutMap.loading">
                     <ve-line
+                            v-if="!burnoutMap.loading"
                             :data="burnoutMap.chartData"
                             :settings="burnoutMap.chartSettings"
                             :extend="burnoutMap.chartExtend"
@@ -52,6 +54,7 @@
                             :legend-visible="false"
                             height="200px"
                     ></ve-line>
+                    </a-spin>
                 </div>
             </div>
             <div class="overview-item">
@@ -110,7 +113,8 @@
                                                 <span>{{ item.name }}</span>
                                             </div>
                                             <div slot="description">
-                                                {{item.owner_name}} 创建于 {{moment(item.create_time).format('YYYY年MM月DD日')}}
+                                                {{item.owner_name}} 创建于
+                                                {{moment(item.create_time).format('YYYY年MM月DD日')}}
                                             </div>
                                         </a-list-item-meta>
                                     </a-list-item>
@@ -137,7 +141,8 @@
                                     <div class="stats-number">{{stats.number}}</div>
                                     <a-tooltip placement="right" :mouseEnterDelay="0.3"
                                                :title="`${stats.schedule}%`">
-                                        <a-progress strokeColor="#1890ff" :strokeWidth="3" :showInfo="false" :percent="stats.schedule" />
+                                        <a-progress strokeColor="#1890ff" :strokeWidth="3" :showInfo="false"
+                                                    :percent="stats.schedule"/>
                                     </a-tooltip>
                                 </div>
                             </div>
@@ -164,7 +169,7 @@
 <script>
     import moment from "moment";
     import VeLine from 'v-charts/lib/line.common'
-    import {_projectStats, doData, read as getProject} from "../../../api/project";
+    import {_getProjectReport, _projectStats, doData, read as getProject} from "../../../api/project";
     import {collect} from "../../../api/projectCollect";
     import {checkResponse} from "../../../assets/js/utils";
     import {getLogBySelfProject, dateTotalForProject} from "../../../api/task";
@@ -190,16 +195,10 @@
                 showLoadingMore: false,
                 loadingMore: false,
                 burnoutMap: {
+                    loading: true,
                     chartData: {
                         columns: ['日期', '剩余任务', '基线'],
-                        rows: [
-                            {'日期': '07-09'},
-                            {'日期': '07-10'},
-                            {'日期': '07-11'},
-                            {'日期': '07-12'},
-                            {'日期': '07-13'},
-                            {'日期': '07-14'}
-                        ]
+                        rows: []
                     },
                     series: [
                         {
@@ -207,7 +206,7 @@
                             name: '剩余任务',
                             smooth: false,
                             color: '#1890ff',
-                            data: [10, 9, 1, 7, 2, 3],
+                            data: [],
                         },
                         {
                             type: 'line',
@@ -217,7 +216,7 @@
                             lineStyle: {
                                 type: 'dashed'
                             },
-                            data: [10, 8, 6, 4, 2, 0]
+                            data: []
                         },
                     ],
                     chartSettings: {},
@@ -262,7 +261,7 @@
                 },
                 chartData: {
                     columns: ['日期', '任务'],
-                    rows: []
+                    rows: [],
                 },
                 chartSettings: {
                     area: true,
@@ -351,6 +350,7 @@
                 this.getProjectLog();
                 this.overviewForProject();
                 this.getProjectStats();
+                this.getProjectReport();
             },
             getProject() {
                 this.loading = true;
@@ -360,6 +360,20 @@
                     if (this.project.begin_time) {
                         this.projectDate = [moment(this.project.begin_time), moment(this.project.end_time)];
                     }
+                });
+            },
+            getProjectReport() {
+                let app = this;
+                _getProjectReport({projectCode: this.code}).then(res => {
+                    let rows = [];
+                    res.data.date.forEach((v) => {
+                        rows.push({'日期': v})
+                    });
+                    app.burnoutMap.loading = false;
+                    app.burnoutMap.chartData.rows = rows;
+                    app.burnoutMap.series[0].data = res.data.undoneTask;
+                    app.burnoutMap.series[1].data = res.data.baseLineList;
+
                 });
             },
             getProjectLog(reset = true) {
@@ -396,10 +410,10 @@
             getProjectStats() {
                 _projectStats({
                     projectCode: this.code
-                }).then(res=>{
+                }).then(res => {
                     const taskStats = res.data;
                     const total = taskStats['total'];
-                    this.projectStats.forEach((v,k)=>{
+                    this.projectStats.forEach((v, k) => {
                         v.number = taskStats[v.key];
                         if (total) {
                             v.schedule = parseInt(v.number / total * 100);
