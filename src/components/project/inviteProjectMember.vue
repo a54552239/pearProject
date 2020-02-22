@@ -2,7 +2,7 @@
     <div>
         <a-modal
                 class="invite-project-member"
-                :width="360"
+                :width="500"
                 v-model="actionInfo.modalStatus"
                 :title="actionInfo.modalTitle"
                 :footer="null"
