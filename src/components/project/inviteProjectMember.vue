@@ -2,7 +2,7 @@
     <div>
         <a-modal
                 class="invite-project-member"
-                :width="360"
+                :width="500"
                 v-model="actionInfo.modalStatus"
                 :title="actionInfo.modalTitle"
                 :footer="null"
@@ -12,20 +12,21 @@
                 <span>账号邀请</span>
                 <a @click="createInviteLink">通过链接邀请</a>
             </div>
-            <div class="search-content">
+            <div class="search-content m-b">
                 <a-input v-model="keyword" placeholder="输入昵称或邮箱查找">
                     <a-icon slot="prefix" type="search"/>
                 </a-input>
             </div>
-            <div class="member-list">
-                <a-list
-                        class="project-list"
-                        itemLayout="horizontal"
-                        :loading="searching"
-                        :dataSource="list"
-                        :locale="{emptyText: (keyword && keyword.length > 1) ? '没有搜索到相关成员' : ''}"
-                >
-                    <a-list-item slot="renderItem" slot-scope="item">
+            <vue-scroll>
+                <div class="member-list">
+                    <a-list
+                            class="project-list"
+                            itemLayout="horizontal"
+                            :loading="searching"
+                            :dataSource="list"
+                            :locale="{emptyText: (keyword && keyword.length > 1) ? '没有搜索到相关成员' : ''}"
+                    >
+                        <a-list-item slot="renderItem" slot-scope="item">
                     <span slot="actions">
                         <a-button size="small" type="dashed" icon="user-add"
                                   v-if="!item.joined"
@@ -36,15 +37,16 @@
                             <span> 已加入</span>
                         </template>
                      </span>
-                        <a-list-item-meta
-                                :description="item.email"
-                        >
-                            <span slot="title">{{item.name}}</span>
-                            <a-avatar slot="avatar" icon="user" :src="item.avatar"/>
-                        </a-list-item-meta>
-                    </a-list-item>
-                </a-list>
-            </div>
+                            <a-list-item-meta
+                                    :description="item.email"
+                            >
+                                <span slot="title">{{item.name}}</span>
+                                <a-avatar slot="avatar" icon="user" :src="item.avatar"/>
+                            </a-list-item-meta>
+                        </a-list-item>
+                    </a-list>
+                </div>
+            </vue-scroll>
         </a-modal>
         <a-modal
                 class="invite-link"
@@ -70,7 +72,7 @@
 <script>
     import _ from 'lodash'
     import moment from 'moment';
-    import {inviteMember, searchInviteMember} from "../../api/projectMember";
+    import {inviteMember, searchInviteMember, _listForInvite} from "../../api/projectMember";
     import {checkResponse} from "../../assets/js/utils";
     import {createInviteLink} from "../../api/common/common";
 
@@ -119,7 +121,16 @@
                 this.search();
             }
         },
+        created() {
+            this.getMembers();
+        },
         methods: {
+            getMembers() {
+                let app = this;
+                _listForInvite({projectCode: app.projectCode}).then(res=>{
+                    app.list = res.data;
+                });
+            },
             invite(item) {
                 inviteMember(item.memberCode, this.projectCode).then((res) => {
                     const success = checkResponse(res);
@@ -148,6 +159,7 @@
                         this.list = [];
                     }
                     if (this.keyword.length <= 1) {
+                        this.getMembers();
                         return false;
                     }
                     this.searching = true;
@@ -169,6 +181,7 @@
     .invite-project-member {
         .ant-modal-body {
             padding-top: 0;
+            padding-right: 12px;
             padding-bottom: 24px;
             min-height: 40vh;
         }
@@ -181,7 +194,8 @@
         }
 
         .member-list {
-            padding-top: 12px;
+            padding-right: 12px;
+            max-height: 400px;
         }
 
     }

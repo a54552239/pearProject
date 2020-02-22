@@ -16,3 +16,6 @@ export function removeMember(memberCode, code) {
 export function list(data) {
     return $http.post('project/project_member/index', data);
 }
+export function _listForInvite(data) {
+    return $http.post('project/project_member/_listForInvite', data);
+}

@@ -60,6 +60,9 @@ export function read(code) {
     return $http.post('project/account/read', {code: code});
 }
 
+export function syncDetail(data) {
+    return $http.post('project/account/_syncDetail', data);
+}
 export function editAccount(data) {
     return $http.post('project/account/edit', data);
 }

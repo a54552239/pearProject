@@ -471,6 +471,7 @@
                     this.project.open_prefix = !!res.data.open_prefix;
                     this.project.open_begin_time = !!res.data.open_begin_time;
                     this.project.open_task_private = !!res.data.open_task_private;
+                    this.project.auto_update_schedule = !!res.data.auto_update_schedule;
                 });
             },
             getTaskWorkflowList() {
