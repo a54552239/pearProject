@@ -27,6 +27,14 @@
                     <div class="mail muted">
                         <a-icon type="mail"></a-icon>
                         {{member.email}}
+                        <a-tooltip>
+                            <template slot="title">
+                                <span>更新基础资料</span>
+                            </template>
+                            <a class="muted m-l-sm" @click="syncDetail">
+                                <a-icon type="reload"/>
+                            </a>
+                        </a-tooltip>
                     </div>
                 </template>
             </div>
@@ -148,7 +156,7 @@
                                 </div>
                                 <div slot="description">
                                     <span class="m-l-sm">{{item.description}}</span>
-<!--                                    <a-progress :strokeWidth="5" :percent="item.schedule"/>-->
+                                    <!--                                    <a-progress :strokeWidth="5" :percent="item.schedule"/>-->
                                 </div>
                             </a-list-item-meta>
                         </a-list-item>
@@ -249,7 +257,7 @@
     import taskDetail from '@/components/project/taskDetail'
     import pagination from "../../mixins/pagination";
     import {checkResponse} from "../../assets/js/utils";
-    import {editAccount, read} from "../../api/user";
+    import {editAccount, read, syncDetail} from "../../api/user";
     import {selfList} from "../../api/task";
     import {selfList as getProjectList} from "../../api/project";
     import {formatTaskTime} from "../../assets/js/dateTime";
@@ -312,6 +320,11 @@
             getMember() {
                 read(this.code).then(res => {
                     this.member = res.data;
+                });
+            },
+            syncDetail() {
+                syncDetail({code: this.code}).then(res => {
+                    this.getMember();
                 });
             },
             getTasks() {
