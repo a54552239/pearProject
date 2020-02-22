@@ -45,20 +45,64 @@
                 <div class="content-item">
                     <h3 class="m-sm m-b text-center">任务燃尽图</h3>
                     <a-spin :spinning="burnoutMap.loading">
-                    <ve-line
-                            v-if="!burnoutMap.loading"
-                            :data="burnoutMap.chartData"
-                            :settings="burnoutMap.chartSettings"
-                            :extend="burnoutMap.chartExtend"
-                            :series="burnoutMap.series"
-                            :legend-visible="false"
-                            height="200px"
-                    ></ve-line>
+                        <ve-line
+                                v-if="!burnoutMap.loading"
+                                :data="burnoutMap.chartData"
+                                :settings="burnoutMap.chartSettings"
+                                :extend="burnoutMap.chartExtend"
+                                :series="burnoutMap.series"
+                                :legend-visible="false"
+                                height="200px"
+                        ></ve-line>
                     </a-spin>
                 </div>
             </div>
             <div class="overview-item">
                 <div class="content-left">
+                    <div class="content-item log-list">
+                        <div class="title">
+                            项目信息
+                            <a-tooltip :mouseEnterDelay="0.5">
+                                <template slot="title">
+                                    <span>添加信息</span>
+                                </template>
+                                <a class="pull-right muted" @click="createInfo()">
+                                    <a-icon type="plus-circle"/>
+                                </a>
+                            </a-tooltip>
+                        </div>
+                        <div class="list-content">
+                            <a-list>
+                                <a-list-item :key="index" v-for="(item, index) in projectInfoList">
+                                    <a-list-item-meta>
+                                        <div slot="title">
+                                            <a-tooltip :mouseEnterDelay="0.5">
+                                                <template slot="title">
+                                                    <span>{{item.description ? item.description : '暂无描述'}}</span>
+                                                </template>
+                                                <span>{{ item.name }} </span>
+                                            </a-tooltip>
+<!--                                            <span class="right-item muted"> {{ formatTime(item.create_time) }}-->
+<!--                                        </span>-->
+                                        </div>
+                                        <div slot="description">
+                                            {{ item.value }}
+                                        </div>
+                                    </a-list-item-meta>
+                                    <span slot="actions" @click="editInfo(item)">
+                                         <a-tooltip title="编辑">
+                                             <a-icon type="edit"/>
+                                         </a-tooltip>
+                                    </span>
+                                    <span slot="actions" @click="delInfo(item,index)">
+                                         <a-tooltip title="删除">
+                                              <a-icon type="delete"/>
+                                         </a-tooltip>
+                                    </span>
+                                </a-list-item>
+                            </a-list>
+                        </div>
+                    </div>
                     <div class="content-item log-list">
                         <div class="title">
                             项目动态
@@ -163,6 +207,46 @@
                 </div>
             </div>
         </wrapper-content>
+        <!--项目信息-->
+        <a-modal
+                class="project-info"
+                :width="400"
+                v-model="infoModal.modalStatus"
+                :title="infoModal.modalTitle"
+                :confirmLoading="infoModal.loading"
+                @ok="handleSubmit"
+        >
+            <a-form
+                    @submit.prevent="handleSubmit"
+                    :form="infoModal.form"
+            >
+                <a-form-item
+                >
+                    <a-input placeholder='名称'
+                             v-decorator="[
+                                            'name',
+                                            {rules: [{ required: true, message: '请输入名称' }]}
+                                            ]"/>
+                </a-form-item>
+                <a-form-item
+                >
+                    <a-textarea placeholder='内容'
+                                :rows="2"
+                                v-decorator="['value']"
+                    />
+                </a-form-item>
+                <a-form-item
+                >
+                    <a-textarea placeholder='描述'
+                                :rows="2"
+                                v-decorator="['description']"
+                    />
+                </a-form-item>
+                <a-form-item
+                >
+                </a-form-item>
+            </a-form>
+        </a-modal>
     </div>
 </template>
 
@@ -170,6 +254,7 @@
     import moment from "moment";
     import VeLine from 'v-charts/lib/line.common'
     import {_getProjectReport, _projectStats, doData, read as getProject} from "../../../api/project";
+    import {doData as doInfo, list as getInfoList, del as delProjectInfo} from "../../../api/projectInfo";
     import {collect} from "../../../api/projectCollect";
     import {checkResponse} from "../../../assets/js/utils";
     import {getLogBySelfProject, dateTotalForProject} from "../../../api/task";
@@ -192,8 +277,18 @@
                 project: {task_board_theme: 'simple'},
                 projectDate: [],
                 activities: [],
+                projectInfoList: [],
                 showLoadingMore: false,
                 loadingMore: false,
+                infoModal: {
+                    form: this.$form.createForm(this),
+                    newData: {
+                        code: ''
+                    },
+                    loading: false,
+                    modalStatus: false,
+                    modalTitle: '项目信息',
+                },
                 burnoutMap: {
                     loading: true,
                     chartData: {
@@ -347,6 +442,7 @@
         methods: {
             moment,
             init() {
+                this.getProjectInfoList();
                 this.getProjectLog();
                 this.overviewForProject();
                 this.getProjectStats();
@@ -407,6 +503,12 @@
                     app.loadingMore = false;
                 })
             },
+            getProjectInfoList() {
+                let app = this;
+                getInfoList({projectCode: app.code}).then(res => {
+                    app.projectInfoList = res.data;
+                });
+            },
             getProjectStats() {
                 _projectStats({
                     projectCode: this.code
@@ -438,6 +540,77 @@
                     this.chartData.rows = list;
                 })
             },
+            createInfo() {
+                let app = this;
+                app.infoModal.newData = {code: ''};
+                setTimeout(function () {
+                    app.infoModal.form && app.infoModal.form.resetFields();
+                }, 0);
+                app.infoModal.modalStatus = true;
+                app.infoModal.modalTitle = '添加字段';
+            },
+            editInfo(info) {
+                let app = this;
+                app.infoModal.newData = info;
+                app.infoModal.modalStatus = true;
+                setTimeout(function () {
+                    app.infoModal.modalTitle = '编辑字段';
+                    app.infoModal.form.setFieldsValue({
+                        name: info.name,
+                        value: info.value,
+                        description: info.description,
+                    });
+                }, 0);
+            },
+            delInfo(info, index) {
+                let app = this;
+                app.$confirm({
+                    title: '确定删除当前字段吗？',
+                    okText: '删除',
+                    okType: 'danger',
+                    cancelText: '再想想',
+                    onOk() {
+                        delProjectInfo({infoCode: info.code}).then(() => {
+                            app.projectInfoList.splice(index, 1);
+                            // app.init();
+                        });
+                        return Promise.resolve();
+                    }
+                });
+            },
+            handleSubmit() {
+                let app = this;
+                app.infoModal.form.validateFields(
+                    (err) => {
+                        if (!err) {
+                            app.handleOk();
+                        }
+                    })
+            },
+            handleOk() {
+                let app = this;
+                app.infoModal.loading = true;
+                let obj = app.infoModal.form.getFieldsValue();
+                if (app.infoModal.newData.code) {
+                    //编辑
+                    obj.infoCode = app.infoModal.newData.code;
+                } else {
+                    //新增
+                    Object.assign(obj, app.infoModal.newData);
+                }
+                obj.projectCode = app.code;
+                console.log(obj);
+                doInfo(obj).then(res => {
+                    app.infoModal.loading = false;
+                    if (!checkResponse(res)) {
+                        return;
+                    }
+                    app.infoModal.form.resetFields();
+                    app.infoModal.newData = {code: 0};
+                    app.infoModal.modalStatus = false;
+                    app.getProjectInfoList();
+                });
+            },
             collectProject() {
                 const type = this.project.collected ? 'cancel' : 'collect';
                 collect(this.project.code, type).then((res) => {
@@ -465,6 +638,11 @@
 
 <style lang="less">
     /*@import "../../../assets/css/components/task";*/
+    .project-info {
+        .ant-modal-body {
+            padding-bottom: 0;
+        }
+    }
 
     .project-space-overview {
         .project-navigation {
@@ -506,6 +684,7 @@
 
                 .log-list {
                     background: #fff;
+                    margin-bottom: 15px;
 
                     .list-content {
                         padding-top: 12px;
