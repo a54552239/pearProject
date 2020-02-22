@@ -25,16 +25,16 @@
             <section class="nav-body">
                 <ul class="nav-wrapper nav nav-underscore pull-left">
                     <li><a class="app" data-app="tasks"
-                           @click="$router.push('/project/space/task/' + project.code)">任务</a></li>
+                           @click="$router.push('/project/space/task/' + code)">任务</a></li>
                     <li class="actives"><a class="app" data-app="works"
-                                           @click="$router.push('/project/space/files/' + project.code)">
+                                           @click="$router.push('/project/space/files/' + code)">
                         文件</a>
                     <li><a class="app" data-app="build"
-                           @click="$router.push('/project/space/overview/' + project.code)">
+                           @click="$router.push('/project/space/overview/' + code)">
                         概览</a>
                     </li>
                     <li class=""><a class="app" data-app="build"
-                                    @click="$router.push('/project/space/features/' + project.code)">
+                                    @click="$router.push('/project/space/features/' + code)">
                         版本</a>
                     </li>
                 </ul>
