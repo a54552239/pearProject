@@ -20,6 +20,8 @@
 </template>
 <script>
     import {Button} from 'ant-design-vue';
+    import {getStore} from "../../assets/js/storage";
+    const currentOrganization = getStore('currentOrganization', true);
 
     export default {
         components: {
@@ -33,7 +35,7 @@
                 default: '抱歉，服务器出错了',
             },
             url: {
-                default: '/home'
+                default: currentOrganization ? '/home/' + currentOrganization.code : '/home'
             },
             urlText: {
                 default: '返回首页'

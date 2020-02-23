@@ -4,7 +4,7 @@
         <a-spin :spinning="windowLoading">
             <a-layout id="layout" :class="layoutClass">
                 <a-layout-header :class="{'collapsed':collapsed}">
-                    <div class="logo" @click="()=>{this.$router.push(config.HOME_PAGE)}">
+                    <div class="logo" @click="toHome">
                         <img class="logo-img" src="../assets/image/common/logo.png" alt="">
                         <span class="title" v-if="system">
                             {{system.app_name}}
@@ -127,7 +127,8 @@
     import Socket from '../components/websocket/socket';
     import config from "../config/config";
     import {notice} from "../assets/js/notice";
-
+    import {getStore} from "../assets/js/storage";
+    import {_getOrgList} from "../api/organization";
 
     const ASider = ALayout.Sider;
     const AFooter = ALayout.Footer;
@@ -186,6 +187,9 @@
             if (this.$route.query.message) {
                 notice({title: this.$route.query.message}, 'notice');
                 // notice(this.$route.query.message);
+            }
+            if (this.logged) {
+                _getOrgList();
             }
         },
         watch: {
@@ -327,6 +331,10 @@
                             turnPath += v.children[0].fullUrl;
                         } else {
                             turnPath += v.children[0].children[0].fullUrl;
+                        }
+                        if (turnPath == '/home') {
+                            that.toHome();
+                            return false;
                         }
                         if (turnPath != '/#') {
                             that.$router.push(turnPath);

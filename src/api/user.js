@@ -1,4 +1,7 @@
 import $http from '@/assets/js/http'
+import router from '@/router';
+import store from '@/store';
+import {checkResponse, createRoute} from "../assets/js/utils";
 
 export async function Login(data) {
     return $http.post('project/login', data);
@@ -20,8 +23,40 @@ export function _resetPasswordByMail(data) {
     return $http.post('project/login/_resetPasswordByMail', data);
 }
 
-export function changeCurrentOrganization(organizationCode) {
-    return $http.post('project/index/changeCurrentOrganization', {organizationCode: organizationCode});
+export function changeCurrentOrganization(organization) {
+    const organizationCode = organization.code;
+    store.dispatch('setCurrentOrganization', organization);
+    return $http.post('project/index/changeCurrentOrganization', {organizationCode: organizationCode}).then(res=>{
+        if (checkResponse(res)) {
+            store.dispatch('SET_MENU', res.data.menuList);
+            store.dispatch('SET_USER', res.data.member);
+            store.dispatch('windowLoading', true);
+            setTimeout(function () {
+                const menu = res.data.menuList;
+                if (menu) {
+                    let routes = router.options.routes;
+                    menu.forEach(function (v) {
+                        routes[0].children.push(createRoute(v));
+                        if (v.children) {
+                            v.children.forEach(function (v2) {
+                                routes[0].children.push(createRoute(v2));
+                                if (v2.children) {
+                                    v2.children.forEach(function (v3) {
+                                        routes[0].children.push(createRoute(v3));
+                                    });
+                                }
+
+                            });
+                        }
+                    });
+                    router.addRoutes(routes);
+                    store.dispatch('windowLoading', false);
+                    // router.replace('/');
+                }
+            }, 500);
+            return Promise.resolve(res);
+        }
+    });
 }
 
 export function list(data) {

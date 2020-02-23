@@ -4,10 +4,10 @@
             <div class="project-nav-header">
                 <a-breadcrumb>
                     <a-breadcrumb-item>
-                        <router-link to="/home">
+                        <a @click="toHome">
                             <a-icon type="home"/>
                             首页
-                        </router-link>
+                        </a>
                     </a-breadcrumb-item>
                     <a-breadcrumb-item>
                         <project-select class="nav-title" style="display: inline-block" :code="code"></project-select>

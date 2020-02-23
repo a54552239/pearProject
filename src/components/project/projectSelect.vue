@@ -97,6 +97,7 @@
             getProjectList(loading = true) {
                 this.loading = loading;
                 this.requestData.pageSize = 50;
+                this.requestData.archive = -1;
                 getProjectList(this.requestData).then(res => {
                     console.log(res);
                     this.projectList = res.data.list;

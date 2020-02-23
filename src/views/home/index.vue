@@ -231,6 +231,9 @@
             this.init();
         },
         watch:{
+            $route: function (to, from) {
+                this.init();
+            },
             socketAction(val) {
                 console.log(val);
                 if (val.action === 'organization:task') {
