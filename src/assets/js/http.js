@@ -7,7 +7,11 @@ import $router from '../../router/index';
 import {notice} from './notice';
 import config from "../../config/config";
 
-const HOME_PAGE = config.HOME_PAGE;
+let HOME_PAGE = config.HOME_PAGE;
+const currentOrganization = getStore('currentOrganization', true);
+if (currentOrganization) {
+    HOME_PAGE = HOME_PAGE + '/' + currentOrganization.code;
+}
 const crossDomain = config.crossDomain;
 let axiosConfig = {};
 if (crossDomain) {
