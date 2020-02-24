@@ -8,6 +8,12 @@ import {createRoute, isTokenExpired} from "../assets/js/utils";
 import config from "../config/config";
 import {refreshAccessToken} from "../api/common/common";
 
+let HOME_PAGE = config.HOME_PAGE;
+const currentOrganization = getStore('currentOrganization', true);
+if (currentOrganization) {
+    HOME_PAGE = HOME_PAGE + '/' + currentOrganization.code;
+}
+
 Vue.use(Router);
 const routes = [].concat(
     Home
@@ -124,7 +130,6 @@ router.beforeEach((to, from, next) => {
             });
         }
     }
-    const HOME_PAGE = config.HOME_PAGE;
     //页面中转
     if (to.name === 'index' || to.path === '/index' || to.path === '/') {
         next({path: HOME_PAGE});

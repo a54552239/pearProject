@@ -315,6 +315,11 @@
                         this.loginBtn = false;
                         this.$router.addRoutes(routes);
                         let redirect = this.$route.query.redirect || config.HOME_PAGE + '/' + org.code;
+                        if (redirect == config.HOME_PAGE) {
+                            redirect = config.HOME_PAGE + '/' + org.code
+                        }
+                        console.log('redirect');
+                        console.log(redirect);
                         this.$router.push({
                             path: redirect
                         });
