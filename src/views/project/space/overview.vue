@@ -292,20 +292,20 @@
                 burnoutMap: {
                     loading: true,
                     chartData: {
-                        columns: ['日期', '剩余任务', '基线'],
+                        columns: ['日期', '实际剩余任务', '理想剩余任务'],
                         rows: []
                     },
                     series: [
                         {
                             type: 'line',
-                            name: '剩余任务',
+                            name: '实际剩余任务',
                             smooth: false,
                             color: '#1890ff',
                             data: [],
                         },
                         {
                             type: 'line',
-                            name: '基线',
+                            name: '理想剩余任务',
                             color: '#52C41A',
                             smooth: false,
                             lineStyle: {
