@@ -48,7 +48,7 @@
 <script>
     import _ from 'lodash'
     import {mapState} from 'vuex'
-    import {selfList as getProjectList} from "../../api/project";
+    import {read as getProject, selfList as getProjectList} from "../../api/project";
     import pagination from "../../mixins/pagination";
 
     export default {
@@ -92,18 +92,22 @@
         },
         methods: {
             init() {
+                this.getProject();
                 this.getProjectList(true);
+            },
+            getProject() {
+                getProject(this.code).then((res) => {
+                    this.currentProject = res.data;
+                });
             },
             getProjectList(loading = true) {
                 this.loading = loading;
                 this.requestData.pageSize = 50;
                 this.requestData.archive = -1;
                 getProjectList(this.requestData).then(res => {
-                    console.log(res);
                     this.projectList = res.data.list;
                     this.projectListCopy = res.data.list;
                     this.projectTotal = res.data.total;
-                    this.currentProject = res.data.list.find(item => item.code == this.code);
                     this.loading = false;
                 });
             },
