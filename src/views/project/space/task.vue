@@ -39,6 +39,10 @@
                 </ul>
             </section>
             <div class="project-nav-footer">
+                <a class="footer-item" @click="visibleDraw('taskSearch')">
+                    <a-icon type="search"></a-icon>
+                    <span> 筛选</span>
+                </a>
                 <a class="footer-item" :class="{active:slideMenuKey == 'member'}" @click="visibleDraw('member')">
                     <a-icon type="user"></a-icon>
                     <span> {{projectMembers.length}}</span>
@@ -556,6 +560,16 @@
             </div>
         </a-modal>
 
+        <a-drawer
+                wrapClassName="info-drawer task-search"
+                title="任务筛选"
+                width=350
+                placement="right"
+                @close="taskSearch.visible = false"
+                :visible="taskSearch.visible"
+        >
+            <task-search :project-code="code" @search="taskSearchAction"></task-search>
+        </a-drawer>
         <invite-project-member v-model="showInviteMember" :project-code="code"
                                v-if="showInviteMember"></invite-project-member>
     </div>
@@ -571,6 +585,7 @@
     import projectConfig from '@/components/project/projectConfig'
     import RecycleBin from '@/components/project/recycleBin'
     import TaskTag from '@/components/project/taskTag'
+    import TaskSearch from '@/components/project/taskSearch'
 
     import {list as getTaskStages, sort, tasks as getTasks} from "../../../api/taskStages";
     import {read as getProject} from "../../../api/project";
@@ -589,6 +604,7 @@
             TaskTag,
             draggable,
             projectSelect,
+            TaskSearch,
             inviteProjectMember,
             projectConfig
         },
@@ -609,6 +625,8 @@
                 preCode: '',
                 nextCode: '',
 
+                taskSearchParams: {},
+
                 stageKeys: [],
                 stageModal: {
                     form: this.$form.createForm(this),
@@ -628,6 +646,9 @@
                     list: [],
                 },
                 configDraw: {
+                    visible: false,
+                },
+                taskSearch: {
                     visible: false,
                 },
 
@@ -695,7 +716,9 @@
                     const stageIndex = from.query.from;
                     // this.getTaskStages(false);
                     if (stageIndex != undefined) {
-                        getTasks({stageCode: this.taskStages[stageIndex].code}).then((res) => {
+                        let searchParams = this.taskSearchParams;
+                        let params = Object.assign({stageCode:this.taskStages[stageIndex].code}, searchParams);
+                        getTasks(params).then((res) => {
                             this.taskStages[stageIndex].tasksLoading = false;
                             this.taskStages[stageIndex].tasks = res.data;
                             let doneTasks = this.taskStages[stageIndex].doneTasks = [];
@@ -790,8 +813,12 @@
                         this.taskStages = taskStages = res.data.list;
                     }
                     if (taskStages) {
+                        let searchParams = app.taskSearchParams;
+                        let params = {};
                         taskStages.forEach((v, k) => {
-                            getTasks({stageCode: v.code}).then((res) => {
+                            params = {stageCode: v.code};
+                            params = Object.assign(params, searchParams);
+                            getTasks(params).then((res) => {
                                 let canNotReadCount = 0;
                                 res.data.forEach((task) => {
                                     if (!task.canRead) {
@@ -816,6 +843,11 @@
             },
             filterTask(tasks, done) {
                 return tasks.filter(item => item.done == done);
+            },
+            taskSearchAction(value) {
+                console.log(value);
+                this.taskSearchParams = value;
+                this.getTaskStages();
             },
             //显示添加任务卡片
             showTaskCard(index = false, show = true) {
@@ -1144,10 +1176,16 @@
             visibleDraw(type) {
                 if (type == 'member') {
                     this.configDraw.visible = false;
+                    this.taskSearch.visible = false;
                     this.inviteMemberDraw.visible = !this.inviteMemberDraw.visible;
 
+                } else if (type == 'taskSearch') {
+                    this.taskSearch.visible = !this.taskSearch.visible;
+                    this.configDraw.visible = false;
+                    this.inviteMemberDraw.visible = false;
                 } else {
                     this.inviteMemberDraw.visible = false;
+                    this.taskSearch.visible = false;
                     this.configDraw.visible = !this.configDraw.visible;
                 }
             },
@@ -1254,11 +1292,11 @@
         }
 
         .ant-drawer-content {
-            background-color: #f7f7f7;
+            /*background-color: #f7f7f7;*/
         }
 
         .ant-drawer-header {
-            background-color: #f7f7f7;
+            /*background-color: #f7f7f7;*/
             text-align: center;
         }
 
