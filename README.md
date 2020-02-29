@@ -10,7 +10,7 @@
 
 有不明白的地方的可以加群：275264059，或者联系我，QQ：545522390
 ### 演示地址
-> [https://beta.vilson.xyz](https://beta.vilson.xyz)
+> [https://home.vilson.xyz](https://home.vilson.xyz)
 
 ### 登录 ###
 账号：123456 密码：123456
