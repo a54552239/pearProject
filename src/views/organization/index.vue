@@ -7,7 +7,8 @@
             <a-table :columns="columns" :dataSource="dataSource" :loading="loading" rowKey="id" :pagination="pagination"
                      @change="pageChange">
                 <template slot="action" slot-scope="text,record,index">
-                    <a @click="rowClick(record,'edit')">编辑</a>
+                    <a @click="rowClick(record,'edit')" v-if="record.owner_code == userInfo.code">编辑</a>
+                    <a @click="rowClick(record,'quit')" v-if="record.owner_code != userInfo.code">退出</a>
                 </template>
             </a-table>
         </wrapper-content>
@@ -72,11 +73,12 @@
     </div>
 </template>
 <script>
+    import {mapState} from 'vuex'
     import {list, doData, del} from '@/api/organization';
     import {checkResponse} from '@/assets/js/utils';
-    import {areasData} from "../../api/common/common";
     import pagination from "@/mixins/pagination";
     import moment from 'moment';
+    import {_quitOrganization} from "../../api/organization";
 
     const columns = [{
         title: '组织名称',
@@ -112,18 +114,27 @@
                 options: [],
             }
         },
+        computed: {
+            ...mapState({
+                userInfo: state => state.userInfo,
+            })
+        },
         created() {
             this.init();
         },
         methods: {
             moment,
-            init() {
+            init(quited) {
                 let app = this;
                 app.loading = true;
                 list(app.requestData).then(res => {
                     app.dataSource = res.data.list;
                     app.pagination.total = res.data.total;
                     app.loading = false;
+                    if (quited) {
+                        //退出组织后重新更新当前组织
+                        app.$store.dispatch('setCurrentOrganization',  res.data.list[0]);
+                    }
                     app.$store.dispatch('setOrganizationList', res.data.list);
                 });
                 // areasData().then(res => {
@@ -151,17 +162,18 @@
                             app.newData = record;
                         }, 0);
                     }
-                }else if (action == 'del') {
+                }else if (action == 'quit') {
                     this.$confirm({
-                        title: '保存要删除此组织?',
-                        content: '删除后不可恢复',
-                        okText: '删除',
+                        title: '确定要退出此组织?',
+                        okText: '退出',
                         okType: 'danger',
-                        cancelText: '放弃',
+                        cancelText: '再想想',
                         onOk() {
-                            del(record.code).then(res => {
+                            _quitOrganization({organizationCode: record.code}).then(res=>{
+                                if (checkResponse(res)) {
+                                    app.init(true);
+                                }
                             });
-                            app.init();
                             return Promise.resolve();
                         }
                     });

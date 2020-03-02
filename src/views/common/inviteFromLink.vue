@@ -75,12 +75,14 @@
                     });
                 } else if (this.inviteLink.invite_type == 'organization') {
                     joinOrganation(this.$route.params.code).then(res => {
-                        this.$store.dispatch('setOrganizationList', res.data.organizationList);
-                        this.$store.dispatch('setCurrentOrganization', res.data.currentOrganization);
-                        this.$notice({title: '你已成功加入组织', msg: '你可以在右上方切换当前组织'}, 'notice', 'success');
-                        setTimeout(function () {
-                            app.$router.replace('/')
-                        }, 500);
+                        if (checkResponse(res)) {
+                            this.$store.dispatch('setOrganizationList', res.data.organizationList);
+                            this.$store.dispatch('setCurrentOrganization', res.data.currentOrganization);
+                            this.$notice({title: '你已成功加入组织', msg: '你可以在右上方切换当前组织'}, 'notice', 'success');
+                            setTimeout(function () {
+                                app.$router.replace('/')
+                            }, 500);
+                        }
                     });
                 }
             }
