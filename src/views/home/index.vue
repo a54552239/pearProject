@@ -129,7 +129,7 @@
                         :xs="24">
                     <a-card class="tasks-list" :title="`我的任务 · ${task.total}`" style="margin-bottom: 24px"
                             :bordered="false">
-                        <a-tabs defaultActiveKey="1" @change="taskTabChange">
+                        <a-tabs defaultActiveKey="1" :animated="false" @change="taskTabChange">
                             <a-tab-pane key="1">
                                 <span slot="tab"><a-icon type="bars" />我执行的</span>
                             </a-tab-pane>
