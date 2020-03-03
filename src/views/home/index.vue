@@ -146,11 +146,14 @@
                                     <div slot="title">
                                         <div style="display: flex;justify-content: space-between ">
                                             <router-link target="_blank"
+                                                         class="task-title-wrap"
                                                          :to="`/project/space/task/${item.projectInfo.code}/detail/${item.code}`">
                                                 <a-tooltip title="优先级">
                                                     <a-tag :color="priColor(item.pri)">{{item.priText}}</a-tag>
                                                 </a-tooltip>
-                                                <span>{{ item.name }}</span>
+                                                <a-tooltip :title="item.name">
+                                                    {{ item.name }}
+                                                </a-tooltip>
                                             </router-link>
                                             <div>
                                                 <a-tooltip title="任务开始 - 截止时间" v-if="item.end_time">
@@ -242,6 +245,7 @@
                 accounts: [],
                 task: {
                     list: [],
+                    taskType: '1',
                     total: 0,
                     page: 1,
                     pageSize: 10,
@@ -314,9 +318,9 @@
                     app.yiyan = data
                 }, 'd')
             },
-            getTasks(taskType = 1) {
+            getTasks() {
                 this.task.loading = true;
-                selfList({page: this.task.page, pageSize: this.task.pageSize, taskType: taskType}).then(res => {
+                selfList({page: this.task.page, pageSize: this.task.pageSize, taskType: this.task.taskType}).then(res => {
                     this.task.loading = false;
                     this.task.list =  res.data.list;
                     // this.task.list =  this.task.list.concat(res.data.list);;
@@ -327,9 +331,10 @@
             },
             taskTabChange(key) {
                 console.log(key);
+                this.task.taskType = key;
                 this.task.loadingMore = true;
                 this.task.page = 1;
-                this.getTasks(key);
+                this.getTasks();
             },
             onLoadMoreTask(page, PageSize) {
                 this.task.loadingMore = true;
@@ -518,6 +523,13 @@
             .tasks-list {
                 .ant-card-body {
                     padding: 6px 24px;
+                    .task-title-wrap{
+                        /*max-width: 310px;*/
+                        flex: 1;
+                        overflow: hidden;
+                        text-overflow: ellipsis;
+                        white-space: nowrap;
+                    }
                 }
             }
 
