@@ -153,8 +153,8 @@
                                                 <span>{{ item.name }}</span>
                                             </router-link>
                                             <div>
-                                                <a-tooltip title="开始-截止时间" v-if="item.end_time">
-                                                    <span class="label m-r-xs" :class="showTimeLabel(item.end_time)">{{showTaskTime(item.begin_time, item.end_time)}}</span>
+                                                <a-tooltip title="任务开始 - 截止时间" v-if="item.end_time">
+                                                    <span class="label m-r-sm" :class="showTimeLabel(item.end_time)">{{showTaskTime(item.begin_time, item.end_time)}}</span>
                                                 </a-tooltip>
                                                 <a-tooltip title="子任务" v-if="item.pcode">
                                                     <a-icon type="branches" class="m-r-sm muted"/>
