@@ -523,12 +523,18 @@
             .tasks-list {
                 .ant-card-body {
                     padding: 6px 24px;
+
+                    .ant-list-item-meta, .ant-list-item-meta-content{
+                        width: 100%;
+                    }
+
                     .task-title-wrap{
                         /*max-width: 310px;*/
                         flex: 1;
                         overflow: hidden;
                         text-overflow: ellipsis;
                         white-space: nowrap;
+                        padding-right: 10px;
                     }
                 }
             }
