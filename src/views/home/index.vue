@@ -127,26 +127,50 @@
                         :md="24"
                         :sm="24"
                         :xs="24">
-                    <a-card class="tasks-list" :title="`我的任务 · ${tasks.length}`" style="margin-bottom: 24px"
-                            :bordered="false"
-                            :loading="loading">
-                        <a-list>
-                            <a-list-item :key="index" v-for="(item, index) in tasks">
+                    <a-card class="tasks-list" :title="`我的任务 · ${task.total}`" style="margin-bottom: 24px"
+                            :bordered="false">
+                        <a-tabs defaultActiveKey="1" @change="taskTabChange">
+                            <a-tab-pane key="1">
+                                <span slot="tab"><a-icon type="bars" />我执行的</span>
+                            </a-tab-pane>
+                            <a-tab-pane key="2">
+                                <span slot="tab"><a-icon type="team" />我参与的</span>
+                            </a-tab-pane>
+                            <a-tab-pane key="3">
+                                <span slot="tab"><a-icon type="rocket" />我创建的</span>
+                            </a-tab-pane>
+                        </a-tabs>
+                        <a-list :loading="task.loading">
+                            <a-list-item :key="index" v-for="(item, index) in task.list">
                                 <a-list-item-meta>
                                     <div slot="title">
-                                        <router-link target="_blank"
-                                                :to="`/project/space/task/${item.projectInfo.code}/detail/${item.code}`">
-                                            {{ item.name }}
-                                        </router-link>
+                                        <div style="display: flex;justify-content: space-between ">
+                                            <router-link target="_blank"
+                                                         :to="`/project/space/task/${item.projectInfo.code}/detail/${item.code}`">
+                                                <a-tooltip title="优先级">
+                                                    <a-tag :color="priColor(item.pri)">{{item.priText}}</a-tag>
+                                                </a-tooltip>
+                                                <span>{{ item.name }}</span>
+                                            </router-link>
+                                            <div>
+                                                <a-tooltip title="开始-截止时间" v-if="item.end_time">
+                                                    <span class="label m-r-xs" :class="showTimeLabel(item.end_time)">{{showTaskTime(item.begin_time, item.end_time)}}</span>
+                                                </a-tooltip>
+                                                <a-tooltip title="子任务" v-if="item.pcode">
+                                                    <a-icon type="branches" class="m-r-sm muted"/>
+                                                </a-tooltip>
+                                                <router-link target="_blank" class="muted" :to="'/project/space/task/' + item.projectInfo.code">
+                                                    <a-tooltip title="所属项目">{{ item.projectInfo.name }}</a-tooltip>
+                                                </router-link>
+                                            </div>
+                                        </div>
                                     </div>
-                                    <div slot="description">
-                                        <span class="label m-r-xs" :class="showTimeLabel(item.end_time)" v-if="item.end_time">{{showTaskTime(item.begin_time, item.end_time)}}</span>
-                                        <router-link target="_blank" class="muted" :to="'/project/space/task/' + item.projectInfo.code">{{ item.projectInfo.name }}
-                                        </router-link>
-                                    </div>
+                                   <!-- <div slot="description">
+                                    </div>-->
                                 </a-list-item-meta>
                             </a-list-item>
                         </a-list>
+                        <a-pagination class="pull-right m-b" size="small" v-model="task.page" :total="task.total" @change="onLoadMoreTask"/>
                     </a-card>
                     <!-- <a-col
                              style="padding: 0 12px"
@@ -201,6 +225,7 @@
     import {list as accountList} from "../../api/user";
     import pagination from "../../mixins/pagination";
     import {getLogBySelfProject, selfList} from "../../api/task";
+    import task from "../project/space/task";
 
     export default {
         components: {},
@@ -215,6 +240,15 @@
                 tasks: [],
                 tasksTotal: 0,
                 accounts: [],
+                task: {
+                    list: [],
+                    total: 0,
+                    page: 1,
+                    pageSize: 10,
+                    loading: false,
+                    showLoadingMore: false,
+                    loadingMore: false,
+                },
             }
         },
         computed: {
@@ -264,12 +298,6 @@
                     this.loading = false;
                 });
             },
-            getTasks() {
-                selfList({page: 1, pageSize: 10}).then(res => {
-                    this.tasks = res.data.list;
-                    this.tasksTotal = res.data.total;
-                })
-            },
             getTaskLog() {
                 getLogBySelfProject().then(res => {
                     this.activities = res.data;
@@ -285,6 +313,39 @@
                 getYiYan(function (data) {
                     app.yiyan = data
                 }, 'd')
+            },
+            getTasks(taskType = 1) {
+                this.task.loading = true;
+                selfList({page: this.task.page, pageSize: this.task.pageSize, taskType: taskType}).then(res => {
+                    this.task.loading = false;
+                    this.task.list =  res.data.list;
+                    // this.task.list =  this.task.list.concat(res.data.list);;
+                    this.task.total = res.data.total;
+                    this.task.showLoadingMore = this.task.total > res.data.list.length;
+                    this.task.loadingMore = false
+                })
+            },
+            taskTabChange(key) {
+                console.log(key);
+                this.task.loadingMore = true;
+                this.task.page = 1;
+                this.getTasks(key);
+            },
+            onLoadMoreTask(page, PageSize) {
+                this.task.loadingMore = true;
+                this.task.page = page;
+                this.getTasks();
+            },
+            priColor(pri) {
+                switch (pri) {
+                    case 1:
+                        return '#ff9900';
+                    case 2:
+                        return '#ed3f14';
+                    default:
+                        return 'green';
+
+                }
             },
             formatTime(time) {
                 return relativelyTime(time);

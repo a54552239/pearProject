@@ -1623,7 +1623,7 @@
                     case 2:
                         return '#ed3f14';
                     default:
-                        return '#a6a6a6';
+                        return 'green';
 
                 }
             },
