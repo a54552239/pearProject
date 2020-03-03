@@ -18,20 +18,20 @@
                     </div>
                 </div>
                 <div class="right-content">
-                    <div class="content-item">
+                    <!--<div class="content-item">
                         <div class="item-title muted">
                             任务数
                         </div>
                         <div class="item-text">
-                            <span>{{tasksTotal}}</span>
+                            <span>{{task.total}}</span>
                         </div>
-                    </div>
+                    </div>-->
                     <div class="content-item">
                         <div class="item-title muted">
-                            团队内排名
+                            团队人数
                         </div>
                         <div class="item-text">
-                            <span>2 <span class="small muted">/ 8</span> </span>
+                            <span>{{accounts.length}}</span>
                         </div>
                     </div>
                     <div class="content-item">
