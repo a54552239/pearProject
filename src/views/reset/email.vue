@@ -15,7 +15,7 @@
                         <span v-else>绑定邮箱失败</span>
                     </span>
                 </div>
-                <a-button type="primary" block size="large" class="middle-btn" @click="routerLink('/home', true)">
+                <a-button type="primary" block size="large" class="middle-btn" @click="toHome">
                     <span>进入首页</span>
                 </a-button>
             </a-card>
