@@ -25,3 +25,6 @@ export function doData(data) {
 export function del(organizationCode) {
     return $http.post('project/organization/delete', {organizationCode: organizationCode});
 }
+export function _quitOrganization(data) {
+    return $http.post('project/organization/_quitOrganization', data);
+}
