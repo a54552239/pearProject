@@ -127,8 +127,17 @@
                         :md="24"
                         :sm="24"
                         :xs="24">
-                    <a-card class="tasks-list" :title="`我的任务 · ${task.total}`" style="margin-bottom: 24px"
+                    <a-card class="tasks-list" style="margin-bottom: 24px"
                             :bordered="false">
+                        <div slot="title">
+                            <div class="flex ant-row-flex-space-between ant-row-flex-middle">
+                                <span>我的任务 · {{task.total}}</span>
+                                <a-select v-model="task.done" @select="taskSelectChange" :defaultActiveFirstOption="false">
+                                    <a-select-option :key="0">未完成</a-select-option>
+                                    <a-select-option :key="1">已完成</a-select-option>
+                                </a-select>
+                            </div>
+                        </div>
                         <a-tabs defaultActiveKey="1" :animated="false" @change="taskTabChange">
                             <a-tab-pane key="1">
                                 <span slot="tab"><a-icon type="bars" />我执行的</span>
@@ -246,6 +255,7 @@
                 task: {
                     list: [],
                     taskType: '1',
+                    done: 0,
                     total: 0,
                     page: 1,
                     pageSize: 10,
@@ -320,7 +330,7 @@
             },
             getTasks() {
                 this.task.loading = true;
-                selfList({page: this.task.page, pageSize: this.task.pageSize, taskType: this.task.taskType}).then(res => {
+                selfList({page: this.task.page, pageSize: this.task.pageSize, taskType: this.task.taskType, type: this.task.done}).then(res => {
                     this.task.loading = false;
                     this.task.list =  res.data.list;
                     // this.task.list =  this.task.list.concat(res.data.list);;
@@ -332,6 +342,12 @@
             taskTabChange(key) {
                 console.log(key);
                 this.task.taskType = key;
+                this.task.loadingMore = true;
+                this.task.page = 1;
+                this.getTasks();
+            },
+            taskSelectChange(value) {
+                this.task.done = value;
                 this.task.loadingMore = true;
                 this.task.page = 1;
                 this.getTasks();
