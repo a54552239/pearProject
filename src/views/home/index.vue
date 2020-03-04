@@ -169,7 +169,7 @@
                                                     <span class="label m-r-sm" :class="showTimeLabel(item.end_time)">{{showTaskTime(item.begin_time, item.end_time)}}</span>
                                                 </a-tooltip>
                                                 <a-tooltip title="子任务" v-if="item.pcode">
-                                                    <a-icon type="branches" class="m-r-sm muted"/>
+                                                    <a-icon type="cluster" class="m-r-sm muted"/>
                                                 </a-tooltip>
                                                 <router-link target="_blank" class="muted" :to="'/project/space/task/' + item.projectInfo.code">
                                                     <a-tooltip title="所属项目">{{ item.projectInfo.name }}</a-tooltip>
