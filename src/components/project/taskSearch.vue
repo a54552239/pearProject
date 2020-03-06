@@ -145,6 +145,25 @@
                             <a-select-option :key="2">非常紧急</a-select-option>
                         </a-select>
                     </a-form-item>
+                    <a-form-item
+                            label='执行状态'
+                            :colon="false"
+                            :labelCol="{ span: 6 }"
+                            :wrapperCol="{ span: 18 }"
+                    >
+                        <a-select
+                                mode="multiple"
+                                showSearch
+                                allowClear
+                                placeholder='请选择'
+                                v-decorator="[
+                                            'status',
+                                            ]"
+                                optionFilterProp="children"
+                        >
+                            <a-select-option :key="status.id" v-for="(status, index) in taskStatusList">{{status.name}}</a-select-option>
+                        </a-select>
+                    </a-form-item>
                     <!--<a-form-item
                             label='任务列表'
                             :colon="false"
@@ -244,6 +263,7 @@
     import {list as getProjectMember} from "../../api/projectMember";
     import {_getAll as getTaskStage} from "../../api/taskStages";
     import {notice} from "../../assets/js/notice";
+    import {COMMON} from "../../const/common";
 
     export default {
         name: "taskSearch",
@@ -262,6 +282,7 @@
                 loading: false,
                 projectMemberList: [],
                 taskStageList: [],
+                taskStatusList: COMMON.TASK_STATUS,
             };
         },
         watch: {
@@ -303,6 +324,7 @@
                         params.executor = JSON.stringify(params.executor);
                         params.creator = JSON.stringify(params.creator);
                         params.joiner = JSON.stringify(params.joiner);
+                        params.status = JSON.stringify(params.status);
                         console.log(params);
                         if (params.end_time && params.end_time.length) {
                             params.endTime = JSON.stringify([moment(params.end_time[0]).format('YYYY-MM-DD'), moment(params.end_time[1]).format('YYYY-MM-DD')]);

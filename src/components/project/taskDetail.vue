@@ -123,7 +123,7 @@
                                         <div class="field">
                                             <div class="field-left">
                                                 <a-icon type="check-square"/>
-                                                <span class="field-name">状态</span>
+                                                <span class="field-name">完成状态</span>
                                             </div>
                                             <div class="field-right">
                                                 <a-dropdown :trigger="['click']"
@@ -154,6 +154,32 @@
                                                                 <a-tag color="grey">未完成</a-tag>
                                                                 <a-icon type="check" class="check muted"
                                                                         v-show="!task.done"></a-icon>
+                                                            </div>
+                                                        </a-menu-item>
+                                                    </a-menu>
+                                                </a-dropdown>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="component-mount">
+                                        <div class="field">
+                                            <div class="field-left">
+                                                <a-icon type="deployment-unit"/>
+                                                <span class="field-name">执行状态</span>
+                                            </div>
+                                            <div class="field-right">
+                                                <a-dropdown :trigger="['click']"
+                                                            :disabled="!!task.deleted || !!task.hasUnDone"
+                                                            :class="{'disabled': task.hasUnDone}">
+                                                    <span>{{task.statusText}}</span>
+                                                    <a-menu class="field-right-menu" slot="overlay"
+                                                            :selectable="false"
+                                                            @click="taskStatusChange">
+                                                        <a-menu-item :key="status.id" v-for="(status, index) in taskStatusList">
+                                                            <div class="menu-item-content">
+                                                                <span color="green">{{status.name}}</span>
+                                                                <a-icon type="check" class="check muted"
+                                                                        v-show="task.status == status.id"></a-icon>
                                                             </div>
                                                         </a-menu-item>
                                                     </a-menu>
@@ -1047,6 +1073,7 @@
     import {mapState} from 'vuex'
     import $ from 'jquery'
     import moment from 'moment';
+    import {COMMON} from '../../const/common'
     import editor from '@/components/editor'
     import {createComment, del, edit, logs, read, recovery, recycle, star, taskDone} from "@/api/task";
     import {del as delSourceLink} from "@/api/sourceLink";
@@ -1110,6 +1137,7 @@
                 code: this.taskCode,
                 projectCodeCurrent: '',
                 task: {},
+                taskStatusList: COMMON.TASK_STATUS,
                 taskLogList: [],
                 taskLogTotal: 0,
                 taskMemberList: [],
@@ -1606,6 +1634,10 @@
                 }
                 this.editTask({name: this.task.name});
             },
+            taskStatusChange(item) {
+                this.task.status = item.key;
+                this.editTask({status: item.key});
+            },
             editTask(data) {
                 data.taskCode = this.code;
                 edit(data).then((res) => {
@@ -1623,7 +1655,7 @@
                     case 2:
                         return '#ed3f14';
                     default:
-                        return '#a6a6a6';
+                        return 'green';
 
                 }
             },

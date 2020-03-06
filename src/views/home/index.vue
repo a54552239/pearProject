@@ -18,20 +18,20 @@
                     </div>
                 </div>
                 <div class="right-content">
-                    <div class="content-item">
+                    <!--<div class="content-item">
                         <div class="item-title muted">
                             任务数
                         </div>
                         <div class="item-text">
-                            <span>{{tasksTotal}}</span>
+                            <span>{{task.total}}</span>
                         </div>
-                    </div>
+                    </div>-->
                     <div class="content-item">
                         <div class="item-title muted">
-                            团队内排名
+                            团队人数
                         </div>
                         <div class="item-text">
-                            <span>2 <span class="small muted">/ 8</span> </span>
+                            <span>{{accounts.length}}</span>
                         </div>
                     </div>
                     <div class="content-item">
@@ -127,26 +127,62 @@
                         :md="24"
                         :sm="24"
                         :xs="24">
-                    <a-card class="tasks-list" :title="`我的任务 · ${tasks.length}`" style="margin-bottom: 24px"
-                            :bordered="false"
-                            :loading="loading">
-                        <a-list>
-                            <a-list-item :key="index" v-for="(item, index) in tasks">
+                    <a-card class="tasks-list" style="margin-bottom: 24px"
+                            :bordered="false">
+                        <div slot="title">
+                            <div class="flex ant-row-flex-space-between ant-row-flex-middle">
+                                <span>我的任务 · {{task.total}}</span>
+                                <a-select v-model="task.done" @select="taskSelectChange" :defaultActiveFirstOption="false">
+                                    <a-select-option :key="0">未完成</a-select-option>
+                                    <a-select-option :key="1">已完成</a-select-option>
+                                </a-select>
+                            </div>
+                        </div>
+                        <a-tabs defaultActiveKey="1" :animated="false" @change="taskTabChange">
+                            <a-tab-pane key="1">
+                                <span slot="tab"><a-icon type="bars" />我执行的</span>
+                            </a-tab-pane>
+                            <a-tab-pane key="2">
+                                <span slot="tab"><a-icon type="team" />我参与的</span>
+                            </a-tab-pane>
+                            <a-tab-pane key="3">
+                                <span slot="tab"><a-icon type="rocket" />我创建的</span>
+                            </a-tab-pane>
+                        </a-tabs>
+                        <a-list :loading="task.loading">
+                            <a-list-item :key="index" v-for="(item, index) in task.list">
                                 <a-list-item-meta>
                                     <div slot="title">
-                                        <router-link target="_blank"
-                                                :to="`/project/space/task/${item.projectInfo.code}/detail/${item.code}`">
-                                            {{ item.name }}
-                                        </router-link>
+                                        <div style="display: flex;justify-content: space-between ">
+                                            <router-link target="_blank"
+                                                         class="task-title-wrap"
+                                                         :to="`/project/space/task/${item.projectInfo.code}/detail/${item.code}`">
+                                                <a-tooltip title="优先级">
+                                                    <a-tag :color="priColor(item.pri)">{{item.priText}}</a-tag>
+                                                </a-tooltip>
+                                                <a-tooltip :title="item.name">
+                                                    {{ item.name }}
+                                                </a-tooltip>
+                                            </router-link>
+                                            <div>
+                                                <a-tooltip title="任务开始 - 截止时间" v-if="item.end_time">
+                                                    <span class="label m-r-sm" :class="showTimeLabel(item.end_time)">{{showTaskTime(item.begin_time, item.end_time)}}</span>
+                                                </a-tooltip>
+                                                <a-tooltip title="子任务" v-if="item.pcode">
+                                                    <a-icon type="cluster" class="m-r-sm muted"/>
+                                                </a-tooltip>
+                                                <router-link target="_blank" class="muted" :to="'/project/space/task/' + item.projectInfo.code">
+                                                    <a-tooltip title="所属项目">{{ item.projectInfo.name }}</a-tooltip>
+                                                </router-link>
+                                            </div>
+                                        </div>
                                     </div>
-                                    <div slot="description">
-                                        <span class="label m-r-xs" :class="showTimeLabel(item.end_time)" v-if="item.end_time">{{showTaskTime(item.begin_time, item.end_time)}}</span>
-                                        <router-link target="_blank" class="muted" :to="'/project/space/task/' + item.projectInfo.code">{{ item.projectInfo.name }}
-                                        </router-link>
-                                    </div>
+                                   <!-- <div slot="description">
+                                    </div>-->
                                 </a-list-item-meta>
                             </a-list-item>
                         </a-list>
+                        <a-pagination class="pull-right m-b" size="small" v-model="task.page" :total="task.total" @change="onLoadMoreTask"/>
                     </a-card>
                     <!-- <a-col
                              style="padding: 0 12px"
@@ -201,6 +237,7 @@
     import {list as accountList} from "../../api/user";
     import pagination from "../../mixins/pagination";
     import {getLogBySelfProject, selfList} from "../../api/task";
+    import task from "../project/space/task";
 
     export default {
         components: {},
@@ -215,6 +252,17 @@
                 tasks: [],
                 tasksTotal: 0,
                 accounts: [],
+                task: {
+                    list: [],
+                    taskType: '1',
+                    done: 0,
+                    total: 0,
+                    page: 1,
+                    pageSize: 10,
+                    loading: false,
+                    showLoadingMore: false,
+                    loadingMore: false,
+                },
             }
         },
         computed: {
@@ -264,12 +312,6 @@
                     this.loading = false;
                 });
             },
-            getTasks() {
-                selfList({page: 1, pageSize: 10}).then(res => {
-                    this.tasks = res.data.list;
-                    this.tasksTotal = res.data.total;
-                })
-            },
             getTaskLog() {
                 getLogBySelfProject().then(res => {
                     this.activities = res.data;
@@ -285,6 +327,46 @@
                 getYiYan(function (data) {
                     app.yiyan = data
                 }, 'd')
+            },
+            getTasks() {
+                this.task.loading = true;
+                selfList({page: this.task.page, pageSize: this.task.pageSize, taskType: this.task.taskType, type: this.task.done}).then(res => {
+                    this.task.loading = false;
+                    this.task.list =  res.data.list;
+                    // this.task.list =  this.task.list.concat(res.data.list);;
+                    this.task.total = res.data.total;
+                    this.task.showLoadingMore = this.task.total > res.data.list.length;
+                    this.task.loadingMore = false
+                })
+            },
+            taskTabChange(key) {
+                console.log(key);
+                this.task.taskType = key;
+                this.task.loadingMore = true;
+                this.task.page = 1;
+                this.getTasks();
+            },
+            taskSelectChange(value) {
+                this.task.done = value;
+                this.task.loadingMore = true;
+                this.task.page = 1;
+                this.getTasks();
+            },
+            onLoadMoreTask(page, PageSize) {
+                this.task.loadingMore = true;
+                this.task.page = page;
+                this.getTasks();
+            },
+            priColor(pri) {
+                switch (pri) {
+                    case 1:
+                        return '#ff9900';
+                    case 2:
+                        return '#ed3f14';
+                    default:
+                        return 'green';
+
+                }
             },
             formatTime(time) {
                 return relativelyTime(time);
@@ -457,6 +539,19 @@
             .tasks-list {
                 .ant-card-body {
                     padding: 6px 24px;
+
+                    .ant-list-item-meta, .ant-list-item-meta-content{
+                        width: 100%;
+                    }
+
+                    .task-title-wrap{
+                        /*max-width: 310px;*/
+                        flex: 1;
+                        overflow: hidden;
+                        text-overflow: ellipsis;
+                        white-space: nowrap;
+                        padding-right: 10px;
+                    }
                 }
             }
 

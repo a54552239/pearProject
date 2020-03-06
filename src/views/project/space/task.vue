@@ -163,6 +163,7 @@
                                                     </div>
                                                     <div class="task-info-wrapper clearfix">
                                                         <div class="task-infos">
+                                                            <span class="icon-wrapper" :style="{color: getStatusColor(task.status), fontSize: '12px'}" v-if="task.status">{{task.statusText}}</span>
                                                        <span class="label" :class="showTimeLabel(task.end_time)"
                                                              v-if="task.end_time">
                                                             <span :title="task.end_time">
@@ -579,6 +580,7 @@
     import {mapState} from 'vuex'
     import _ from 'lodash'
     import moment from 'moment'
+    import {COMMON} from '../../../const/common'
     import draggable from 'vuedraggable'
     import projectSelect from '@/components/project/projectSelect'
     import inviteProjectMember from '@/components/project/inviteProjectMember'
@@ -615,6 +617,7 @@
                 project: {task_board_theme: 'simple'},
                 stageName: '',
                 task: {}, //当前任务
+                taskStatusList: COMMON.TASK_STATUS,
                 taskStages: [], //任务列表
                 defaultExecutor: {},//默认执行人
                 projectMembers: [], //项目成员列表
@@ -1268,6 +1271,13 @@
                 }
                 return isLt2M
             },
+            getStatusColor(status) {
+                const statusInfo = this.taskStatusList.find(item => item.id == status);
+                if (statusInfo) {
+                    return statusInfo.color;
+                }
+                return '';
+            }
         }
     }
 </script>
