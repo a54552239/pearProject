@@ -31,7 +31,7 @@
                             团队人数
                         </div>
                         <div class="item-text">
-                            <span>{{accounts.length}}</span>
+                            <span>{{accounts.total}}</span>
                         </div>
                     </div>
                     <div class="content-item">
@@ -182,7 +182,7 @@
                                 </a-list-item-meta>
                             </a-list-item>
                         </a-list>
-                        <a-pagination class="pull-right m-b" size="small" v-model="task.page" :total="task.total" @change="onLoadMoreTask"/>
+                        <a-pagination class="pull-right m-b" size="small" :defaultPageSize="task.pageSize" v-model="task.page" :total="task.total" @change="onLoadMoreTask"/>
                     </a-card>
                     <!-- <a-col
                              style="padding: 0 12px"
@@ -209,10 +209,10 @@
                                 <radar :data="radarData" />
                             </div>
                         </a-card>-->
-                    <a-card :loading="loading" title="团队" :bordered="false">
+                    <a-card :loading="loading" :title="'团队  · ' + accounts.total" :bordered="false">
                         <div class="members">
                             <a-row>
-                                <a-col :span="12" v-for="(item, index) in accounts" :key="index">
+                                <a-col :span="8" v-for="(item, index) in accounts.list" :key="index">
                                     <a @click="routerLink('/members/profile/' + item.membar_account_code + '?key=3')" style="display: flex;align-items: center"
                                     >
                                         <a-avatar size="small" :src="item.avatar"/>
@@ -221,6 +221,7 @@
                                 </a-col>
                             </a-row>
                         </div>
+                        <a-pagination class="pull-right m-b" :defaultPageSize="accounts.pageSize" size="small" v-show="accounts.total > accounts.pageSize" v-model="accounts.page" :total="accounts.total" @change="onLoadMoreAccounts"/>
                     </a-card>
                 </a-col>
             </a-row>
@@ -251,7 +252,14 @@
                 activities: [],
                 tasks: [],
                 tasksTotal: 0,
-                accounts: [],
+                // accounts: [],
+                accounts: {
+                    list: [],
+                    total: 0,
+                    page: 1,
+                    pageSize: 10,
+                    loading: false,
+                },
                 task: {
                     list: [],
                     taskType: '1',
@@ -260,8 +268,6 @@
                     page: 1,
                     pageSize: 10,
                     loading: false,
-                    showLoadingMore: false,
-                    loadingMore: false,
                 },
             }
         },
@@ -318,8 +324,11 @@
                 })
             },
             getAccountList() {
-                accountList().then(res => {
-                    this.accounts = res.data.list;
+                this.accounts.loading = true;
+                accountList({page: this.accounts.page, pageSize: this.accounts.pageSize}).then(res => {
+                    this.accounts.loading = false;
+                    this.accounts.list =  res.data.list;
+                    this.accounts.total = res.data.total;
                 })
             },
             getYiYan() {
@@ -335,8 +344,6 @@
                     this.task.list =  res.data.list;
                     // this.task.list =  this.task.list.concat(res.data.list);;
                     this.task.total = res.data.total;
-                    this.task.showLoadingMore = this.task.total > res.data.list.length;
-                    this.task.loadingMore = false
                 })
             },
             taskTabChange(key) {
@@ -356,6 +363,11 @@
                 this.task.loadingMore = true;
                 this.task.page = page;
                 this.getTasks();
+            },
+            onLoadMoreAccounts(page, PageSize) {
+                this.accounts.loadingMore = true;
+                this.accounts.page = page;
+                this.getAccountList();
             },
             priColor(pri) {
                 switch (pri) {
