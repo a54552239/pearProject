@@ -2,6 +2,7 @@
     <div class="install" style="height: 100%;">
         <user-layout desc="正在安装Pear Project项目管理系统">
             <div class="main">
+                <a-alert message="请确认已正确修改服务端目录下的.env配置文件"></a-alert>
                 <a-form
                         layout="horizontal"
                         class="user-layout-login"
@@ -9,7 +10,7 @@
                         :form="form"
                 >
 
-                    <a-form-item
+                  <!--  <a-form-item
                             :labelCol="{ span: 6 }"
                             :wrapperCol="{ span: 18}"
                             label="数据库地址"
@@ -90,7 +91,7 @@
                                 {rules: [{ required: true, message: '请输入MySQL 端口号' }], validateTrigger: 'change',initialValue: '3306'}
                             ]">
                         </a-input>
-                    </a-form-item>
+                    </a-form-item>-->
                     <a-form-item
                             label="清除数据"
                             :labelCol="{ span: 6 }"
@@ -107,7 +108,7 @@
                     </a-form-item>
                     <a-form-item
                             :labelCol="{ span: 6 }"
-                            :wrapperCol="{ span: 18, offset: 6}"
+                            :wrapperCol="{ span: 18, offset: 3}"
                             style="margin-top:24px">
                         <a-button
                                 size="large"
