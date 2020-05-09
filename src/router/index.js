@@ -151,6 +151,11 @@ router.beforeEach((to, from, next) => {
         });
         return false;
     }
+    // 统计代码
+    if (to.path) {
+        _hmt.push(['_trackPageview', '/#' + to.fullPath]);
+        console.log(_hmt);
+    }
     next();
 });
 router.afterEach(route => {
