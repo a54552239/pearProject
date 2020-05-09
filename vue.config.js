@@ -4,11 +4,8 @@ function resolve(dir) {
     return path.join(__dirname, dir)
 }
 
-const HOST = '127.0.0.1';
-const PORT = '8045';
-const DEV_URL = 'http://127.0.0.1/pearProjectApi/index.php';
 module.exports = {
-    publicPath: process.env.NODE_ENV === 'production' ? './' : '/',
+    publicPath: process.env.NODE_ENV === 'production' ? process.env.VUE_APP_BUILD_PATH: '/',
     productionSourceMap: false,
     css: {
         loaderOptions: {
@@ -22,14 +19,14 @@ module.exports = {
         }
     },
     devServer: {
-        host: HOST,
-        port: PORT,
+        host: process.env.VUE_APP_DEV_HOST || '127.0.0.1',
+        port: process.env.VUE_APP_DEV_PORT || '8045',
         https: false,
         hotOnly: false,
         proxy: { // 配置跨域
             '/api': {
                 //要访问的跨域的api的域名
-                target: `${DEV_URL}/`,
+                target: `${process.env.VUE_APP_API_URL}/`,
                 ws: true,
                 changOrigin: true,
                 pathRewrite: {
@@ -49,5 +46,5 @@ module.exports = {
             }
         }
     },
-    lintOnSave: undefined
+    lintOnSave: false
 };

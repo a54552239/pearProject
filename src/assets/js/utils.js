@@ -1,9 +1,5 @@
 import {notice} from './notice';
-import config from '../../config/config'
 import {getStore} from "./storage";
-
-const PROD_URL = config.PROD_URL;
-const crossDomain = config.crossDomain;
 
 /**
  * 判断客户端返回状态
@@ -72,15 +68,15 @@ export const showWarConfirm = (options = {}, callback = function () {
  * 获取完整的api请求地址
  */
 export const getFullUrl = (api) => {
-    return PROD_URL + '/' + api
+    return process.env.VUE_APP_API_URL + '/' + api
 };
 
 export const getApiUrl = (api) => {
-    if (crossDomain) {
-        return PROD_URL + '/' + api; //开启跨域直接返回
+    if (process.env.VUE_APP_CROSS_DOMAIN) {
+        return process.env.VUE_APP_API_URL + '/' + api; //开启跨域直接返回
     }
     if (process.env.NODE_ENV === 'production') {
-        return PROD_URL + '/' + api;
+        return process.env.VUE_APP_API_URL + '/' + api;
     } else {
         return '/api/' + api;
     }
@@ -94,7 +90,7 @@ export const getApiUrl = (api) => {
 export const getUploadUrl = (api) => {
     let baseUrl = '';
     // if (process.env.NODE_ENV === 'production') {
-    //     baseUrl = PROD_URL
+    //     baseUrl = process.env.VUE_APP_API_URL
     // }
     return baseUrl + getApiUrl(api)
 };
