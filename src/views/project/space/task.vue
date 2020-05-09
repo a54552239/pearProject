@@ -56,7 +56,7 @@
         <wrapper-content :showHeader="false">
             <draggable v-model="taskStages"
                        :options="{group:'stages',filter:'.undraggables',handle:'.ui-sortable-handle',ghostClass:'stage-ghost',animation: 200,forceFallback:false}"
-                       id="board-scrum-stages" class="board-scrum-stages" :move="stageMove" @update="stageSort">
+                       id="board-scrum-stages" class="board-scrum-stages" @end="stageSort">
                 <div class="scrum-stage" v-for="(stage,index) in taskStages" :key="index" :id="stage.code"
                      :class="{ 'fixed-creator': stage.fixedCreator == true}">
                     <!--<a-spin wrapperClassName="tasks-loading" :spinning="stage.tasksLoading">-->
@@ -628,6 +628,9 @@
                 preCode: '',
                 nextCode: '',
 
+                preTaskCode: '',
+                nextTaskCode: '',
+
                 taskSearchParams: {},
 
                 stageKeys: [],
@@ -1151,24 +1154,28 @@
             taskDetail(code, stageIndex) {
                 this.$router.push(`${this.$route.path}/detail/${code}?from=${stageIndex}`);
             },
-            stageMove(evt) {
-                this.preCode = evt.draggedContext.element.code;
-                this.nextCode = evt.relatedContext.element.code;
-
+            stageSort(event) {
+                const list = this.getPreAndNextCode(event);
+                sort(list[0], list[1], this.code);
             },
-            stageSort() {
-                sort(this.preCode, this.nextCode, this.code);
+            getPreAndNextCode(event) {
+                const preCode = event.clone.getAttribute('id');
+                let toList = [];
+                let nextCode = '';
+                for (let i = 0, len = event.to.children.length; i < len; i++) {
+                    toList.push(event.to.children[i].getAttribute('id'));
+                }
+                const preCodeIndex = toList.findIndex(item => item === preCode)
+                if (preCodeIndex < toList.length) {
+                    nextCode = toList[preCodeIndex + 1];
+                }
+                return [preCode, nextCode];
             },
             taskSort(event) {
-                console.log(event);
+                const list = this.getPreAndNextCode(event);
+                console.log(list);
                 const toStageCode = event.to.parentNode.parentNode.parentNode.getAttribute('id');
-                let codes = '';
-                for (let i = 0, len = event.to.children.length; i < len; i++) {
-                    codes += ',' + event.to.children[i].getAttribute('id');
-                }
-                sortTask({stageCode: toStageCode, codes: codes.substr(1)}).then(res => {
-                    this.getTaskStages(false);
-                });
+                sortTask({preTaskCode: list[0], nextTaskCode: list[1], toStageCode: toStageCode});
             },
             handleResize(vertical, stageIndex) {
                 if (vertical.barSize) {
