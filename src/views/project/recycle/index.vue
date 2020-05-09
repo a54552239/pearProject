@@ -1,9 +1,6 @@
 <template>
     <div class="project-recycle-index">
         <wrapper-content :showHeader="false">
-            <div style="display: flex;justify-content: center">
-                <img style="height: 250px;"  src="../../../assets/image/common/nullContent.png" alt="" v-show="!dataSource.length">
-            </div>
             <a-list
                     class="project-list"
                     :loading="loading"
@@ -77,7 +74,7 @@
                 if (reset) {
                     this.dataSource = [];
                     this.pagination.page = 1;
-                    this.pagination.pageSize = 1000;
+                    this.pagination.pageSize = 100;
                     this.showLoadingMore = false;
                 }
                 this.requestData.recycle = 1;

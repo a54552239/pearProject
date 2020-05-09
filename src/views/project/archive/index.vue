@@ -1,9 +1,6 @@
 <template>
     <div class="project-archive-index">
         <wrapper-content :showHeader="false">
-            <div style="display: flex;justify-content: center">
-                <img style="height: 250px;"  src="../../../assets/image/common/nullContent.png" alt="" v-show="!dataSource.length">
-            </div>
             <a-list
                     class="project-list"
                     :loading="loading"

@@ -220,7 +220,7 @@
                 if (reset) {
                     this.dataSource = [];
                     this.pagination.page = 1;
-                    this.pagination.pageSize = 1000;
+                    this.pagination.pageSize = 100;
                     this.showLoadingMore = false;
                 }
                 this.requestData.type = this.$route.params.type;
