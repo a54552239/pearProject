@@ -127,7 +127,11 @@ router.beforeEach((to, from, next) => {
                 tokenList.accessToken = res.data.accessToken;
                 tokenList.accessTokenExp = res.data.accessTokenExp;
                 setStore('tokenList', tokenList);
-            });
+            }).catch((() => {
+                store.state.logged = false;
+                store.state.userInfo = null;
+                return false;
+            }));
         }
     }
     //页面中转

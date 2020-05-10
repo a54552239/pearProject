@@ -132,7 +132,6 @@
     import {checkResponse, createRoute, timeFix} from '@/assets/js/utils'
     import {getStore} from '@/assets/js/storage'
     import {checkInstall} from "../../api/common/common";
-    import {setStore} from "../../assets/js/storage";
     import {_checkLogin} from "../../api/user";
     import {dingTalkLoginByCode, dingTalkOauth} from "../../api/oauth";
     import {notice} from "../../assets/js/notice";
@@ -295,41 +294,39 @@
                 })
             },
             loginSuccess(res, org) {
-                setTimeout(() => {
-                    const menu = getStore('menu', true);
-                    if (menu) {
-                        let routes = this.$router.options.routes;
-                        menu.forEach(function (v) {
-                            routes[0].children.push(createRoute(v));
-                            if (v.children) {
-                                v.children.forEach(function (v2) {
-                                    routes[0].children.push(createRoute(v2));
-                                    if (v2.children) {
-                                        v2.children.forEach(function (v3) {
-                                            routes[0].children.push(createRoute(v3));
-                                        });
-                                    }
-                                });
-                            }
-                        });
-                        this.loginBtn = false;
-                        this.$router.addRoutes(routes);
-                        let redirect = this.$route.query.redirect || config.HOME_PAGE + '/' + org.code;
-                        if (redirect == config.HOME_PAGE) {
-                            redirect = config.HOME_PAGE + '/' + org.code
+                const menu = getStore('menu', true);
+                if (menu) {
+                    let routes = this.$router.options.routes;
+                    menu.forEach(function (v) {
+                        routes[0].children.push(createRoute(v));
+                        if (v.children) {
+                            v.children.forEach(function (v2) {
+                                routes[0].children.push(createRoute(v2));
+                                if (v2.children) {
+                                    v2.children.forEach(function (v3) {
+                                        routes[0].children.push(createRoute(v3));
+                                    });
+                                }
+                            });
                         }
-                        console.log('redirect');
-                        console.log(redirect);
-                        this.$router.push({
-                            path: redirect
-                        });
-                        this.$notification.success({
-                            message: '欢迎',
-                            description: `${res.data.member.name}，${timeFix()}，欢迎回来`,
-                        });
-                        this.oauthLoading = false;
+                    });
+                    this.loginBtn = false;
+                    this.$router.addRoutes(routes);
+                    let redirect = this.$route.query.redirect || config.HOME_PAGE + '/' + org.code;
+                    if (redirect == config.HOME_PAGE) {
+                        redirect = config.HOME_PAGE + '/' + org.code
                     }
-                }, 500);
+                    console.log('redirect');
+                    console.log(redirect);
+                    this.$router.push({
+                        path: redirect
+                    });
+                    this.$notification.success({
+                        message: '欢迎',
+                        description: `${res.data.member.name}，${timeFix()}，欢迎回来`,
+                    });
+                    this.oauthLoading = false;
+                }
             },
             dingTalkOauth() {
                 let url = dingTalkOauth() + '?redirect=' + this.$route.query.redirect;
@@ -361,7 +358,7 @@
                     this.dealDataBeforeLogin(res);
                 });
             },
-            dealDataBeforeLogin(res) {
+            async dealDataBeforeLogin(res) {
                 let app = this;
                 if (res.data) {
                     const obj = {
@@ -370,8 +367,8 @@
                     };
                     let currentOrganization = getStore('currentOrganization', true);
                     const organizationList = res.data.organizationList;
-                    app.$store.dispatch('SET_LOGGED', obj);
-                    app.$store.dispatch('setOrganizationList', organizationList);
+                    await app.$store.dispatch('SET_LOGGED', obj);
+                    await app.$store.dispatch('setOrganizationList', organizationList);
                     if (!currentOrganization) {
                         currentOrganization = organizationList[0];
                     } else {
@@ -380,8 +377,8 @@
                             currentOrganization = organizationList[0];
                         }
                     }
-                    app.$store.dispatch('setCurrentOrganization', currentOrganization);
-                    app.$store.dispatch('GET_MENU').then(() => {
+                    await app.$store.dispatch('setCurrentOrganization', currentOrganization);
+                    await app.$store.dispatch('GET_MENU').then(() => {
                         app.loginSuccess(res, currentOrganization);
                     });
                 } else {

@@ -180,7 +180,9 @@
             }
         },
         created() {
-            this.checkLayout();
+            if (this.logged) {
+                this.checkLayout();
+            }
             if (this.$route.query.logged) {
                 this.$store.dispatch('checkLogin');
             }
