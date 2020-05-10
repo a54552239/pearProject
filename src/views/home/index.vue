@@ -5,7 +5,7 @@
                 <a-icon type="reload"/>
             </a>
             </p>
-            <div class="header-content">
+            <div class="header-content" v-if="userInfo">
                 <div class="left-content">
                     <div class="avatar">
                         <a-avatar :size="64" :src="userInfo.avatar">{{userInfo.name}}</a-avatar>

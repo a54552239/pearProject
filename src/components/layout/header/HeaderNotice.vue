@@ -247,7 +247,7 @@
 
             .ant-list-item-meta-title {
                 p {
-                    margin-bottom: 8px;
+                    margin-bottom: 0;
                     position: relative;
                 }
             }
