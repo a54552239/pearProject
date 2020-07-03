@@ -100,7 +100,7 @@
                         <a-checkbox
                                 v-decorator="[
                                 'initData',
-                                {initialValue: false}
+                                {initialValue: false, valuePropName: 'checked'}
                             ]"
                         >
                             勾选后将清除预置数据

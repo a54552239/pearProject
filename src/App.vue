@@ -1,10 +1,10 @@
 <template>
     <div id="app" style="height: 100%">
-        <a-locale-provider :locale="zh_CN">
+        <a-config-provider :getPopupContainer="getPopupContainer" :locale="zh_CN">
             <transition name="router-fades" mode="out-in">
                 <router-view></router-view>
             </transition>
-        </a-locale-provider>
+        </a-config-provider>
     </div>
 </template>
 <script>
@@ -18,6 +18,14 @@
             }
         },
         watch: {},
-        methods: {},
+        methods: {
+            getPopupContainer(el, dialogContext) {
+                if (dialogContext) {
+                    return dialogContext.getDialogWrap();
+                } else {
+                    return document.body;
+                }
+            },
+        },
     }
 </script>
