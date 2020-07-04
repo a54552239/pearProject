@@ -50,6 +50,31 @@
                     <a-button v-else @click="onLoadMore">查看更多项目</a-button>
                 </div>
                 <a-list-item slot="renderItem" slot-scope="item,index">
+                    <a-list-item-meta
+                            :description="item.description"
+                    >
+                        <div slot="title">
+                            <router-link :to="'/project/space/task/' + item.code">{{item.name}}</router-link>
+                            <a-tag color="green" class="m-l" v-show="!item.private">公开</a-tag>
+                        </div>
+                        <a-avatar slot="avatar" icon="user" :src="item.cover"/>
+                    </a-list-item-meta>
+                    <div class="ant-list-item-content">
+                        <div class="other-info muted">
+                            <div class="info-item">
+                                <span>创建日期</span>
+                                <span>{{moment(item.create_time).format('YYYY-MM-DD')}}</span>
+                            </div>
+                            <div class="info-item">
+                                <span>创建人</span>
+                                <span>{{item.owner_name}}</span>
+                            </div>
+                            <div class="info-item schedule">
+                                <span>进度</span>
+                                <a-progress :strokeWidth="5" :percent="item.schedule"/>
+                            </div>
+                        </div>
+                    </div>
                     <template v-if="selectBy === 'my' || selectBy === 'collect'">
                         <span slot="actions" @click="inviteProjectMember(item)">
                              <a-tooltip title="添加成员">
@@ -90,29 +115,6 @@
                              </a-tooltip>
                         </span>
                     </template>
-                    <a-list-item-meta
-                            :description="item.description"
-                    >
-                        <div slot="title">
-                            <router-link :to="'/project/space/task/' + item.code">{{item.name}}</router-link>
-                            <a-tag color="green" class="m-l" v-show="!item.private">公开</a-tag>
-                        </div>
-                        <a-avatar slot="avatar" icon="user" :src="item.cover"/>
-                    </a-list-item-meta>
-                    <div class="other-info muted">
-                        <div class="info-item">
-                            <span>创建日期</span>
-                            <span>{{moment(item.create_time).format('YYYY-MM-DD')}}</span>
-                        </div>
-                        <div class="info-item">
-                            <span>创建人</span>
-                            <span>{{item.owner_name}}</span>
-                        </div>
-                        <div class="info-item schedule">
-                            <span>进度</span>
-                            <a-progress :strokeWidth="5" :percent="item.schedule"/>
-                        </div>
-                    </div>
                 </a-list-item>
             </a-list>
         </wrapper-content>
@@ -415,6 +417,16 @@
             }
 
             .ant-list-item-content {
+                display: -webkit-box;
+                display: -ms-flexbox;
+                display: flex;
+                -webkit-box-flex: 1;
+                -ms-flex: 1;
+                flex: 1;
+                -webkit-box-pack: end;
+                -ms-flex-pack: end;
+                justify-content: flex-end;
+
                 .other-info {
                     display: flex;
 
