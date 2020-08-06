@@ -14,6 +14,7 @@ if (currentOrganization) {
 }
 const crossDomain = config.crossDomain;
 let axiosConfig = {};
+axiosConfig.baseURL = '/api'// process.env.VUE_APP_API_URL;
 if (crossDomain) {
     axiosConfig.withCredentials = true;
     axiosConfig.crossDomain = true;

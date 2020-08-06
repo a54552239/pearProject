@@ -530,7 +530,6 @@
         .left {
             padding: 12px 24px 12px 0;
             width: 280px;
-            height: 85vh;
 
             .left-content {
                 width: 255px;

@@ -3,7 +3,7 @@ import {getStore} from "../assets/js/storage";
 const userInfo = getStore('userInfo', true);
 const theme = getStore('theme');
 export default {
-    theme: theme ? theme : 'dark',
+    theme: theme ? theme : 'light',
     logged: !!userInfo,//登录状态
     userInfo: userInfo,//用户信息
     organizationList: getStore('organizationList', true),//能查看的组织列表

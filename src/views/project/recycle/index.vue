@@ -77,8 +77,7 @@
                     this.pagination.pageSize = 100;
                     this.showLoadingMore = false;
                 }
-                this.requestData.recycle = 1;
-                this.requestData.type = 'other';
+                this.requestData.selectBy = 'deleted';
                 app.loading = true;
                 list(app.requestData).then(res => {
                     app.dataSource = app.dataSource.concat(res.data.list);
