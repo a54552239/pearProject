@@ -14,6 +14,11 @@
 
 ### 登录 ###
 账号：123456 密码：123456
+
+### 友情链接 ###
+
+**JAVA版本：https://gitee.com/wulon/mk-teamwork-server**
+
 ### 界面截图 ###
 ![1](https://static.vilson.xyz/overview/1.png)
 
