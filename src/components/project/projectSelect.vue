@@ -4,7 +4,7 @@
                     v-model="visibleMenu"
                     class="action-item" placement="bottomCenter">
             <a-tooltip :mouseEnterDelay="0.3" :title="currentProject.name">
-                <a class="project-select" style="color: #333" @click="visibleMenu = true">
+                <a class="project-select" style="color: #333">
                     <span>{{currentProject.name}}</span>
                     <span class="m-l-xs"><a-icon type="down"/></span>
                 </a>

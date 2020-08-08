@@ -1302,7 +1302,9 @@
             this.init();
         },
         mounted() {
-            this.changeModalHeight();
+            this.$nextTick(()=>{
+              this.changeModalHeight();
+            })
             window.onresize = () => {
                 return (() => {
                     this.changeModalHeight();
