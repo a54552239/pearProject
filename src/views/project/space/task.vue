@@ -1,5 +1,5 @@
 <template>
-    <div class="project-space-task" :class="project.task_board_theme">
+    <div class="project-space-task" :class="`${project.task_board_theme} ${viewType}`">
         <div class="project-navigation">
             <div class="project-nav-header">
                 <a-breadcrumb>
@@ -1400,6 +1400,15 @@
                     }
                 }
             }
+        }
+    }
+
+    .task-table {
+        .ant-table-body{
+            margin: 0 10px 0 15px;
+        }
+        .wrapper-content{
+            position: inherit !important;
         }
     }
 </style>
