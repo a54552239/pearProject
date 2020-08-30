@@ -39,6 +39,9 @@
                 </ul>
             </section>
             <div class="project-nav-footer">
+                <a class="footer-item" @click="changeViewType()">
+                    <span> <span v-if="viewType == 'task-board'"> <a-icon type="database"></a-icon> 看板</span><span v-else> <a-icon type="table"></a-icon> 表格</span>视图</span>
+                </a>
                 <a class="footer-item" @click="visibleDraw('taskSearch')">
                     <a-icon type="search"></a-icon>
                     <span> 筛选</span>
@@ -54,7 +57,7 @@
             </div>
         </div>
         <wrapper-content :showHeader="false">
-            <draggable v-model="taskStages"
+            <draggable e v-show="viewType == 'task-board'" v-model="taskStages"
                        :options="{group:'stages',filter:'.undraggables',handle:'.ui-sortable-handle',ghostClass:'stage-ghost',animation: 200,forceFallback:false}"
                        id="board-scrum-stages" class="board-scrum-stages" @end="stageSort">
                 <div class="scrum-stage" v-for="(stage,index) in taskStages" :key="index" :id="stage.code"
@@ -345,6 +348,7 @@
                     </header>
                 </div>
             </draggable>
+            <task-table v-if="viewType == 'task-table' && !loading" :project-code="this.code"></task-table>
             <router-view></router-view>
         </wrapper-content>
         <!--编辑任务列表-->
@@ -580,24 +584,25 @@
     import {mapState} from 'vuex'
     import _ from 'lodash'
     import moment from 'moment'
-    import {COMMON} from '../../../const/common'
+    import {COMMON} from '@/const/common'
     import draggable from 'vuedraggable'
     import projectSelect from '@/components/project/projectSelect'
     import inviteProjectMember from '@/components/project/inviteProjectMember'
     import projectConfig from '@/components/project/projectConfig'
     import RecycleBin from '@/components/project/recycleBin'
+    import TaskTable from '@/components/project/taskTable'
     import TaskTag from '@/components/project/taskTag'
     import TaskSearch from '@/components/project/taskSearch'
 
-    import {list as getTaskStages, sort, tasks as getTasks} from "../../../api/taskStages";
-    import {read as getProject} from "../../../api/project";
-    import {inviteMember, list as getProjectMembers, removeMember} from "../../../api/projectMember";
-    import {save as createTask, taskDone, sort as sortTask, recycleBatch, batchAssignTask} from "../../../api/task";
-    import {save as createState, edit as editStage, del as delStage} from "../../../api/taskStages";
-    import {checkResponse, getApiUrl, getAuthorization, getUploadUrl} from "../../../assets/js/utils";
-    import {formatTaskTime} from "../../../assets/js/dateTime";
-    import {collect} from "../../../api/projectCollect";
-    import {notice} from "../../../assets/js/notice";
+    import {list as getTaskStages, sort, tasks as getTasks} from "@/api/taskStages";
+    import {read as getProject} from "@/api/project";
+    import {inviteMember, list as getProjectMembers, removeMember} from "@/api/projectMember";
+    import {save as createTask, taskDone, sort as sortTask, recycleBatch, batchAssignTask} from "@/api/task";
+    import {save as createState, edit as editStage, del as delStage} from "@/api/taskStages";
+    import {checkResponse, getApiUrl, getAuthorization, getUploadUrl} from "@/assets/js/utils";
+    import {formatTaskTime} from "@/assets/js/dateTime";
+    import {collect} from "@/api/projectCollect";
+    import {notice} from "@/assets/js/notice";
 
     export default {
         name: "project-space-task",
@@ -607,11 +612,13 @@
             draggable,
             projectSelect,
             TaskSearch,
+            TaskTable,
             inviteProjectMember,
-            projectConfig
+            projectConfig,
         },
         data() {
             return {
+                viewType: 'task-board',
                 code: this.$route.params.code,
                 loading: true,
                 project: {task_board_theme: 'simple'},
@@ -1197,6 +1204,13 @@
                     this.inviteMemberDraw.visible = false;
                     this.taskSearch.visible = false;
                     this.configDraw.visible = !this.configDraw.visible;
+                }
+            },
+            changeViewType() {
+                if (this.viewType === 'task-board') {
+                    this.viewType = 'task-table';
+                }else{
+                    this.viewType = 'task-board';
                 }
             },
             removeMember(member, index) {

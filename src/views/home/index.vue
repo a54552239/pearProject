@@ -47,8 +47,8 @@
         </div>
         <!--<wrapper-content :showHeader="false">-->
         <div class="page-wrapper">
-            <a-row :gutter="24">
-                <a-col :xl="16" :lg="24" :md="24" :sm="24" :xs="24">
+            <a-row class="page-wrapper-content" :gutter="24">
+                <a-col class="project-list-content" :xl="16" :lg="24" :md="24" :sm="24" :xs="24">
                     <a-card
                             class="project-list"
                             :loading="loading"
@@ -57,12 +57,17 @@
                             title="进行中的项目"
                             :body-style="{ padding: 0 }">
                         <router-link to="/project/list/my" slot="extra">全部项目</router-link>
-                        <div>
+                        <div style="display: flex; flex-direction: row; flex-wrap: wrap; justify-content: start;">
                             <a-card-grid class="project-card-grid" :key="i" v-for="(item, i) in projectList">
                                 <a-card :bordered="false" :body-style="{ padding: 0 }" @click="routerLink('/project/space/task/' + item.code)">
+                                    <img
+                                        slot="cover"
+                                        alt="example"
+                                        :src="item.cover"
+                                    />
                                     <a-card-meta>
                                         <div slot="title" class="card-title">
-                                            <a-avatar size="small" :src="item.cover"/>
+<!--                                            <a-avatar size="small" :src="item.cover"/>-->
                                             <router-link :to="'/project/space/task/' + item.code">
                                                 <a-icon type="star" theme="filled" style="color: #ffaf38;margin-right: 6px;" v-show="item.collected"/>{{ item.name }}
                                             </router-link>
@@ -121,7 +126,7 @@
                     </a-card>
                 </a-col>
                 <a-col
-                        style="padding: 0 12px"
+                        style="padding: 0 12px;flex: 1"
                         :xl="8"
                         :lg="24"
                         :md="24"
@@ -154,16 +159,32 @@
                                 <a-list-item-meta>
                                     <div slot="title">
                                         <div style="display: flex;justify-content: space-between ">
-                                            <router-link target="_blank"
-                                                         class="task-title-wrap"
-                                                         :to="`/project/space/task/${item.projectInfo.code}/detail/${item.code}`">
+                                            <a class="task-title-wrap">
                                                 <a-tooltip title="优先级">
                                                     <a-tag :color="priColor(item.pri)">{{item.priText}}</a-tag>
                                                 </a-tooltip>
-                                                <a-tooltip :title="item.name">
-                                                    {{ item.name }}
+                                                <a-tooltip placement="top">
+                                                    <template slot="title">
+                                                        <template v-if="item.pcode">
+                                                            <span v-if="item.parentDone" style="font-size: 12px;">父任务已完成，无法重做子任务</span>
+                                                            <span v-else-if="item.hasUnDone" style="font-size: 12px;">子任务尚未全部完成，无法完成父任务</span>
+                                                        </template>
+                                                        <template v-else>
+                                                            <span v-if="item.hasUnDone" style="font-size: 12px;">子任务尚未全部完成，无法完成父任务</span>
+                                                        </template>
+                                                    </template>
+                                                     <span class="check-box-wrapper task-item"
+                                                           @click.stop="()=>{if(item.deleted || item.hasUnDone || (item.pcode && item.parentDone)) return false;taskDone(item.code, !item.done)}">
+                                                        <a-icon class="check-box"
+                                                                :class="{'disabled': item.deleted || item.parentDone || item.hasUnDone}"
+                                                                :type="item.done ? 'check-square' : 'border'"
+                                                                :style="{fontSize:'16px'}"/>
+                                                </span>
                                                 </a-tooltip>
-                                            </router-link>
+                                                <a-tooltip :title="item.name">
+                                                    <span @click="showTaskDetail = true;taskCode = item.code">{{ item.name }}</span>
+                                                </a-tooltip>
+                                            </a>
                                             <div>
                                                 <a-tooltip title="任务开始 - 截止时间" v-if="item.end_time">
                                                     <span class="label m-r-sm" :class="showTimeLabel(item.end_time)">{{showTaskTime(item.begin_time, item.end_time)}}</span>
@@ -227,21 +248,38 @@
             </a-row>
         </div>
         <!--</wrapper-content>-->
+        <a-modal
+            destroyOnClose
+            class="task-detail-modal"
+            width="min-content"
+            :closable="false"
+            :visible="showTaskDetail"
+            title=""
+            :footer="null"
+            @cancel="detailClose"
+        >
+            <task-detail :taskCode="taskCode" @close="detailClose"></task-detail>
+
+        </a-modal>
     </div>
 </template>
 <script>
     import {mapState} from 'vuex'
     import moment from "moment";
+    import taskDetail from '../../components/project/taskDetail'
     import {getYiYan} from "../../api/other";
     import {formatTaskTime, relativelyTime, showHelloTime} from "../../assets/js/dateTime";
     import {selfList as getProjectList} from "../../api/project";
     import {list as accountList} from "../../api/user";
     import pagination from "../../mixins/pagination";
-    import {getLogBySelfProject, selfList} from "../../api/task";
+    import {getLogBySelfProject, selfList, taskDone} from "../../api/task";
     import task from "../project/space/task";
+    import {checkResponse} from "assets/js/utils";
 
     export default {
-        components: {},
+        components: {
+            taskDetail
+        },
         mixins: [pagination],
         data() {
             return {
@@ -269,6 +307,8 @@
                     pageSize: 10,
                     loading: false,
                 },
+                showTaskDetail: false,
+                taskCode: ''
             }
         },
         computed: {
@@ -337,7 +377,10 @@
                     app.yiyan = data
                 }, 'd')
             },
-            getTasks() {
+            getTasks(reload = true) {
+                if (reload) {
+                    this.task.page = 1;
+                }
                 this.task.loading = true;
                 selfList({page: this.task.page, pageSize: this.task.pageSize, taskType: this.task.taskType, type: this.task.done}).then(res => {
                     this.task.loading = false;
@@ -350,24 +393,37 @@
                 console.log(key);
                 this.task.taskType = key;
                 this.task.loadingMore = true;
-                this.task.page = 1;
                 this.getTasks();
             },
             taskSelectChange(value) {
                 this.task.done = value;
                 this.task.loadingMore = true;
-                this.task.page = 1;
                 this.getTasks();
             },
             onLoadMoreTask(page, PageSize) {
                 this.task.loadingMore = true;
                 this.task.page = page;
-                this.getTasks();
+                this.getTasks(false);
             },
             onLoadMoreAccounts(page, PageSize) {
                 this.accounts.loadingMore = true;
                 this.accounts.page = page;
                 this.getAccountList();
+            },
+            detailClose() {
+                this.taskCode = '';
+                this.showTaskDetail = false;
+                this.getTasks(false);
+            },
+            taskDone(taskCode, done) {
+                done ? done = 1 : done = 0;
+                taskDone(taskCode, done).then((res) => {
+                    const result = checkResponse(res);
+                    if (!result) {
+                        return false;
+                    }
+                    this.getTasks(false);
+                });
             },
             priColor(pri) {
                 switch (pri) {
@@ -468,14 +524,34 @@
         .page-wrapper {
             margin: 24px;
 
+            .page-wrapper-content {
+                display: flex;
+            }
+
             .project-list {
+                .project-card-grid {
+                    width: 25%;
+                    padding: 12px;
+                    cursor: pointer;
+                }
+
+                .ant-card-cover {
+                    height: 125px;
+                    img {
+                        display: block !important;
+                        width: 100% !important;
+                        height: 100% !important;
+                        object-fit: cover !important;
+                    }
+                }
+
 
                 .card-title {
                     font-size: 0;
 
                     a {
                         color: rgba(0, 0, 0, 0.85);
-                        margin-left: 12px;
+                        //margin-left: 12px;
                         line-height: 24px;
                         height: 24px;
                         display: inline-block;
@@ -486,6 +562,11 @@
                             color: #1890ff;
                         }
                     }
+                }
+
+                .ant-card-meta-title {
+                    margin-bottom: 0px;
+                    margin-top: 8px;
                 }
 
                 .card-description {
@@ -563,6 +644,27 @@
                         text-overflow: ellipsis;
                         white-space: nowrap;
                         padding-right: 10px;
+
+                        .check-box-wrapper {
+                            text-align: center;
+                            margin: 11px 2px 0 0;
+                            padding: 10px 0;
+                            transition: background 218ms;
+                            border-radius: 3px;
+                            .check-box {
+                                color: #A6A6A6;
+                                cursor: pointer;
+                                border-radius: 3px;
+                                margin: 5px;
+                            }
+                            &:hover {
+                                .check-box {
+                                    color: grey;
+                                }
+
+                                background: #f5f5f5;
+                            }
+                        }
                     }
                 }
             }
