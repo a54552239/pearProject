@@ -1,0 +1,109 @@
+.account-setting-base,
+.account-setting-security {
+  .wrapper-main {
+    padding-left: 0;
+    padding-right: 0;
+  }
+
+  .setting-content {
+    display: flex;
+    flex-direction: row;
+
+    .right {
+      flex: 1 1 0;
+      padding: 8px 40px;
+
+      .setting-info-title {
+        font-size: 20px;
+      }
+
+      .setting-info {
+        display: flex;
+        flex-direction: row;
+        padding-top: 12px;
+
+        &-content {
+          flex: 1;
+        }
+
+        &-avatar {
+          padding-left: 2rem;
+          display: flex;
+          flex-direction: column;
+
+          .avatar {
+            margin-top: 12px;
+            margin-left: auto;
+            margin-right: auto;
+          }
+
+          .avatar-uploader {
+            margin: 1.6rem auto;
+            text-align: center;
+          }
+        }
+      }
+    }
+  }
+}
+
+.account-setting-security {
+  .setting-content {
+    .right {
+      .setting-info {
+        &-content {
+          width: 100%;
+        }
+      }
+    }
+  }
+}
+
+.mobile-modal {
+  .getCaptcha {
+    display: block;
+    width: 100%;
+    height: 40px;
+  }
+}
+
+.wap-menu {
+  display: none;
+  visibility: hidden;
+}
+
+@media (max-width: 768px) {
+  .pc-view {
+    display: none;
+    visibility: hidden;
+  }
+
+  .wap-menu {
+    display: block;
+    visibility: visible;
+  }
+
+  .account-setting .left {
+    width: auto !important;
+    border-right: 0px solid #e8e8e8 !important;
+  }
+
+  .account-setting-base,
+  .account-setting-security {
+    .setting-content {
+      flex-direction: column;
+
+      .right {
+        padding: 1rem;
+
+        .setting-info {
+          flex-direction: column;
+
+          &-avatar {
+            padding-left: 0;
+          }
+        }
+      }
+    }
+  }
+}

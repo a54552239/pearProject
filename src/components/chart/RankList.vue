@@ -1,6 +1,6 @@
 <template>
   <div class="rank">
-    <h4 class="title">{{ title }}</h4>
+    <h4 class="title" v-if="title">{{ title }}</h4>
     <ul class="list">
       <li :key="index" v-for="(item, index) in list">
         <span :class="index < 3 ? 'active' : null">{{ index + 1 }}</span>
@@ -31,7 +31,7 @@
 <style lang="less" scoped>
 
   .rank {
-    padding: 0 32px 32px 72px;
+    padding: 0 1rem 1rem;
 
     .list {
       margin: 25px 0 0;
