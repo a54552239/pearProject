@@ -93,7 +93,11 @@
           </div>
           <a-spin :spinning="loading" v-if="currentProjectFeatures">
             <template v-if="versionTotal">
-              <div class="version-group" :key="versionType" v-for="(versionItem,versionType) in versionList">
+              <div
+                class="version-group"
+                :key="versionType"
+                v-for="(versionItem,versionType) in versionList"
+              >
                 <a
                   style="cursor: pointer;display: block"
                   class="version-group-title muted m-l-sm m-b-sm"
@@ -232,6 +236,7 @@
               <p class="muted">暂无可用版本</p>
               <a-button type="primary" @click="createVersion">创建版本</a-button>
             </div>
+            <a-icon slot="indicator" type="loading" style="font-size: 2rem" spin />
           </a-spin>
         </div>
       </div>

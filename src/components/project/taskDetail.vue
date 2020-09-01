@@ -1,6 +1,7 @@
 <template>
     <div class="task-detail" id="task-detail">
         <a-spin class="task-detail-spin" :spinning="loading">
+            <a-icon slot="indicator" type="loading" style="font-size: 2rem" spin />
             <div class="task-header" :class="{'disabled': task.deleted}">
                     <span class="head-title" v-if="!task.deleted">
                         <span v-if="task.parentTask">

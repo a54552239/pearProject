@@ -2,13 +2,14 @@
 <template>
   <div class="index">
     <a-spin :spinning="windowLoading">
+      <a-icon slot="indicator" type="loading" style="font-size: 2rem" spin />
       <a-layout id="layout" :class="layoutClass">
         <a-layout-header class="project-nav" :class="{'collapsed':collapsed}">
           <div class="logo pc-view" :title="system.site_name" @click="toHome">
             <img class="logo-img" src="../assets/image/common/logo.png" alt />
             <span class="title" v-if="system">
               {{system.app_name}}
-              <sup class="version">{{system.app_version}}</sup>
+              <sup class="version">{{version.VERSION}}</sup>
             </span>
           </div>
           <div class="left-menudrawer wap-menu" @click="collapsed = !collapsed">
@@ -119,6 +120,7 @@
             <a-layout-content>
               <transition name="router-fade" mode="out-in">
                 <a-spin :spinning="pageLoading">
+                  <a-icon slot="indicator" type="loading" style="font-size: 2rem" spin />
                   <router-view></router-view>
                 </a-spin>
               </transition>
@@ -146,6 +148,7 @@ import HeaderSelect from "../components/layout/header/HeaderSelect";
 import VUploader from "../components/tools/VUploader";
 import Socket from "../components/websocket/socket";
 import config from "../config/config";
+import version from "../config/version";
 import { notice } from "../assets/js/notice";
 import { getStore } from "../assets/js/storage";
 import { _getOrgList } from "../api/organization";
@@ -177,6 +180,7 @@ export default {
       selectedModelKeys: [],
       breadCrumbInfo: [],
       config: config,
+      version: version,
       online: 0,
     };
   },

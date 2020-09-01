@@ -1,55 +1,10 @@
 <template>
-  <div class="project-space-files" :class="project.task_board_theme">
-    <a-row class="project-navigation" align="middle" justify="center">
-      <a-col class="project-nav-header" :span="8" :xs="24" :sm="10" :md="8" :lg="8">
-        <a-breadcrumb>
-          <a-breadcrumb-item>
-            <a @click="toHome">
-              <a-icon type="home" />首页
-            </a>
-          </a-breadcrumb-item>
-          <a-breadcrumb-item>
-            <project-select class="nav-title" style="display: inline-block" :code="code"></project-select>
-            <span class="actions">
-              <a-tooltip
-                :mouseEnterDelay="0.3"
-                :title="project.collected ? '取消收藏' : '加入收藏'"
-                @click="collectProject"
-              >
-                <a-icon
-                  type="star"
-                  theme="filled"
-                  style="color: grey;"
-                  v-show="!project.collected"
-                />
-                <a-icon
-                  type="star"
-                  theme="filled"
-                  style="color: #ffaf38;"
-                  v-show="project.collected"
-                />
-              </a-tooltip>
-            </span>
-            <span class="label label-normal" v-if="project.private === 0">
-              <a-icon type="global" />公开
-            </span>
-          </a-breadcrumb-item>
-        </a-breadcrumb>
-      </a-col>
-      <a-col class="nav-body" :span="8" :xs="24" :sm="14" :md="8" :lg="8">
-        <ul class="nav-wrapper nav nav-underscore">
-          <li class data-app="tasks" @click="$router.push('/project/space/task/' + code)">任务</li>
-          <li class="actives" data-app="works" @click="getFiles">文件</li>
-          <li class data-app="build" @click="$router.push('/project/space/overview/' + code)">概览</li>
-          <li class data-app="build" @click="$router.push('/project/space/features/' + code)">版本</li>
-        </ul>
-      </a-col>
-    </a-row>
+  <div class="project-space-files">
     <wrapper-content :showHeader="false">
       <div class="content-wrapper">
         <div class="content-item files-list">
           <div class="header">
-            <span class="title">项目文件</span>
+            <span class="title">公共文件</span>
             <div class="header-actions">
               <!--<a><a-icon type="upload"></a-icon> 上传文件</a>-->
               <a-button id="upload-file" icon="up-circle" type="dashed" size="small">上传</a-button>
@@ -190,35 +145,30 @@
 
 <script>
 import { mapState } from "vuex";
-import { read as getProject } from "../../../api/project";
-import { collect } from "../../../api/projectCollect";
-import { checkResponse } from "../../../assets/js/utils";
-import { relativelyTime } from "../../../assets/js/dateTime";
-import { edit, list, recycle } from "../../../api/file";
+import { checkResponse } from "../../assets/js/utils";
+import { relativelyTime } from "../../assets/js/dateTime";
+import { edit, list, recycle } from "../../api/file";
 import pagination from "@/mixins/pagination";
-import { notice } from "../../../assets/js/notice";
-import projectSelect from "@/components/project/projectSelect";
+import { notice } from "../../assets/js/notice";
 
 export default {
-  name: "project-space-files",
+  name: "organization-files",
   mixins: [pagination],
   data() {
     return {
-      code: this.$route.params.code,
+      code: "",
       loading: true,
       showLoadingMore: false,
       loadingMore: false,
-      project: { task_board_theme: "simple" },
       currentFileIndex: {},
       files: [],
     };
   },
-  components: {
-    projectSelect,
-  },
+  components: {},
   computed: {
     ...mapState({
       uploader: (state) => state.common.uploader,
+      organizationCode: (state) => state.currentOrganization.code,
     }),
   },
   watch: {
@@ -226,9 +176,8 @@ export default {
       handler(newVal, oldVal) {
         //监听是否有上传文件行为
         const files = newVal.fileList;
-        const index = files.findIndex(
-          (item) => item.projectName == this.project.name
-        );
+        const index = files.findIndex((item) => item.projectName == "");
+        console.log(files);
         if (index !== -1) {
           this.getFiles();
         }
@@ -237,7 +186,7 @@ export default {
     },
   },
   created() {
-    this.getProject();
+    this.clearProject();
     this.getFiles();
   },
   mounted() {
@@ -246,15 +195,8 @@ export default {
     }, 500);
   },
   methods: {
-    getProject() {
-      this.loading = true;
-      getProject(this.code).then((res) => {
-        this.loading = false;
-        this.project = res.data;
-        this.$store.dispatch("setTempData", {
-          projectCode: this.project.code,
-        });
-      });
+    clearProject() {
+      this.$store.dispatch("setTempData", {});
     },
     getFiles(reset = true) {
       let app = this;
@@ -263,6 +205,7 @@ export default {
         this.pagination.pageSize = 50;
         this.showLoadingMore = false;
       }
+      app.requestData.organizationCode = this.organizationCode;
       app.requestData.projectCode = this.code;
       app.requestData.deleted = 0;
       list(app.requestData).then((res) => {
@@ -283,15 +226,6 @@ export default {
       this.loadingMore = true;
       this.pagination.page++;
       this.getFiles(false);
-    },
-    collectProject() {
-      const type = this.project.collected ? "cancel" : "collect";
-      collect(this.project.code, type).then((res) => {
-        if (!checkResponse(res)) {
-          return;
-        }
-        this.project.collected = !this.project.collected;
-      });
     },
     editFile(file, index) {
       let app = this;

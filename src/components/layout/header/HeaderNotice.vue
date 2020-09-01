@@ -7,6 +7,7 @@
   >
     <template slot="content">
       <a-spin :spinning="loading">
+        <a-icon slot="indicator" type="loading" style="font-size: 2rem" spin />
         <a-tabs class="header-notice-content" :tabBarGutter="25">
           <a-tab-pane key="1">
             <span slot="tab">

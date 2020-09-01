@@ -60,6 +60,7 @@
               :legend-visible="false"
               height="200px"
             ></ve-line>
+            <a-icon slot="indicator" type="loading" style="font-size: 2rem" spin />
           </a-spin>
         </div>
       </div>
@@ -121,7 +122,9 @@
                   slot="loadMore"
                   :style="{ textAlign: 'center', marginTop: '12px', height: '32px', lineHeight: '32px' }"
                 >
-                  <a-spin v-if="loadingMore" />
+                  <a-spin v-if="loadingMore">
+                    <a-icon slot="indicator" type="loading" style="font-size: 2rem" spin />
+                  </a-spin>
                   <a-button v-else @click="onLoadMore">查看更多动态</a-button>
                 </div>
                 <a-list-item :key="index" v-for="(item, index) in activities">

@@ -373,7 +373,9 @@
                   </template>
                 </template>
                 <div class="text-center">
-                  <a-spin :spinning="loadingWorkflowRule"></a-spin>
+                  <a-spin :spinning="loadingWorkflowRule">
+                    <a-icon slot="indicator" type="loading" style="font-size: 2rem" spin />
+                  </a-spin>
                 </div>
               </div>
             </div>

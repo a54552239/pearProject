@@ -1,6 +1,7 @@
 <template>
     <div class="member-menu">
         <a-spin :spinning="listLoading || doListLoading">
+            <a-icon slot="indicator" type="loading" style="font-size: 2rem" spin />
             <!--<div class="header">
             </div>-->
             <div class="search-content">

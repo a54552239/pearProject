@@ -13,7 +13,9 @@
           slot="loadMore"
           :style="{ textAlign: 'center', marginTop: '12px', height: '32px', lineHeight: '32px' }"
         >
-          <a-spin v-if="loadingMore" />
+          <a-spin v-if="loadingMore">
+            <a-icon slot="indicator" type="loading" style="font-size: 2rem" spin />
+          </a-spin>
           <a-button v-else @click="onLoadMore">查看更多项目</a-button>
         </div>
         <a-list-item slot="renderItem" slot-scope="item,index">

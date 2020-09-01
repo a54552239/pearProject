@@ -1,6 +1,7 @@
 <template>
   <div class="version-detail">
     <a-spin class="version-detail-spin" :spinning="loading">
+      <a-icon slot="indicator" type="loading" style="font-size: 2rem" spin />
       <div class="task-header">
         <span class="head-title">
           <span>{{version.featureName}}</span>

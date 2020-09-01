@@ -2,6 +2,7 @@
   <div class="main">
     <a-spin class="text-center" :spinning="oauthLoading">
       <span v-show="oauthLoading">正在登陆，请稍后...</span>
+      <a-icon slot="indicator" type="loading" style="font-size: 2rem" spin />
     </a-spin>
     <a-form
       v-show="!oauthLoading"

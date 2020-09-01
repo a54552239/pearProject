@@ -1,9 +1,5 @@
 <template>
-  <div
-    class="project-space-task"
-    ref="taskarea"
-    :class="project.task_board_theme"
-  >
+  <div class="project-space-task" ref="taskarea" :class="project.task_board_theme">
     <a-row class="project-navigation" align="middle" justify="center">
       <a-col class="project-nav-header" :span="8" :xs="24" :sm="24" :md="24" :lg="8">
         <a-breadcrumb>
@@ -87,7 +83,7 @@
           :id="stage.code"
           :class="{ 'fixed-creator': stage.fixedCreator == true}"
         >
-          <!--<a-spin wrapperClassName="tasks-loading" :spinning="stage.tasksLoading">-->
+          <!--<a-spin wrapperClassName="tasks-loading" :spinning="stage.tasksLoading"><a-icon slot="indicator" type="loading" style="font-size: 2rem" spin />-->
           <!--<a-tooltip placement="top" >
                      <template slot="title">
                          {{ stage.name }}
@@ -153,6 +149,7 @@
                 class="scrum-stage-content thin-scroll"
               >
                 <a-spin wrapperClassName="tasks-loading" :spinning="stage.tasksLoading">
+                  <a-icon slot="indicator" type="loading" style="font-size: 2rem" spin />
                   <!--未完成列表-->
                   <draggable
                     v-model="stage.unDoneTasks"

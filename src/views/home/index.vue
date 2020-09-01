@@ -355,7 +355,10 @@ export default {
   mixins: [pagination],
   data() {
     return {
-      loading: false,
+      loading: {
+        spinning: false,
+        indicator: <a-icon type="loading" style="font-size: 2rem" spin />,
+      },
       yiyan: {},
       yiyan_cate_c: 0,
       yiyan_cate: [
