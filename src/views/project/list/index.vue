@@ -8,7 +8,7 @@
           @submit.prevent="handleSearchSubmit"
         >
           <a-form-item label="名称" fieldDecoratorId="name">
-            <a-input placeholder="请输入" />
+            <a-input placeholder="请输入" allowClear />
           </a-form-item>
           <a-form-item label="创建日期" fieldDecoratorId="date">
             <a-range-picker :placeholder="['开始日期','结束日期']"></a-range-picker>
@@ -22,12 +22,11 @@
             >搜索</a-button>
           </a-form-item>
         </a-form>
-      </div>-->
+      </div> -->
       <a-tabs v-model="selectBy" @change="selectChange" :animated="false">
-        <a-tab-pane key="my" tab="全部项目"></a-tab-pane>
+        <a-tab-pane key="public" tab="项目广场"></a-tab-pane>
+        <a-tab-pane key="my" tab="我的项目"></a-tab-pane>
         <a-tab-pane key="collect" tab="我的收藏"></a-tab-pane>
-        <a-tab-pane key="archive" tab="已归档"></a-tab-pane>
-        <a-tab-pane key="deleted" tab="回收站"></a-tab-pane>
         <a-button
           slot="tabBarExtraContent"
           type="primary"
@@ -44,7 +43,7 @@
         <div
           v-if="showLoadingMore"
           slot="loadMore"
-          :style="{ textAlign: 'center', marginTop: '12px', height: '32px', lineHeight: '32px' }"
+          :style="{ textAlign: 'center', marginTop: '3rem',marginBottom: '3rem', height: '32px', lineHeight: '32px' }"
         >
           <a-spin v-if="loadingMore">
             <a-icon slot="indicator" type="loading" style="font-size: 2rem" spin />
@@ -202,9 +201,12 @@ export default {
   mixins: [pagination],
   data() {
     return {
-      selectBy: this.$route.params.type || "my",
+      selectBy: this.$route.params.type || "public",
       dataSource: [],
-      loading: true,
+      loading: {
+        spinning: false,
+        indicator: <a-icon type="loading" style="font-size: 2rem" spin />,
+      },
       showLoadingMore: false,
       loadingMore: false,
       showInviteMember: false,
@@ -250,12 +252,12 @@ export default {
         this.showLoadingMore = false;
       }
       this.requestData.selectBy = this.selectBy;
-      app.loading = true;
+      app.loading.spinning = true;
       list(app.requestData).then((res) => {
         app.dataSource = app.dataSource.concat(res.data.list);
         app.pagination.total = res.data.total;
         app.showLoadingMore = app.pagination.total > app.dataSource.length;
-        app.loading = false;
+        app.loading.spinning = false;
         app.loadingMore = false;
       });
     },
@@ -388,11 +390,21 @@ export default {
     },
     search() {
       let obj = this.searchForm.getFieldsValue();
+      if (Array.isArray(obj.date) && obj.date.length >= 2) {
+        obj.date[0] =
+          obj.date[0].format instanceof Function
+            ? obj.date[0].format("YYYY-MM-DD")
+            : obj.date[0];
+        obj.date[1] =
+          obj.date[1].format instanceof Function
+            ? obj.date[1].format("YYYY-MM-DD")
+            : obj.date[1];
+      }
       Object.assign(this.requestData, obj);
       this.init();
     },
-    selectChange() {
-      this.init();
+    selectChange(e = "my") {
+      return this.$router.push("/project/list/" + e);
     },
   },
 };

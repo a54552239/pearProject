@@ -60,7 +60,7 @@
                                 </div>
                                 <div class="file-extra">
                                   <span
-                                    v-if="file.file.projectName"
+                                    v-if="file.file.projectName || tempData.projectName"
                                   >{{file.file.projectName ? file.file.projectName : tempData.projectName}}</span>
                                   <span v-else>公共文件</span>
                                   <span v-if="file.status == 'success'">({{file.formatedSize }})</span>
@@ -233,7 +233,7 @@ export default {
       //所有文件上传完成
       console.log("complete", arguments);
       this.progressTotal = this.completeTotal = 0;
-      notice({ title: "关联文件成功" }, "notice", "success");
+      notice({ title: "上传文件成功" }, "notice", "success");
       setTimeout(() => {
         this.showFiles = false;
       }, 3000);

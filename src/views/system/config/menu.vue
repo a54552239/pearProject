@@ -57,7 +57,7 @@
               :wrapperCol="{ span: 21 }"
               fieldDecoratorId="url"
               :fieldDecoratorOptions="{rules: [{ required: true, message: '请输入路由地址' }]}"
-              help="必填，请填写路由地址（如：admin/user/index，对应的文件位于：views/admin/user/index.vue）。如果是上级菜单时，请填写"#"符号，不要填写路由地址。"
+              help="必填，请填写路由地址（如：admin/user/index，对应的文件位于：views/admin/user/index.vue）。如果是上级菜单时，请填写'#'符号，不要填写路由地址。"
             >
               <Input placeholder="路由地址" />
             </FormItem>
@@ -80,7 +80,7 @@
               :wrapperCol="{ span: 21 }"
               fieldDecoratorId="node"
               :fieldDecoratorOptions="{rules: [{ required: true, message: '请绑定权限节点' }]}"
-              help="必填，将当前路由与权限节点进行绑定，没有该节点权限的菜单将会被隐藏。不进行绑定，请填写"#"符号。"
+              help="必填，将当前路由与权限节点进行绑定，没有该节点权限的菜单将会被隐藏。不进行绑定，请填写'#'符号。"
             >
               <a-select
                 showSearch
