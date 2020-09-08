@@ -78,7 +78,7 @@
             :loading="loading"
             style="margin-bottom: 24px;"
             :bordered="false"
-            title="进行中的项目"
+            title="最近的项目"
             :body-style="{ padding: 0 }"
           >
             <router-link to="/project/list/my" slot="extra">全部项目</router-link>
