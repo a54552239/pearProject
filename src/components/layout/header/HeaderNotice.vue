@@ -150,9 +150,10 @@
             socketAction(val) {
                 if (val.action === 'notice') {
                     this.init();
-                } else if (val.action === 'task') {
+                } else if (val.action === 'task' || val.action === 'events') {
                     this.init();
                     const permission = showMsgNotification(val.title, val.msg, {icon: val.data.notify.avatar});
+                    console.log(permission);
                     if (permission === false) {
                         notice(val, 'notice', 'info', 10);
                     }
