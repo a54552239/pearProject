@@ -41,7 +41,7 @@
                      @change="pageChange"
                      :rowSelection="{selectedRowKeys: selectedRowKeys, onChange: onSelectChange}"
                      rowKey="id">
-                <p slot="expandedRowRender" slot-scope="record" style="margin: 0" v-html="record.content"></p>
+                <a slot="expandedRowRender" slot-scope="record" style="margin: 0" v-html="record.content" @click="messageAction(record)"></a>
                 <template slot="action" slot-scope="text,record,index">
                     <a @click="rowClick(record,'del')">删除</a>
                 </template>
@@ -132,6 +132,14 @@
                             }
                         });
                         break;
+                }
+            },
+            messageAction(message) {
+                const sendData = JSON.parse(message.send_data);
+                this.showNotice = false;
+                if (message.action === 'task') {
+                    setReadied(JSON.stringify([message.id]));
+                    this.$router.push(`/project/space/task/${sendData.project_code}/detail/${sendData.code}`);
                 }
             },
             rowClick(record, action) {
