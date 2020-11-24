@@ -13,6 +13,7 @@
             <uploader ref="uploader"
                       :options="options"
                       :autoStart="autoStart"
+                      @files-added="fileAdded"
                       @files-submitted="filesSubmitted"
                       @file-progress="fileProgress"
                       @file-success="fileSuccess"
@@ -108,6 +109,7 @@
         data() {
             return {
                 loading: false,
+                singleMaxSize: 30,//单个文件最大大小，MB
                 showFiles: false, //显示上传文件
                 showUploader: false,//显示上传窗口
                 progressTotal: 0, //上传中的文件数
@@ -115,6 +117,7 @@
                 options: {
                     target: uploadFiles,
                     testChunks: false,
+                    chunkSize: 5 * 1024 * 1024,//分片大小
                     query: function () {
                         return getStore('tempData', true);//query暂时无法动态响应
                     },
@@ -169,6 +172,26 @@
             closeUploader() {//关闭上传窗口
                 this.showUploader = false;
                 this.uploader.cancel();
+            },
+            fileAdded(files, fileList, event) {
+                let ignored = false;
+                let fileName = '';
+                const singleMaxSize = this.singleMaxSize * 1024 * 1024;
+                console.log(fileList);
+                fileList.forEach((v, k) => {
+                    if (v.size > singleMaxSize) {
+                        ignored = true;
+                        fileName = v.file.name;
+                        return false;
+                    }
+                });
+                files.ignored = ignored;
+                if (ignored) {
+                    this.$info({
+                        title: '文件超过最大限制',
+                        content: `上传文件「${fileName}」过大，请选择${this.singleMaxSize}MB以内的文件`,
+                    });
+                }
             },
             filesSubmitted(files) { //添加上传文件
                 // this.$refs.uploader.uploader.opts.query = this.tempData;
