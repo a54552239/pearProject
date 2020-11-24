@@ -304,8 +304,8 @@
             this.init();
         },
         methods: {
-            init() {
-                this.getMember();
+            async init() {
+                await this.getMember();
                 this.tabChange(this.tabKey)
             },
             tabChange(key) {
@@ -318,7 +318,7 @@
                 }
             },
             getMember() {
-                read(this.code).then(res => {
+                return read(this.code).then(res => {
                     this.member = res.data;
                 });
             },
