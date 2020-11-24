@@ -257,7 +257,7 @@
                     list: [],
                     total: 0,
                     page: 1,
-                    pageSize: 10,
+                    pageSize: 30,
                     loading: false,
                 },
                 task: {
