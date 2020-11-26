@@ -943,7 +943,7 @@
                                     </div>
                                 </template>
 <!--                                <span slot="title">Title</span>-->
-                                <a-textarea @focus="commenting = true" @blur="commenting = false" ref="commentText" v-model="comment" :rows="1" placeholder="支持@提及任务成员，Ctrl+Enter发表评论"
+                                <a-textarea @focus="commenting = true" @blur="commenting = false" ref="commentText" v-model="comment" :rows="1" placeholder="@提及任务成员，Ctrl+Enter发表评论"
                                             style="margin-right: 24px;"/>
                             </a-popover>
                             <a-button class="middle-btn" type="primary" @click="createComment">评论</a-button>
@@ -1125,7 +1125,7 @@
             width: {
                 type: [String, Number],
                 default() {
-                    return '1200'
+                    return '1360'
                 }
             }
         },
@@ -2054,7 +2054,8 @@
                 .content-left {
                     border-right: 1px solid #e5e5e5;
                     min-width: 560px;
-                    width: 63%;
+                    //width: 63%;
+                    flex: 1;
                     /*width: 760px;*/
 
                     .task-title {
@@ -2304,8 +2305,8 @@
                 }
 
                 .content-right {
-                    width: 37%;
-                    /*width: 440px;*/
+                    //width: 37%;
+                    width: 410px;
 
                     .header {
                         padding: 15px 20px 20px 20px;

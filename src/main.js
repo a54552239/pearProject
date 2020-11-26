@@ -12,7 +12,7 @@ import '@/assets/css/theme.less'
 import '@/assets/icon/iconfont'
 import WrapperContent from '@/components/layout/WrapperContent'
 import {message, notification} from 'ant-design-vue'
-import {notice, destroyNotice} from './assets/js/notice'
+import {notice, destroyNotice} from 'assets/js/notice'
 
 import moment from 'moment';
 import 'moment/locale/zh-cn';
