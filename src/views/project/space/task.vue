@@ -121,7 +121,7 @@
                     <!--</a-tooltip>-->
                     <div class="scrum-stage-wrap ui-sortable"
                          :class="{ 'hidden-creator-bottom': stage.showTaskCard}">
-                        <vue-scroll :ref="index + '-stage'" @handle-resize="handleResize($event,index)"
+                        <vue-scroll :ref="index + '-stage'" @handle-resize="handleResize($event,index)" @handle-scroll="handleScroll"  @refresh-start="handleStart"
                                     :ops="scrollOps">
                             <section :id="stage.code" :task-type-index="index"
                                      class="scrum-stage-content thin-scroll">
@@ -515,7 +515,7 @@
                 :title="projectModal.modalTitle"
                 :footer="null"
         >
-            <project-config :code="code" @update="updateProject"></project-config>
+            <project-config :code="code" @update="updateProject"  @complete="projectModal.modalStatus = false;"></project-config>
         </a-modal>
         <!--回收站-->
         <a-modal
@@ -710,12 +710,24 @@
             },
             scrollOps() {
                 return {
+                    mode: 'slide',
                     rail: {
                         background: '#e5e5e5',
                         opacity: 1
                     },
                     bar: {
                         keepShow: true
+                    },
+                    pushLoad: {
+                        enable: true,
+                        tips: {
+                            deactive: 'Push to Load',
+                            active: 'Release to Load',
+                            start: 'Loading...',
+                            beforeDeactive: 'Load Successfully!'
+                        },
+                        auto: true,
+                        autoLoadDistance: 0
                     }
                 }
             }
@@ -833,7 +845,9 @@
                         let searchParams = app.taskSearchParams;
                         let params = {};
                         taskStages.forEach((v, k) => {
-                            params = {stageCode: v.code};
+                            v.page = 1;
+                            app.getTasks(v, k, showLoading);
+                            /*params = {stageCode: v.code};
                             params = Object.assign(params, searchParams);
                             getTasks(params).then((res) => {
                                 let canNotReadCount = 0;
@@ -853,8 +867,33 @@
                                 if (!showLoading) {
                                     app.$set(app.taskStages, k, v);
                                 }
-                            })
+                            })*/
                         });
+                    }
+                })
+            },
+            getTasks(stage, index, showLoading) {
+                let searchParams = this.taskSearchParams;
+                let params = {};
+                params = {stageCode: stage.code};
+                params = Object.assign(params, searchParams);
+                getTasks(params).then((res) => {
+                    let canNotReadCount = 0;
+                    res.data.forEach((task) => {
+                        if (!task.canRead) {
+                            canNotReadCount++;
+                        }
+                        if (task.done) {
+                            stage.doneTasks.push(task);
+                        } else {
+                            stage.unDoneTasks.push(task);
+                        }
+                    });
+                    stage.canNotReadCount = canNotReadCount;
+                    stage.tasksLoading = false;
+                    stage.tasks = res.data;
+                    if (!showLoading) {
+                        this.$set(this.taskStages, index, stage);
                     }
                 })
             },
@@ -1193,7 +1232,18 @@
                     this.taskStages[stageIndex].fixedCreator = true;
                 }
             },
-
+            handleScroll(vertical, horizontal, nativeEvent) {
+                // console.log(vertical)
+                if (vertical.process >= 0.8) {
+                    // console.log(horizontal)
+                }
+            },
+            handleStart(vm, refreshDom, done) {
+                console.log(vm, refreshDom, 'handleStart');
+                setTimeout(() => {
+                    done(); // load finished
+                }, 2000)
+            },
             visibleDraw(type) {
                 if (type == 'member') {
                     this.configDraw.visible = false;
