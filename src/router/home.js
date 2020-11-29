@@ -25,4 +25,10 @@ export default [
         component: resolve => require(['@/views/common/inviteFromLink'], resolve),
         meta: {model: 'Common', info: {show_slider: false}},
     },
+    {
+        name: 'calendar',
+        path: '/calendar',
+        component: resolve => require(['@/views/common/calendar'], resolve),
+        meta: {model: 'Common', info: {show_slider: false}},
+    },
 ];

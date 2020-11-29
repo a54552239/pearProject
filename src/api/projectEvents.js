@@ -15,6 +15,9 @@ export function read(data) {
 export function confirmJoin(data) {
     return $http.post('project/events/confirmJoin', data);
 }
+export function getEventsListByCalendar(data) {
+    return $http.post('project/events/getEventsListByCalendar', data);
+}
 
 export function doData(data) {
     let url = 'project/events/save';

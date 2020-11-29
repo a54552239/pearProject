@@ -231,6 +231,7 @@
                             </div>
                         </a-card>-->
                     <a-card class="events-list" :loading="events.loading" :title="`日程 · ${events.eventList.length}`" :bordered="false"  style="margin-bottom: 24px">
+                        <router-link to="/calendar" slot="extra">日程日历</router-link>
                         <div class="list-content">
                             <a-list
                                 :loading="events.loading"

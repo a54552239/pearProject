@@ -121,8 +121,7 @@
                     <!--</a-tooltip>-->
                     <div class="scrum-stage-wrap ui-sortable"
                          :class="{ 'hidden-creator-bottom': stage.showTaskCard}">
-                        <vue-scroll :ref="index + '-stage'" @handle-resize="handleResize($event,index)" @handle-scroll="handleScroll"  @refresh-start="handleStart"
-                                    :ops="scrollOps">
+                        <vue-scroll :ref="index + '-stage'" :ops="scrollOps">
                             <section :id="stage.code" :task-type-index="index"
                                      class="scrum-stage-content thin-scroll">
                                 <a-spin wrapperClassName="tasks-loading" :spinning="stage.tasksLoading">
@@ -156,7 +155,7 @@
                                                 </a-tooltip>
                                                 <div class="task-content-set open-detail">
                                                     <div class="task-content-wrapper">
-                                                        <div class="task-content"> {{ task.name }}</div>
+                                                        <div class="task-content" :style="{overflowWrap: 'anywhere'}"> {{ task.name }}</div>
                                                         <a-tooltip placement="top"
                                                                    v-if="task.executor && task.executor.avatar">
                                                             <template slot="title">
@@ -284,7 +283,7 @@
                                                 </a>-->
                                                 <div class="task-content-set open-detail">
                                                     <div class="task-content-wrapper">
-                                                        <div class="task-content">{{ task.name }}</div>
+                                                        <div class="task-content" :style="{overflowWrap: 'anywhere'}">{{ task.name }}</div>
                                                         <a-tooltip placement="top"
                                                                    v-if="task.executor && task.executor.avatar">
                                                             <template slot="title">
@@ -1231,18 +1230,6 @@
                 if (vertical.barSize) {
                     this.taskStages[stageIndex].fixedCreator = true;
                 }
-            },
-            handleScroll(vertical, horizontal, nativeEvent) {
-                // console.log(vertical)
-                if (vertical.process >= 0.8) {
-                    // console.log(horizontal)
-                }
-            },
-            handleStart(vm, refreshDom, done) {
-                console.log(vm, refreshDom, 'handleStart');
-                setTimeout(() => {
-                    done(); // load finished
-                }, 2000)
             },
             visibleDraw(type) {
                 if (type == 'member') {
