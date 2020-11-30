@@ -1,5 +1,5 @@
 <template>
-    <div class="calendar-index">
+    <div class="calendar-index" id="calendar-index">
         <div class="layout-item left">
             <div class="left-content">
                 <div class="search-content">
@@ -42,7 +42,7 @@
                 <a-calendar @panelChange="onPanelChange" v-model="calendarValue">
                     <ul slot="dateCellRender" slot-scope="value" class="events">
                         <template v-for="(item, key) in list[value.format('YYYY-MM-DD')]">
-                            <a-popover class="calendar-pop" :visible="item.visible" title="" trigger="click" :key="item.id" v-if="key <= 3">
+                            <a-popover className="calendar-pop" :visible="item.visible" title="" trigger="click" :key="item.id" v-if="key <= 3" :getPopupContainer="getPopup">
                                 <a slot="content">
                                     <a-card class="calendar-pop-detail" size="small" style="width: 350px">
                                         <div slot="title">
@@ -99,7 +99,7 @@
                                 </a>
                                 <li>
                                     <div @click.stop="showCalendarPop(item)" v-if="key <= 2">{{item.title}}</div>
-                                    <a-popover class="calendar-pop" :visible="item.visibleMore" title="" trigger="click" :key="item.id" v-if="key == 3">
+                                    <a-popover class="calendar-pop" :visible="item.visibleMore" title="" trigger="click" :key="item.id" v-if="key == 3"  :getPopupContainer="getPopup">
                                         <a slot="content">
                                             <a-card class="calendar-pop-detail" size="small" style="width: 350px">
                                                 <div slot="title">{{value.format('YYYY-MM-DD')}}</div>
@@ -110,7 +110,7 @@
                                                 </div>
                                                 <ul class="events">
                                                     <template v-for="(item2, key2) in list[value.format('YYYY-MM-DD')]">
-                                                        <a-popover placement="left" class="calendar-pop" :visible="item2.visibleInner" title="" trigger="click" :key="item2.id" v-if="key <= 3">
+                                                        <a-popover placement="left" class="calendar-pop" :visible="item2.visibleInner" title="" trigger="click" :key="item2.id" v-if="key <= 3"  :getPopupContainer="getPopup">
                                                             <a slot="content">
                                                                 <a-card class="calendar-pop-detail" size="small" style="width: 350px">
                                                                     <div slot="title">
@@ -393,24 +393,13 @@ export default {
                 });
             }
         },
+        getPopup() {
+            return document.getElementById('calendar-index');
+        },
     }
 }
 </script>
 <style lang="less">
-.ant-popover-inner-content{
-    padding: 0;
-}
-.calendar-pop-detail{
-    .ant-card-extra {
-        a{
-            margin-left: 10px;
-        }
-    }
-    .ant-card-body{
-        line-height: 30px;
-    }
-
-}
 </style>
 <style lang="less">
 .calendar-index {
@@ -497,43 +486,48 @@ export default {
         }
     }
 
-    .notes-month {
-        text-align: center;
-        font-size: 28px;
+    .ant-popover-inner-content{
+        padding: 0;
+    }
+    .calendar-pop-detail{
+        .ant-card-extra {
+            a{
+                margin-left: 10px;
+            }
+        }
+        .ant-card-body{
+            line-height: 30px;
+        }
+
     }
 
-    .notes-month section {
-        font-size: 28px;
-    }
-}
+    .events {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        font-size: 12px;
+        line-height: 20px;
 
-.events {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    font-size: 12px;
-    line-height: 20px;
+        li {
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+            padding: 0 5px;
+            background-color: #f6ffed;
+            border: 1px solid #f6ffed;
 
-    li {
-        overflow: hidden;
-        white-space: nowrap;
-        text-overflow: ellipsis;
-        padding: 0 5px;
-        background-color: #f6ffed;
-        border: 1px solid #f6ffed;
-
-        &:hover {
-            border: 1px solid #b7eb8f;
+            &:hover {
+                border: 1px solid #b7eb8f;
+            }
         }
     }
-}
 
-.events .ant-badge-status {
-    overflow: hidden;
-    white-space: nowrap;
-    width: 100%;
-    text-overflow: ellipsis;
-    font-size: 12px;
+    .events .ant-badge-status {
+        overflow: hidden;
+        white-space: nowrap;
+        width: 100%;
+        text-overflow: ellipsis;
+        font-size: 12px;
+    }
 }
-
 </style>
