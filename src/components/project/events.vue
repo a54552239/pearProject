@@ -56,7 +56,9 @@
                                       allowClear
                                       showSearch
                                       :disabled="!!formData.id"
-                                      autoClearSearchValue>
+                                      autoClearSearchValue
+                                      @change="projectChange"
+                            >
                                 <template v-for="item in projectList">
                                     <a-select-option :key="item.code" :value="item.code">
                                         {{ item.name }}
@@ -127,6 +129,9 @@ export default {
         'projectCode': {
             default: 0
         },
+        date: {
+            default: moment()
+        },
         visible: {
             default: false
         },
@@ -135,6 +140,7 @@ export default {
         return {
             moment,
             currentMemberCode: this.$store.state.userInfo.code,
+            currentProjectCode: this.projectCode,
             loading: true,
             showLoadingMore: false,
             loadingMore: false,
@@ -155,8 +161,8 @@ export default {
                 id: 0,
                 title: undefined,
                 description: undefined,
-                begin_time: null,
-                end_time: null,
+                begin_time: this.date,
+                end_time: this.date,
                 all_day: false,
                 project_code: this.$route.params.code,
                 position: undefined,
@@ -198,7 +204,11 @@ export default {
     methods: {
         getProject() {
             this.loading = true;
-            getProject(this.projectCode).then((res) => {
+            if (!this.currentProjectCode) {
+                this.loading = false;
+                return false;
+            }
+            getProject(this.currentProjectCode).then((res) => {
                 this.loading = false;
                 this.project = res.data;
                 this.$store.dispatch('setTempData', {
@@ -207,32 +217,37 @@ export default {
             });
         },
         getProjectMemberList() {
-            getProjectMemberList({projectCode: this.projectCode, pageSize: 300}).then(res => {
+            getProjectMemberList({projectCode: this.currentProjectCode, pageSize: 300}).then(res => {
                 this.projectMemberList = res.data.list;
             })
         },
         getProjectList() {
             getProjectList({archive: 0, pageSize: 300}).then(res => {
+                this.loading = false;
                 this.projectList = res.data.list;
+                if (this.projectList.length && !this.currentProjectCode) {
+                    this.currentProjectCode = this.projectList[0].code;
+                    this.projectChange(this.currentProjectCode);
+                }
             })
         },
         init(reset = true) {
             let app = this;
-            if (this.projectCode) {
+            if (this.currentProjectCode) {
                 this.getProject();
                 this.getProjectMemberList();
-                this.getProjectList();
             }
+            this.getProjectList();
             if (!this.code) {
                 app.actionInfo.modalTitle = '新建日程';
                 app.formData = {
                     id: 0,
                     title: undefined,
                     description: undefined,
-                    begin_time: null,
-                    end_time: null,
+                    begin_time: this.date,
+                    end_time: this.date,
                     all_day: false,
-                    project_code: this.projectCode,
+                    project_code: this.currentProjectCode,
                     position: undefined,
                     member_list: [app.currentMemberCode],
                 };
@@ -249,6 +264,12 @@ export default {
                     app.formData = {...record};
                 });
             }
+        },
+        projectChange(value, option) {
+            this.currentProjectCode = value;
+            this.formData.project_code = value;
+            this.formData.member_list = [this.currentMemberCode];
+            this.getProjectMemberList();
         },
         handleSubmit() {
             let app = this;

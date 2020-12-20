@@ -41,6 +41,7 @@
             <div class="calendar-content">
                 <a-calendar @panelChange="onPanelChange" v-model="calendarValue">
                     <ul slot="dateCellRender" slot-scope="value" class="events">
+                        <li class="add-item" @click.stop="rowClick(null, 'add', value)">添加日程</li>
                         <template v-for="(item, key) in list[value.format('YYYY-MM-DD')]">
                             <a-popover className="calendar-pop" :visible="item.visible" title="" trigger="click" :key="item.id" v-if="key <= 3" :getPopupContainer="getPopup">
                                 <a slot="content">
@@ -189,17 +190,19 @@
                             <a-button shape="circle" @click="changeMonth(1, onChange)">
                                 <a-icon type="right"/>
                             </a-button>
+                            <a-button type="primary" class="m-l" @click="rowClick(null, 'add')">添加日程</a-button>
                         </div>
                     </template>
                 </a-calendar>
             </div>
         </div>
-        <events v-if="eventsModal" :visible.sync="eventsModal" :code="eventsCode" :project-code="code" @confirm="eventsConfirm"/>
+        <events v-if="eventsModal" :visible.sync="eventsModal" :code="eventsCode" :date="eventsDate" :project-code="code" @confirm="eventsConfirm"/>
     </div>
 </template>
 
 <script>
 import _ from 'lodash'
+import $ from 'jquery'
 import moment from 'moment'
 import pagination from "@/mixins/pagination";
 import {confirmJoin, del, getEventsListByCalendar} from "@/api/projectEvents";
@@ -229,6 +232,7 @@ export default {
 
             eventsModal: false,
             eventsCode: '',
+            eventsDate: moment(),
             code: ''
         }
     },
@@ -304,11 +308,18 @@ export default {
             this.getEventsListByCalendar(value);
         },
         getEventsListByCalendar(value) {
+            let app = this;
             let obj = {date: value.format('YYYY-MM-DD HH:mm:ss'), memberCodes: JSON.stringify(this.memberCodes)};
             console.log(obj);
             // this.showData = false;
             getEventsListByCalendar(obj).then(res => {
                 this.list = res.data.list;
+                this.$nextTick(()=>{
+                    $(".ant-fullcalendar-date").hover(function (){
+                        $(".add-item").hide();
+                        $(this).find(".add-item").show();
+                    })
+                })
                 // this.showData = true;
             });
         },
@@ -362,12 +373,22 @@ export default {
                 record.visibleMore = true;
             }
         },
-        async rowClick(record, action) {
+        async rowClick(record, action, date) {
             let app = this;
-            record.visible = false;
-            record.visibleInner = false;
-            record.visibleMore = false;
-            this.code = record.project_code;
+            if (date) {
+                this.eventsDate = date;
+            }else{
+                this.eventsDate = moment();
+            }
+
+            if (record) {
+                record.visible = false;
+                record.visibleInner = false;
+                record.visibleMore = false;
+                this.code = record.project_code;
+            }else {
+                this.code = '';
+            }
             console.log(record);
             if (action == 'add' || action == 'edit' || action == 'new') {
                 app.eventsCode = '';
@@ -408,6 +429,12 @@ export default {
     flex-direction: row;
     min-width: 1200px;
     padding: 0 12px;
+
+    .add-item{
+        display: none;
+        position: absolute;
+        top: 5px;
+    }
 
     .layout-item {
         background: #FFF;
@@ -461,7 +488,7 @@ export default {
                 display: flex;
                 align-items: center;
                 text-align: center;
-                width: 260px;
+                width: 380px;
                 margin: 15px;
             }
 
