@@ -1,17 +1,16 @@
 <template>
-    <div class="project-space-task" :class="`${project.task_board_theme} ${viewType}`">
-        <div class="project-navigation">
-            <div class="project-nav-header">
-                <a-breadcrumb>
-                    <a-breadcrumb-item>
-                        <a @click="toHome">
-                            <a-icon type="home"/>
-                            首页
-                        </a>
-                    </a-breadcrumb-item>
-                    <a-breadcrumb-item>
-                        <project-select class="nav-title" style="display: inline-block" :code="code"></project-select>
-                        <span class="actions">
+	<div class="project-space-task" :class="`${project.task_board_theme} ${viewType}`">
+		<div class="project-navigation">
+			<div class="project-nav-header">
+				<a-breadcrumb>
+					<a-breadcrumb-item>
+						<a @click="toHome">
+							<a-icon type="home" /> 首页
+						</a>
+					</a-breadcrumb-item>
+					<a-breadcrumb-item>
+						<project-select class="nav-title" style="display: inline-block" :code="code"></project-select>
+						<span class="actions">
                              <a-tooltip :mouseEnterDelay="0.3" :title="project.collected ? '取消收藏' : '加入收藏'"
                                         @click="collectProject">
                             <a-icon type="star" theme="filled" style="color: grey;" v-show="!project.collected"/>
@@ -63,7 +62,8 @@
         <wrapper-content :showHeader="false">
             <draggable e v-show="viewType == 'task-board'" v-model="taskStages"
                        :options="{group:'stages',filter:'.undraggables',handle:'.ui-sortable-handle',ghostClass:'stage-ghost',animation: 200,forceFallback:false}"
-                       id="board-scrum-stages" class="board-scrum-stages" @end="stageSort">
+                       id="board-scrum-stages" class="board-scrum-stages" @end="stageSort"
+                       v-dragscroll2>
                 <div class="scrum-stage" v-for="(stage,index) in taskStages" :key="index" :id="stage.code"
                      :class="{ 'fixed-creator': stage.fixedCreator == true}">
                     <!--<a-spin wrapperClassName="tasks-loading" :spinning="stage.tasksLoading">-->
@@ -808,6 +808,74 @@
             this.getProject();
             this.getProjectMembers();
             this.init();
+        },
+         directives: {
+            dragscroll2: function (el) {
+            // el.oncontextmenu = function (ev) {
+            el.onmousedown = function (ev) {
+                console.log(ev.target.classList);
+                const exclude = [
+                "task-content",
+                "task-content-set",
+                "task-content",
+                "stage-name",
+                "scrum-stage-header",
+                "task-creator-handler",
+                "ant-btn",
+                "ant-input",
+                ];
+                const isExclude = exclude.some((item) =>
+                ev.target.classList.contains(item)
+                );
+                if (isExclude) {
+                // document.onmousemove = null;
+                // document.onmouseup = null;
+                // el.style["scroll-behavior"] = originalScrollBehavior;
+                // el.style["pointer-events"] = originalPointerEvents;
+                return;
+                }
+
+                ev.stopPropagation();
+                ev.preventDefault();
+                document.body.style.cursor = "move";
+                const disX = ev.clientX;
+                const disY = ev.clientY;
+                const originalScrollLeft = el.scrollLeft;
+                const originalScrollTop = el.scrollTop;
+                const originalScrollBehavior = el.style["scroll-behavior"];
+                const originalPointerEvents = el.style["pointer-events"];
+                el.style["scroll-behavior"] = "auto";
+                let elEvent = ev;
+                // 鼠标移动事件是监听的整个document，这样可以使鼠标能够在元素外部移动的时候也能实现拖动
+                document.onmousemove = function (ev) {
+                ev.stopPropagation();
+                ev.preventDefault();
+                // elEvent.target.style.cursor = "move";
+                // ev.target.style.cursor = "move";
+                document.body.style.cursor = "move";
+
+                const distanceX = ev.clientX - disX;
+                const distanceY = ev.clientY - disY;
+                el.scrollTo(
+                    originalScrollLeft - distanceX,
+                    originalScrollTop - distanceY
+                );
+                // 由于我们的图片本身有点击效果，所以需要在鼠标拖动的时候将点击事件屏蔽掉
+                el.style["pointer-events"] = "none";
+                };
+                document.onmouseup = function (ev) {
+                ev.stopPropagation();
+                // elEvent.target.style.cursor = "auto";
+                // ev.target.style.cursor = "auto";
+                document.body.style.cursor = "auto";
+
+                document.onmousemove = null;
+                document.onmouseup = null;
+                el.style["scroll-behavior"] = originalScrollBehavior;
+                el.style["pointer-events"] = originalPointerEvents;
+                };
+            };
+            },
         },
         methods: {
             init() {
