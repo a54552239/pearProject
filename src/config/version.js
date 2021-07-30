@@ -16,4 +16,8 @@ ALTER TABLE `pear_project` MODIFY COLUMN `auto_update_schedule` tinyint(1) NULL 
 UPDATE `projectdb`.`pear_project` SET `auto_update_schedule`=1;
 UPDATE `projectdb`.`pear_project` SET `open_begin_time`=1;
 
+5. 增加文件物理删除
+ALTER TABLE `pear_project_log` ADD COLUMN `file_code` varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT '' COMMENT '文件id' AFTER `is_robot`;
+
+
 */
