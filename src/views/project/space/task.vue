@@ -771,7 +771,7 @@ export default {
       /*回收站*/
       recycleModal: {
         modalStatus: false,
-        modalTitle: "查看回收站",
+        modalTitle: "项目回收站",
       },
       /*任务标签*/
       taskTagModal: {

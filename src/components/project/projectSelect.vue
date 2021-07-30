@@ -1,14 +1,17 @@
 <template>
-  <div id="project-select" v-if="currentProject">
+  <div id="project-select">
     <a-dropdown
       :trigger="['click']"
       v-model="visibleMenu"
       class="action-item"
       placement="bottomCenter"
     >
-      <a-tooltip :mouseEnterDelay="0.3" :title="currentProject.name">
+      <a-tooltip
+        :mouseEnterDelay="0.3"
+        :title="(currentProject && currentProject.name) || '全部'"
+      >
         <div class="project-select" style="color: #333">
-          <span>{{currentProject.name}}</span>
+          <span>{{ (currentProject && currentProject.name) || "全部" }}</span>
           <span class="m-l-xs">
             <a-icon type="down" />
           </span>
@@ -23,12 +26,28 @@
         <div class="member-list">
           <vue-scroll>
             <div class="list-group">
+              <a-list-item
+                class="member-list-item"
+                slot="renderItem"
+                v-if="rettype"
+                @click.native="changeProject('');currentProject = null"
+              >
+                <span slot="actions">
+                  <a-icon type="check" v-show="showCheck('')"></a-icon>
+                </span>
+                <a-list-item-meta>
+                  <span slot="title">全部</span>
+                </a-list-item-meta>
+              </a-list-item>
               <a-list
                 class="list-content"
                 itemLayout="horizontal"
                 size="small"
                 :dataSource="projectList"
-                :locale="{emptyText: (keyword && keyword.length > 1) ? '没有找到该项目' : ''}"
+                :locale="{
+                  emptyText:
+                    keyword && keyword.length > 1 ? '没有找到该项目' : '',
+                }"
               >
                 <a-list-item
                   class="member-list-item"
@@ -40,7 +59,7 @@
                     <a-icon type="check" v-show="showCheck(item.code)"></a-icon>
                   </span>
                   <a-list-item-meta>
-                    <span slot="title">{{item.name}}</span>
+                    <span slot="title">{{ item.name }}</span>
                     <a-avatar slot="avatar" icon="user" :src="item.cover" />
                   </a-list-item-meta>
                 </a-list-item>
@@ -69,6 +88,12 @@ export default {
       type: [String],
       default() {
         return "";
+      },
+    },
+    rettype: {
+      type: [Boolean],
+      default() {
+        return false;
       },
     },
   },
@@ -103,7 +128,7 @@ export default {
   },
   methods: {
     init() {
-      this.getProject();
+      this.code && this.getProject();
       this.getProjectList(true);
     },
     getProject() {
@@ -124,6 +149,9 @@ export default {
     },
     changeProject(code) {
       this.visibleMenu = false;
+      if (this.rettype) {
+        return this.$emit("change-project", code);
+      }
       if (this.$route.path == "/project/space/task/" + code) {
         this.init();
       } else {

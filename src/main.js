@@ -19,7 +19,8 @@ import 'moment/locale/zh-cn';
 
 import common from "./mixins/common";
 
-import '@/utils/filter' // global filter
+import '@/utils/filter'; // global filter
+
 
 
 moment.locale('zh-cn');
@@ -41,6 +42,7 @@ Vue.prototype.$message = message;
 Vue.prototype.$notification = notification;
 Vue.prototype.$notice = notice;
 Vue.prototype.$destroyNotice = destroyNotice;
+Vue.prototype.$moment = moment;
 
 Vue.use(vuescroll);
 Vue.prototype.$vuescrollConfig = {

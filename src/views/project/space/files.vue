@@ -4,12 +4,14 @@
       <a-col class="project-nav-header" :span="8" :xs="24" :sm="10" :md="8" :lg="8">
         <a-breadcrumb>
           <a-breadcrumb-item>
-            <a @click="toHome">
-              <a-icon type="home" />首页
-            </a>
+            <a @click="toHome"> <a-icon type="home" />首页 </a>
           </a-breadcrumb-item>
           <a-breadcrumb-item>
-            <project-select class="nav-title" style="display: inline-block" :code="code"></project-select>
+            <project-select
+              class="nav-title"
+              style="display: inline-block"
+              :code="code"
+            ></project-select>
             <span class="actions">
               <a-tooltip
                 :mouseEnterDelay="0.3"
@@ -19,13 +21,13 @@
                 <a-icon
                   type="star"
                   theme="filled"
-                  style="color: grey;"
+                  style="color: grey"
                   v-show="!project.collected"
                 />
                 <a-icon
                   type="star"
                   theme="filled"
-                  style="color: #ffaf38;"
+                  style="color: #ffaf38"
                   v-show="project.collected"
                 />
               </a-tooltip>
@@ -38,10 +40,24 @@
       </a-col>
       <a-col class="nav-body" :span="8" :xs="24" :sm="14" :md="8" :lg="8">
         <ul class="nav-wrapper nav nav-underscore">
-          <li class data-app="tasks" @click="$router.push('/project/space/task/' + code)">任务</li>
+          <li class data-app="tasks" @click="$router.push('/project/space/task/' + code)">
+            任务
+          </li>
           <li class="actives" data-app="works" @click="getFiles">文件</li>
-          <li class data-app="build" @click="$router.push('/project/space/overview/' + code)">概览</li>
-          <li class data-app="build" @click="$router.push('/project/space/features/' + code)">版本</li>
+          <li
+            class
+            data-app="build"
+            @click="$router.push('/project/space/overview/' + code)"
+          >
+            概览
+          </li>
+          <li
+            class
+            data-app="build"
+            @click="$router.push('/project/space/features/' + code)"
+          >
+            版本
+          </li>
         </ul>
       </a-col>
     </a-row>
@@ -49,11 +65,20 @@
       <div class="content-wrapper">
         <div class="content-item files-list">
           <div class="header">
-            <span class="title">项目文件</span>
-            <div class="header-actions">
+            <span class="title">项目文件({{ pagination.total }})</span>
+            <a-space class="header-actions" size="small">
               <!--<a><a-icon type="upload"></a-icon> 上传文件</a>-->
-              <a-button id="upload-file" icon="up-circle" type="dashed" size="small">上传</a-button>
-            </div>
+              <a-button
+                icon="delete"
+                type="default"
+                size="small"
+                @click="recycleModal.modalStatus = true"
+                >回收站</a-button
+              >
+              <a-button id="upload-file" icon="up-circle" type="primary" size="small"
+                >上传</a-button
+              >
+            </a-space>
           </div>
           <div class="list-content">
             <a-list :loading="loading">
@@ -81,14 +106,23 @@
                   </a-tooltip>
                 </span>
               </a-list-item>
-              <template v-if="files.length>0">
-                <a-list-item class="list-item" :key="index" v-for="(item, index) in files">
+              <template v-if="files.length > 0">
+                <a-list-item
+                  class="list-item"
+                  :key="index"
+                  v-for="(item, index) in files"
+                >
                   <a-list-item-meta>
-                    <a-avatar slot="avatar" shape="square" icon="link" :src="item.file_url" />
+                    <a-avatar
+                      slot="avatar"
+                      shape="square"
+                      icon="link"
+                      :src="item.file_url"
+                    />
                     <div slot="title">
                       <a-tooltip :mouseEnterDelay="0.3">
                         <template slot="title">
-                          <span>{{item.fullName}}</span>
+                          <span>{{ item.fullName }}</span>
                         </template>
                         <a-input
                           :ref="`inputTitle${index}`"
@@ -104,13 +138,18 @@
                           :href="item | showPreviewUrl"
                           :title="item.fullName"
                           v-show="!item.editing"
-                        >{{item.fullName.length>30?item.fullName.substr(0,30)+'...':item.fullName}}</a>
+                          >{{
+                            item.fullName.length > 30
+                              ? item.fullName.substr(0, 30) + "..."
+                              : item.fullName
+                          }}</a
+                        >
                       </a-tooltip>
                     </div>
                   </a-list-item-meta>
                   <div class="other-info muted">
                     <div class="info-item">
-                      <span>{{(formatSize(item.size))}}</span>
+                      <span>{{ formatSize(item.size) }}</span>
                     </div>
                     <div class="info-item">
                       <a-tooltip :title="item.create_time">
@@ -118,7 +157,7 @@
                       </a-tooltip>
                     </div>
                     <div class="info-item">
-                      <span>{{item.creatorName}}</span>
+                      <span>{{ item.creatorName }}</span>
                     </div>
                   </div>
                   <span slot="actions">
@@ -133,7 +172,7 @@
                                          <a-icon type="upload"/>
                                      </a-tooltip>
                   </span>-->
-                  <span slot="actions" @click="editFile(item,index)">
+                  <span slot="actions" @click="editFile(item, index)">
                     <a-tooltip title="编辑">
                       <a-icon type="edit" />
                     </a-tooltip>
@@ -151,7 +190,7 @@
                       <a-menu
                         class="field-right-menu"
                         v-clipboard="item.file_url"
-                        @click="doFile($event,item.code)"
+                        @click="doFile($event, item.code)"
                         slot="overlay"
                       >
                         <a-menu-item key="copy">
@@ -173,7 +212,12 @@
               <div
                 v-if="showLoadingMore"
                 slot="loadMore"
-                :style="{ textAlign: 'center', marginTop: '12px', height: '32px', lineHeight: '32px' }"
+                :style="{
+                  textAlign: 'center',
+                  marginTop: '12px',
+                  height: '32px',
+                  lineHeight: '32px',
+                }"
               >
                 <a-spin v-if="loadingMore">
                   <a-icon slot="indicator" type="loading" style="font-size: 2rem" spin />
@@ -184,11 +228,27 @@
           </div>
         </div>
       </div>
+
+      <!--回收站-->
+      <a-modal
+        class="recycle-bin-modal"
+        :width="800"
+        v-model="recycleModal.modalStatus"
+        :title="recycleModal.modalTitle"
+        :footer="null"
+      >
+        <recycle-bin
+          v-if="recycleModal.modalStatus"
+          :code="code"
+          @update="getFiles"
+        ></recycle-bin>
+      </a-modal>
     </wrapper-content>
   </div>
 </template>
 
 <script>
+import RecycleBin from "@/components/project/recycleBin";
 import { mapState } from "vuex";
 import { read as getProject } from "../../../api/project";
 import { collect } from "../../../api/projectCollect";
@@ -211,9 +271,15 @@ export default {
       project: { task_board_theme: "simple" },
       currentFileIndex: {},
       files: [],
+      /*回收站*/
+      recycleModal: {
+        modalStatus: false,
+        modalTitle: "项目回收站",
+      },
     };
   },
   components: {
+    RecycleBin,
     projectSelect,
   },
   computed: {
@@ -226,9 +292,7 @@ export default {
       handler(newVal, oldVal) {
         //监听是否有上传文件行为
         const files = newVal.fileList;
-        const index = files.findIndex(
-          (item) => item.projectName == this.project.name
-        );
+        const index = files.findIndex((item) => item.projectName == this.project.name);
         if (index !== -1) {
           this.getFiles();
         }
@@ -311,23 +375,21 @@ export default {
       });
       const fullName = `${file.title}.${file.extension}`;
       if (fullName != currentFile.fullName) {
-        edit({ title: currentFile.title, fileCode: currentFile.code }).then(
-          (res) => {
-            const result = checkResponse(res);
-            if (!result) {
-              return false;
-            }
-            currentFile.title = file.title;
-            currentFile.fullName = fullName;
-            notice(
-              {
-                title: "重命名成功",
-              },
-              "notice",
-              "success"
-            );
+        edit({ title: currentFile.title, fileCode: currentFile.code }).then((res) => {
+          const result = checkResponse(res);
+          if (!result) {
+            return false;
           }
-        );
+          currentFile.title = file.title;
+          currentFile.fullName = fullName;
+          notice(
+            {
+              title: "重命名成功",
+            },
+            "notice",
+            "success"
+          );
+        });
       }
     },
     doFile(action, fileCode) {

@@ -1,14 +1,16 @@
 <template>
-  <a-tabs tabPosition="left" defaultActiveKey="1" :animated="false" v-model="tabKey">
+  <a-tabs
+    tabPosition="left"
+    defaultActiveKey="1"
+    :animated="false"
+    v-model="tabKey"
+    v-if="code"
+  >
     <a-tab-pane key="1">
-      <span slot="tab">
-        <a-icon type="check-square" />任务
-      </span>
+      <span slot="tab"> <a-icon type="check-square" />任务 </span>
     </a-tab-pane>
     <a-tab-pane key="2">
-      <span slot="tab">
-        <a-icon type="link" />文件
-      </span>
+      <span slot="tab"> <a-icon type="link" />文件 </span>
     </a-tab-pane>
     <div class="config-content">
       <vue-scroll>
@@ -18,7 +20,12 @@
               <div
                 v-if="showLoadingMore"
                 slot="loadMore"
-                :style="{ textAlign: 'center', marginTop: '12px', height: '32px', lineHeight: '32px' }"
+                :style="{
+                  textAlign: 'center',
+                  marginTop: '12px',
+                  height: '32px',
+                  lineHeight: '32px',
+                }"
               >
                 <a-spin v-if="loadingMore">
                   <a-icon slot="indicator" type="loading" style="font-size: 2rem" spin />
@@ -32,24 +39,26 @@
                       class="text-default"
                       v-show="tabKey == '1'"
                       :to="`/project/space/task/${code}/detail/${item.code}`"
-                    >{{ item.name }}</router-link>
+                      >{{ item.name }}</router-link
+                    >
                     <a
                       target="_blank"
                       class="text-default"
                       v-show="tabKey == '2'"
                       :href="item.file_url"
-                    >{{ item.fullName }}</a>
+                      >{{ item.fullName }}</a
+                    >
                   </div>
-                  <div slot="description">{{showTaskTime(item.deleted_time)}}</div>
+                  <div slot="description">{{ showTaskTime(item.deleted_time) }}</div>
                 </a-list-item-meta>
-                <a class="muted" slot="actions" @click="recoveryTask(item,index)">
+                <a class="muted" slot="actions" @click="recoveryTask(item, index)">
                   <a-tooltip title="恢复内容">
                     <a-icon type="undo" />
                   </a-tooltip>
                 </a>
-                <a class="muted" slot="actions" @click="deleteItem(item,index)">
+                <a class="muted" slot="actions" @click="deleteItem(item, index)">
                   <a-tooltip title="彻底删除">
-                    <a-icon type="delete" />
+                    <a-icon class="text-error" type="delete" />
                   </a-tooltip>
                 </a>
               </a-list-item>
@@ -59,6 +68,56 @@
       </vue-scroll>
     </div>
   </a-tabs>
+
+  <div class="config-content" v-else>
+    <vue-scroll>
+      <div class="content-item">
+        <div class="files-infos">
+          <a-list>
+            <div
+              v-if="showLoadingMore"
+              slot="loadMore"
+              :style="{
+                textAlign: 'center',
+                marginTop: '12px',
+                height: '32px',
+                lineHeight: '32px',
+              }"
+            >
+              <a-spin v-if="loadingMore">
+                <a-icon slot="indicator" type="loading" style="font-size: 2rem" spin />
+              </a-spin>
+              <a-button v-else @click="onLoadMore">加载更多</a-button>
+            </div>
+            <a-list-item
+              class="file-list-item"
+              :key="index"
+              v-for="(item, index) in list"
+            >
+              <a-list-item-meta>
+                <div slot="title">
+                  <a target="_blank" class="text-default" :href="item.file_url">{{
+                    item.fullName
+                  }}</a>
+                </div>
+                <div slot="description">{{ showTaskTime(item.deleted_time) }}</div>
+              </a-list-item-meta>
+              <a class="muted" slot="actions" @click="recoveryTask(item, index)">
+                <a-tooltip title="放回原处">
+                  <a-icon type="undo" />
+                </a-tooltip>
+              </a>
+              <a slot="actions" @click="deleteItem(item, index)">
+                <a-tooltip title="彻底删除">
+                  <a-icon class="text-error" type="delete" />
+                </a-tooltip>
+              </a>
+            </a-list-item>
+          </a-list>
+        </div>
+      </div>
+    </vue-scroll>
+  </div>
 </template>
 
 <script>
@@ -81,6 +140,12 @@ export default {
         return "";
       },
     },
+    organizationCode: {
+      type: [String],
+      default() {
+        return "";
+      },
+    },
   },
   mixins: [pagination],
   data() {
@@ -98,7 +163,7 @@ export default {
       this.init();
     },
     tabKey(val) {
-      this.init();
+      if (this.code) this.init();
     },
   },
   created() {
@@ -115,6 +180,8 @@ export default {
       }
       this.requestData.deleted = 1;
       this.requestData.projectCode = this.code;
+      this.requestData.organizationCode = this.organizationCode;
+      if (!this.code && this.tabKey == "1") this.tabKey = "2";
       app.loading = true;
       switch (this.tabKey) {
         case "1":
@@ -155,6 +222,7 @@ export default {
     },
     recoveryTask(item, index) {
       let app = this;
+      if (!this.code && this.tabKey == "1") this.tabKey = "2";
       switch (this.tabKey) {
         case "1":
           this.$confirm({
@@ -198,6 +266,7 @@ export default {
     },
     deleteItem(item, index) {
       let app = this;
+      if (!this.code && this.tabKey == "1") this.tabKey = "2";
       switch (this.tabKey) {
         case "1":
           this.$confirm({
@@ -287,9 +356,9 @@ export default {
       flex: 1 1;
       margin-bottom: 24px;
 
-      .infos {
+      .infos,
+      .files-infos {
         width: 100%;
-        padding-right: 12px;
 
         p {
           margin-bottom: 6px;
@@ -302,6 +371,13 @@ export default {
         .item-tips {
           margin-bottom: 12px;
         }
+
+        .file-list-item {
+          padding: 12px 1rem;
+        }
+      }
+      .infos {
+        padding-right: 12px;
       }
     }
   }

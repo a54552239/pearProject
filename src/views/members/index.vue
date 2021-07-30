@@ -17,30 +17,38 @@
         <div class="content-item muted">成员</div>
         <div class="menus">
           <a-menu mode="inline" v-model="selectedKeys" @click="getMembers">
-            <a-menu-item :key="index.toString()" v-for="(item,index) in menus">
+            <a-menu-item :key="index.toString()" v-for="(item, index) in menus">
               <a-icon :type="item.icon" />
-              <span>{{item.title}}</span>
+              <span>{{ item.title }}</span>
             </a-menu-item>
           </a-menu>
         </div>
         <div class="content-item muted">部门</div>
         <div class="actions content-item">
-          <a-dropdown :trigger="['click']" v-model="showCreateDepartment" placement="bottomCenter">
-            <a>
-              <a-icon :style="{fontSize: '14px'}" type="plus-circle" />创建部门
-            </a>
+          <a-dropdown
+            :trigger="['click']"
+            v-model="showCreateDepartment"
+            placement="bottomCenter"
+          >
+            <a> <a-icon :style="{ fontSize: '14px' }" type="plus-circle" />创建部门 </a>
             <div slot="overlay">
-              <create-department v-if="showCreateDepartment" @update="createDepartmentSuccess"></create-department>
+              <create-department
+                v-if="showCreateDepartment"
+                @update="createDepartmentSuccess"
+              ></create-department>
             </div>
           </a-dropdown>
-          <a>
-            <a-icon type="bars" />部门排序*
-          </a>
+          <a> <a-icon type="bars" />部门排序* </a>
         </div>
         <div class="content-item department">
           <a-spin :spinning="departmentLoading">
-            <a-tree :loadData="onLoadData" :treeData="treeData" showIcon @select="onSelect">
-              <template slot="custom" slot-scope="{selected}">
+            <a-tree
+              :loadData="onLoadData"
+              :treeData="treeData"
+              showIcon
+              @select="onSelect"
+            >
+              <template slot="custom" slot-scope="{ selected }">
                 <a-icon type="bulb" />
               </template>
             </a-tree>
@@ -52,7 +60,7 @@
     <div class="layout-item right">
       <div class="header">
         <div class="title">
-          <span>{{currentMenu.title}} · {{pagination.total}}</span>
+          <span>{{ currentMenu.title }} · {{ pagination.total }}</span>
         </div>
         <div class="actions">
           <!-- <a>
@@ -61,9 +69,7 @@
           </a>-->
 
           <a-dropdown :trigger="['click']" placement="bottomCenter">
-            <a class="ant-dropdown-link" href="#">
-              <a-icon type="user-add" />添加成员
-            </a>
+            <a class="ant-dropdown-link" href="#"> <a-icon type="user-add" />添加成员 </a>
             <a-menu slot="overlay">
               <a-menu-item>
                 <a href="javascript:;" @click="showInviteMember = true">
@@ -85,7 +91,11 @@
                   :headers="headers"
                   @change="handleChange"
                 >
-                  <a class="text-default" :loading="uploadLoading" :disabled="uploadLoading">
+                  <a
+                    class="text-default"
+                    :loading="uploadLoading"
+                    :disabled="uploadLoading"
+                  >
                     <a-icon type="upload" v-show="!uploadLoading" />上传文件批量导入成员
                   </a>
                 </a-upload>
@@ -99,7 +109,7 @@
               placement="bottomCenter"
             >
               <a>
-                <a-icon :style="{fontSize: '14px'}" type="plus-circle" />创建子部门
+                <a-icon :style="{ fontSize: '14px' }" type="plus-circle" />创建子部门
               </a>
               <div slot="overlay">
                 <create-department
@@ -109,10 +119,12 @@
                 ></create-department>
               </div>
             </a-dropdown>
-            <a-dropdown :trigger="['click']" v-model="showEditDepartment" placement="bottomCenter">
-              <a>
-                <a-icon :style="{fontSize: '14px'}" type="edit" />编辑部门
-              </a>
+            <a-dropdown
+              :trigger="['click']"
+              v-model="showEditDepartment"
+              placement="bottomCenter"
+            >
+              <a> <a-icon :style="{ fontSize: '14px' }" type="edit" />编辑部门 </a>
               <div slot="overlay">
                 <create-department
                   v-if="showEditDepartment"
@@ -122,7 +134,7 @@
               </div>
             </a-dropdown>
             <a @click="deleteDepartment">
-              <a-icon :style="{fontSize: '14px'}" type="delete" />删除部门
+              <a-icon :style="{ fontSize: '14px' }" type="delete" />删除部门
             </a>
           </template>
         </div>
@@ -133,7 +145,12 @@
             <div
               v-if="showLoadingMore"
               slot="loadMore"
-              :style="{ textAlign: 'center', marginTop: '12px', height: '32px', lineHeight: '32px' }"
+              :style="{
+                textAlign: 'center',
+                marginTop: '12px',
+                height: '32px',
+                lineHeight: '32px',
+              }"
             >
               <!--                            <a-spin v-if="loadingMore"/>-->
               <a-button @click="onLoadMore">加载更多</a-button>
@@ -143,15 +160,14 @@
                 <a-avatar slot="avatar" :src="item.avatar" />
                 <div slot="title">
                   <router-link :to="`/members/profile/${item.code}`" class="text-default">
-                    {{ item.name
-                    }}
+                    {{ item.name }}
                   </router-link>
                   <a-tag class="m-l-sm" v-if="item.is_owner">拥有者</a-tag>
                 </div>
                 <div slot="description">
                   <!--<a-tooltip :mouseEnterDelay="0.3" :title="item.create_time">-->
                   <span>
-                    {{item.email}}
+                    {{ item.email }}
                     <span v-if="item.departments">- {{ item.departments }}</span>
                   </span>
                   <!--</a-tooltip>-->
@@ -162,7 +178,7 @@
                   class="muted"
                   slot="actions"
                   v-if="item.status == 0"
-                  @click="resumeAccount(item,index)"
+                  @click="resumeAccount(item, index)"
                 >
                   <a-tooltip title="启用账号">
                     <a-icon type="check-circle" />
@@ -172,13 +188,13 @@
                   class="muted"
                   slot="actions"
                   v-if="item.status == 1"
-                  @click="forbidAccount(item,index)"
+                  @click="forbidAccount(item, index)"
                 >
                   <a-tooltip title="停用账号">
                     <a-icon type="stop" />
                   </a-tooltip>
                 </a>
-                <a class="muted" slot="actions" @click="deleteAccount(item,index)">
+                <a class="muted" slot="actions" @click="deleteAccount(item, index)">
                   <a-tooltip :title="`从${actionTitle}内移除`">
                     <a-icon type="user-delete" />
                   </a-tooltip>
@@ -353,25 +369,23 @@ export default {
     },
     onLoadData(treeNode) {
       return new Promise((resolve) => {
-        list({ page: 1, pageSize: 100, pcode: treeNode.dataRef.key }).then(
-          (res) => {
-            let list = [];
-            if (res.data.list.length) {
-              res.data.list.forEach((v) => {
-                list.push({
-                  key: v.code,
-                  title: v.name,
-                  isLeaf: !v.hasNext,
-                  scopedSlots: { icon: "custom" },
-                });
+        list({ page: 1, pageSize: 100, pcode: treeNode.dataRef.key }).then((res) => {
+          let list = [];
+          if (res.data.list.length) {
+            res.data.list.forEach((v) => {
+              list.push({
+                key: v.code,
+                title: v.name,
+                isLeaf: !v.hasNext,
+                scopedSlots: { icon: "custom" },
               });
-            }
-            treeNode.dataRef.isLeaf = !list.length > 0;
-            treeNode.dataRef.children = list;
-            this.treeData = [...this.treeData];
-            resolve();
+            });
           }
-        );
+          treeNode.dataRef.isLeaf = !list.length > 0;
+          treeNode.dataRef.children = list;
+          this.treeData = [...this.treeData];
+          resolve();
+        });
       });
     },
     createDepartmentSuccess(data) {
@@ -539,6 +553,8 @@ export default {
   .left {
     padding: 12px 24px 12px 0;
     width: 280px;
+    border-top-left-radius: 1.4rem;
+    border-bottom-left-radius: 1.4rem;
 
     .left-content {
       width: 255px;
@@ -620,7 +636,8 @@ export default {
 
   .right {
     padding: 24px 12px 12px 0;
-
+    border-top-right-radius: 1.4rem;
+    border-bottom-right-radius: 1.4rem;
     .header {
       padding-right: 12px;
       display: flex;
