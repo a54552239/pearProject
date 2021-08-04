@@ -6,13 +6,12 @@
         v-if="yiyan"
         :data-type="yiyan_cate[yiyan_cate_c].title"
         :data-uuid="yiyan.uuid"
-        :href="'https://hitokoto.cn?uuid='+yiyan.uuid"
+        :href="'https://hitokoto.cn?uuid=' + yiyan.uuid"
       >
-        {{ yiyan.hitokoto }} —— {{yiyan.from_who}}《{{ yiyan.from }}》{{yiyan_cate[yiyan_cate_c].name?'['+yiyan_cate[yiyan_cate_c].name+']':''}}
-        <a
-          class="muted"
-          @click="getYiYan"
-        >
+        {{ yiyan.hitokoto }} —— {{ yiyan.from_who }}《{{ yiyan.from }}》{{
+          yiyan_cate[yiyan_cate_c].name ? "[" + yiyan_cate[yiyan_cate_c].name + "]" : ""
+        }}
+        <a class="muted" @click="getYiYan">
           <a-icon type="reload" />
         </a>
       </p>
@@ -28,12 +27,12 @@
           :xxl="18"
         >
           <div class="avatar">
-            <a-avatar :size="64" :src="userInfo.avatar">{{userInfo.name}}</a-avatar>
+            <a-avatar :size="64" :src="userInfo.avatar">{{ userInfo.name }}</a-avatar>
           </div>
           <div class="user-info">
-            <div class="title">{{helloTime}}{{ userInfo.name }}，祝你开心每一天！</div>
+            <div class="title">{{ helloTime }}{{ userInfo.name }}，祝你开心每一天！</div>
             <div class="team muted" v-if="userInfo.position">
-              {{userInfo.position}}
+              {{ userInfo.position }}
               <template v-if="userInfo.department">| {{ userInfo.department }}</template>
             </div>
           </div>
@@ -51,13 +50,13 @@
           <div class="content-item">
             <div class="item-title muted">团队人数</div>
             <div class="item-text">
-              <span>{{accounts.total}}</span>
+              <span>{{ accounts.total }}</span>
             </div>
           </div>
           <div class="content-item">
             <div class="item-title muted">项目总数</div>
             <div class="item-text">
-              <span>{{projectTotal}}</span>
+              <span>{{ projectTotal }}</span>
             </div>
           </div>
           <!-- <div class="content-item">
@@ -76,7 +75,7 @@
           <a-card
             class="project-list"
             :loading="loading"
-            style="margin-bottom: 24px;"
+            style="margin-bottom: 24px"
             :bordered="false"
             title="最近的项目"
             :body-style="{ padding: 0 }"
@@ -107,7 +106,7 @@
                         <a-icon
                           type="star"
                           theme="filled"
-                          style="color: #ffaf38;margin-right: 6px;"
+                          style="color: #ffaf38; margin-right: 6px"
                           v-show="item.collected"
                         />
                         {{ item.name }}
@@ -127,7 +126,11 @@
                     :mouseEnterDelay="0.3"
                     :title="`当前进度：${item.schedule}%`"
                   >
-                    <a-progress :strokeWidth="2" :showInfo="false" :percent="item.schedule" />
+                    <a-progress
+                      :strokeWidth="2"
+                      :showInfo="false"
+                      :percent="item.schedule"
+                    />
                   </a-tooltip>
                   <div class="project-item">
                     <a href="/#/">{{ item.owner_name }}</a>
@@ -135,32 +138,56 @@
                   </div>
                 </a-card>
               </a-col>
-              <p class="muted text-center m-t-md m-b-md" v-if="!projectList.length">暂无项目</p>
+              <p class="muted text-center m-t-md m-b-md" v-if="!projectList.length">
+                暂无项目
+              </p>
             </a-row>
           </a-card>
 
-          <a-card class="activities-list" :loading="loading" title="动态" :bordered="false">
+          <a-card
+            class="activities-list"
+            :loading="loading"
+            title="动态"
+            :bordered="false"
+          >
             <a-list>
               <a-list-item :key="index" v-for="(item, index) in activities">
                 <a-list-item-meta>
                   <a-avatar slot="avatar" :src="item.member_avatar" />
                   <div slot="title">
                     <a-row :gutter="0">
-                      <a-col :span="12" :xs="24" :sm="24" :md="11" :lg="12" :xl="12" :xxl="12">
+                      <a-col
+                        :span="12"
+                        :xs="24"
+                        :sm="24"
+                        :md="11"
+                        :lg="12"
+                        :xl="12"
+                        :xxl="12"
+                      >
                         <span>{{ item.member_name }}</span>
                         <span v-if="item.is_comment == 0">
-                          <span v-html="item.remark"></span>
-                        </span>&nbsp;
+                          <span v-html="item.remark"></span> </span
+                        >&nbsp;
                         <template v-if="item.is_comment == 1">
                           发表了评论
                           <p class="comment-text">{{ item.content }}</p>
                         </template>
                       </a-col>
-                      <a-col :span="12" :xs="24" :sm="24" :md="13" :lg="12" :xl="12" :xxl="12">
+                      <a-col
+                        :span="12"
+                        :xs="24"
+                        :sm="24"
+                        :md="13"
+                        :lg="12"
+                        :xl="12"
+                        :xxl="12"
+                      >
                         <router-link
                           target="_blank"
                           :to="`/project/space/task/${item.project_code}/detail/${item.source_code}`"
-                        >「 {{ item.task_name }} 」</router-link>
+                          >「 {{ item.task_name }} 」</router-link
+                        >
                       </a-col>
                     </a-row>
                   </div>
@@ -171,7 +198,8 @@
                       target="_blank"
                       :to="`/project/space/task/${item.project_code}`"
                       class="muted"
-                    >{{item.project_name}}</router-link>
+                      >{{ item.project_name }}</router-link
+                    >
                     <!--</a-tooltip>-->
                   </div>
                 </a-list-item-meta>
@@ -180,11 +208,19 @@
           </a-card>
         </a-col>
 
-        <a-col style="padding: 0 12px" :xs="24" :sm="24" :md="24" :lg="8" :xl="10" :xxl="10">
+        <a-col
+          style="padding: 0 12px"
+          :xs="24"
+          :sm="24"
+          :md="24"
+          :lg="8"
+          :xl="10"
+          :xxl="10"
+        >
           <a-card class="tasks-list" style="margin-bottom: 24px" :bordered="false">
             <div slot="title">
               <div class="flex ant-row-flex-space-between ant-row-flex-middle">
-                <span>我的任务({{task.total}})</span>
+                <span>我的任务({{ task.total }})</span>
                 <a-select
                   v-model="task.done"
                   @select="taskSelectChange"
@@ -203,33 +239,27 @@
               @change="taskTabChange"
             >
               <a-tab-pane key="1">
-                <span slot="tab">
-                  <a-icon type="bars" />我执行的
-                </span>
+                <span slot="tab"> <a-icon type="bars" />我执行的 </span>
               </a-tab-pane>
               <a-tab-pane key="2">
-                <span slot="tab">
-                  <a-icon type="team" />我参与的
-                </span>
+                <span slot="tab"> <a-icon type="team" />我参与的 </span>
               </a-tab-pane>
               <a-tab-pane key="3">
-                <span slot="tab">
-                  <a-icon type="rocket" />我创建的
-                </span>
+                <span slot="tab"> <a-icon type="rocket" />我创建的 </span>
               </a-tab-pane>
             </a-tabs>
             <a-list :loading="task.loading">
               <a-list-item :key="index" v-for="(item, index) in task.list">
                 <a-list-item-meta>
                   <div slot="title">
-                    <div style="display: flex;justify-content: space-between ">
+                    <div style="display: flex; justify-content: space-between">
                       <router-link
                         target="_blank"
                         class="task-title-wrap"
                         :to="`/project/space/task/${item.projectInfo.code}/detail/${item.code}`"
                       >
                         <a-tooltip title="优先级">
-                          <a-tag :color="priColor(item.pri)">{{item.priText}}</a-tag>
+                          <a-tag :color="priColor(item.pri)">{{ item.priText }}</a-tag>
                         </a-tooltip>
                         <a-tooltip :title="item.name">{{ item.name }}</a-tooltip>
                       </router-link>
@@ -238,7 +268,8 @@
                           <span
                             class="label m-r-sm"
                             :class="showTimeLabel(item.end_time)"
-                          >{{showTaskTime(item.begin_time, item.end_time)}}</span>
+                            >{{ showTaskTime(item.begin_time, item.end_time) }}</span
+                          >
                         </a-tooltip>
                         <a-tooltip title="子任务" v-if="item.pcode">
                           <a-icon type="cluster" class="m-r-sm muted" />
@@ -248,7 +279,9 @@
                           class="muted hidden-xs"
                           :to="'/project/space/task/' + item.projectInfo.code"
                         >
-                          <a-tooltip title="所属项目">{{ item.projectInfo.name }}</a-tooltip>
+                          <a-tooltip title="所属项目">{{
+                            item.projectInfo.name
+                          }}</a-tooltip>
                         </router-link>
                       </div>
                     </div>
@@ -295,7 +328,11 @@
             </div>
           </a-card>-->
 
-          <a-card :loading="loading" :title="'团队(' + accounts.total+')'" :bordered="false">
+          <a-card
+            :loading="loading"
+            :title="'团队(' + accounts.total + ')'"
+            :bordered="false"
+          >
             <a-row class="members">
               <a-col
                 :span="8"
@@ -309,8 +346,10 @@
                 :key="index"
               >
                 <a
-                  @click="routerLink('/members/profile/' + item.membar_account_code + '?key=3')"
-                  style="display: flex;align-items: center"
+                  @click="
+                    routerLink('/members/profile/' + item.membar_account_code + '?key=3')
+                  "
+                  style="display: flex; align-items: center"
                 >
                   <a-avatar size="small" :src="item.avatar" />
                   <span class="member">{{ item.name }}</span>
@@ -334,16 +373,11 @@
   </div>
 </template>
 
-
 <script>
 import { mapState } from "vuex";
 import moment from "moment";
 import { getYiYan } from "../../api/other";
-import {
-  formatTaskTime,
-  relativelyTime,
-  showHelloTime,
-} from "../../assets/js/dateTime";
+import { formatTaskTime, relativelyTime, showHelloTime } from "../../assets/js/dateTime";
 import { selfList as getProjectList } from "../../api/project";
 import { list as accountList } from "../../api/user";
 import pagination from "../../mixins/pagination";
@@ -455,6 +489,7 @@ export default {
       accountList({
         page: this.accounts.page,
         pageSize: this.accounts.pageSize,
+        searchType: 1,
       }).then((res) => {
         this.accounts.loading = false;
         this.accounts.list = res.data.list;
