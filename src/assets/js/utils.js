@@ -72,7 +72,11 @@ export const getFullUrl = (api) => {
 };
 
 export const getApiUrl = (api) => {
-    if (process.env.VUE_APP_CROSS_DOMAIN) {
+    if (
+        process.env.VUE_APP_CROSS_DOMAIN === 'true'
+        || process.env.VUE_APP_CROSS_DOMAIN === true
+        || process.env.VUE_APP_CROSS_DOMAIN === ''
+        || process.env.VUE_APP_CROSS_DOMAIN === null) {
         return process.env.VUE_APP_API_URL + '/' + api; //开启跨域直接返回
     }
     if (process.env.NODE_ENV === 'production') {
