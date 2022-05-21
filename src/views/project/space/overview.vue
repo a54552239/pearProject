@@ -37,6 +37,10 @@
                                     @click="$router.push('/project/space/features/' + code)">
                         版本</a>
                     </li>
+                    <li><a class="app" data-app="build"
+                           @click="$router.push('/project/space/events/' + code)">
+                        日程</a>
+                    </li>
                 </ul>
             </section>
         </div>

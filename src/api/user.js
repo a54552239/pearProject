@@ -59,6 +59,10 @@ export function changeCurrentOrganization(organization) {
     });
 }
 
+export function _allList(data) {
+    return $http.post('project/account/_allList', data);
+}
+
 export function list(data) {
     return $http.post('project/account', data);
 }

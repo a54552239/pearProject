@@ -169,8 +169,7 @@
                                             </div>
                                             <div class="field-right">
                                                 <a-dropdown :trigger="['click']"
-                                                            :disabled="!!task.deleted || !!task.hasUnDone"
-                                                            :class="{'disabled': task.hasUnDone}">
+                                                            :disabled="!!task.deleted">
                                                     <span>{{task.statusText}}</span>
                                                     <a-menu class="field-right-menu" slot="overlay"
                                                             :selectable="false"
@@ -331,7 +330,7 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="component-mount">
+                                    <div class="component-mount pink-bg">
                                         <div class="field">
                                             <div class="field-left">
                                                 <a-icon type="file-text"/>
@@ -341,7 +340,7 @@
                                                 <div class="task-description" :class="{'disabled': task.deleted}"
                                                      v-show="!showTaskDescriptionEdit"
                                                      @click="showTaskDesc">
-                                                    <div class="description-txt" v-show="task.description"
+                                                    <div class="description-txt img-preview-content" v-show="task.description"
                                                          v-html="task.description"></div>
                                                     <span v-show="!task.description">添加备注</span>
                                                 </div>
@@ -902,7 +901,7 @@
                                             <a-icon class="log-item" :type="log.icon"/>
                                             <div class="log-item log-txt">
                                                 <div>{{log.member.name}} <span v-html="log.remark"></span></div>
-                                                <div v-if="log.content" class="log-content"
+                                                <div v-if="log.content" class="log-content img-preview-content"
                                                      v-html="log.content"></div>
                                             </div>
                                         </template>
@@ -944,7 +943,7 @@
                                     </div>
                                 </template>
 <!--                                <span slot="title">Title</span>-->
-                                <a-textarea @focus="commenting = true" @blur="commenting = false" ref="commentText" v-model="comment" :rows="1" placeholder="支持@提及任务成员，Ctrl+Enter发表评论"
+                                <a-textarea @focus="commenting = true" @blur="commenting = false" ref="commentText" v-model="comment" :rows="1" placeholder="@提及任务成员，Ctrl+Enter发表评论"
                                             style="margin-right: 24px;"/>
                             </a-popover>
                             <a-button class="middle-btn" type="primary" @click="createComment">评论</a-button>
@@ -1126,7 +1125,7 @@
             width: {
                 type: [String, Number],
                 default() {
-                    return '1200'
+                    return '1360'
                 }
             }
         },
@@ -1406,6 +1405,11 @@
                         this.hasMoreTaskLog = true;
                         // this.showMoreTaskLog = 1;
                     }
+                    this.$nextTick(()=>{
+                        $(".img-preview-content").find('img').click((e) =>{
+                            window.open($(e.target).attr("src"));
+                        })
+                    })
                 })
             },
             taskSources() {
@@ -2050,7 +2054,8 @@
                 .content-left {
                     border-right: 1px solid #e5e5e5;
                     min-width: 560px;
-                    width: 63%;
+                    //width: 63%;
+                    flex: 1;
                     /*width: 760px;*/
 
                     .task-title {
@@ -2276,6 +2281,7 @@
                                     .description-txt {
                                         max-height: 300px;
                                         overflow: hidden;
+                                        word-break: break-all;
                                     }
 
                                     p {
@@ -2285,11 +2291,22 @@
                             }
                         }
                     }
+
+                    #editor {
+                        .w-e-text {
+                            min-height: 300px;
+                            overflow-y: auto;
+                        }
+                        .w-e-text-container{
+                            height: inherit !important;
+                            min-height: 300px;
+                        }
+                    }
                 }
 
                 .content-right {
-                    width: 37%;
-                    /*width: 440px;*/
+                    //width: 37%;
+                    width: 410px;
 
                     .header {
                         padding: 15px 20px 20px 20px;
@@ -2354,6 +2371,11 @@
                                         border-left: 5px solid #ccc;
                                         padding-left: 12px;
                                         margin-top: 6px;
+                                        word-break: break-all;
+
+                                        img{
+                                            cursor: pointer;
+                                        }
                                     }
                                 }
 

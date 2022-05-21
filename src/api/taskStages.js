@@ -3,6 +3,9 @@ import $http from '@/assets/js/http'
 export function list(data) {
     return $http.post('project/task_stages', data);
 }
+export function taskTree(data) {
+    return $http.post('project/task_stages/taskTree', data);
+}
 export function _getAll(data) {
     return $http.post('project/task_stages/_getAll', data);
 }

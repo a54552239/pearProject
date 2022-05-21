@@ -182,7 +182,7 @@
                 :title="projectModal.modalTitle"
                 :footer="null"
         >
-            <project-config :code="currentProjectCode" @update="updateProject"></project-config>
+            <project-config :code="currentProjectCode" @update="updateProject" @complete="projectModal.modalStatus = false;init(true)"></project-config>
         </a-modal>
         <invite-project-member v-model="showInviteMember" :project-code="currentProjectCode"
                                v-if="showInviteMember"></invite-project-member>

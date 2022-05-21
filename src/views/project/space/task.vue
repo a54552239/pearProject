@@ -1,5 +1,5 @@
 <template>
-    <div class="project-space-task" :class="project.task_board_theme">
+    <div class="project-space-task" :class="`${project.task_board_theme} ${viewType}`">
         <div class="project-navigation">
             <div class="project-nav-header">
                 <a-breadcrumb>
@@ -36,9 +36,16 @@
                                     @click="$router.push('/project/space/features/' + code)">
                         版本</a>
                     </li>
+                    <li><a class="app" data-app="build"
+                           @click="$router.push('/project/space/events/' + code)">
+                        日程</a>
+                    </li>
                 </ul>
             </section>
             <div class="project-nav-footer">
+                <a class="footer-item" @click="changeViewType()">
+                    <span> <span v-if="viewType == 'task-board'"> <a-icon type="database"></a-icon> 看板</span><span v-else> <a-icon type="table"></a-icon> 表格</span>视图</span>
+                </a>
                 <a class="footer-item" @click="visibleDraw('taskSearch')">
                     <a-icon type="search"></a-icon>
                     <span> 筛选</span>
@@ -54,7 +61,7 @@
             </div>
         </div>
         <wrapper-content :showHeader="false">
-            <draggable v-model="taskStages"
+            <draggable e v-show="viewType == 'task-board'" v-model="taskStages"
                        :options="{group:'stages',filter:'.undraggables',handle:'.ui-sortable-handle',ghostClass:'stage-ghost',animation: 200,forceFallback:false}"
                        id="board-scrum-stages" class="board-scrum-stages" @end="stageSort">
                 <div class="scrum-stage" v-for="(stage,index) in taskStages" :key="index" :id="stage.code"
@@ -114,8 +121,7 @@
                     <!--</a-tooltip>-->
                     <div class="scrum-stage-wrap ui-sortable"
                          :class="{ 'hidden-creator-bottom': stage.showTaskCard}">
-                        <vue-scroll :ref="index + '-stage'" @handle-resize="handleResize($event,index)"
-                                    :ops="scrollOps">
+                        <vue-scroll :ref="index + '-stage'" :ops="scrollOps">
                             <section :id="stage.code" :task-type-index="index"
                                      class="scrum-stage-content thin-scroll">
                                 <a-spin wrapperClassName="tasks-loading" :spinning="stage.tasksLoading">
@@ -149,7 +155,7 @@
                                                 </a-tooltip>
                                                 <div class="task-content-set open-detail">
                                                     <div class="task-content-wrapper">
-                                                        <div class="task-content"> {{ task.name }}</div>
+                                                        <div class="task-content" :style="{overflowWrap: 'anywhere'}"> {{ task.name }}</div>
                                                         <a-tooltip placement="top"
                                                                    v-if="task.executor && task.executor.avatar">
                                                             <template slot="title">
@@ -277,7 +283,7 @@
                                                 </a>-->
                                                 <div class="task-content-set open-detail">
                                                     <div class="task-content-wrapper">
-                                                        <div class="task-content">{{ task.name }}</div>
+                                                        <div class="task-content" :style="{overflowWrap: 'anywhere'}">{{ task.name }}</div>
                                                         <a-tooltip placement="top"
                                                                    v-if="task.executor && task.executor.avatar">
                                                             <template slot="title">
@@ -345,6 +351,7 @@
                     </header>
                 </div>
             </draggable>
+            <task-table v-if="viewType == 'task-table' && !loading" :project-code="this.code"></task-table>
             <router-view></router-view>
         </wrapper-content>
         <!--编辑任务列表-->
@@ -507,7 +514,7 @@
                 :title="projectModal.modalTitle"
                 :footer="null"
         >
-            <project-config :code="code" @update="updateProject"></project-config>
+            <project-config :code="code" @update="updateProject"  @complete="projectModal.modalStatus = false;"></project-config>
         </a-modal>
         <!--回收站-->
         <a-modal
@@ -580,24 +587,25 @@
     import {mapState} from 'vuex'
     import _ from 'lodash'
     import moment from 'moment'
-    import {COMMON} from '../../../const/common'
+    import {COMMON} from '@/const/common'
     import draggable from 'vuedraggable'
     import projectSelect from '@/components/project/projectSelect'
     import inviteProjectMember from '@/components/project/inviteProjectMember'
     import projectConfig from '@/components/project/projectConfig'
     import RecycleBin from '@/components/project/recycleBin'
+    import TaskTable from '@/components/project/taskTable'
     import TaskTag from '@/components/project/taskTag'
     import TaskSearch from '@/components/project/taskSearch'
 
-    import {list as getTaskStages, sort, tasks as getTasks} from "../../../api/taskStages";
-    import {read as getProject} from "../../../api/project";
-    import {inviteMember, list as getProjectMembers, removeMember} from "../../../api/projectMember";
-    import {save as createTask, taskDone, sort as sortTask, recycleBatch, batchAssignTask} from "../../../api/task";
-    import {save as createState, edit as editStage, del as delStage} from "../../../api/taskStages";
-    import {checkResponse, getApiUrl, getAuthorization, getUploadUrl} from "../../../assets/js/utils";
-    import {formatTaskTime} from "../../../assets/js/dateTime";
-    import {collect} from "../../../api/projectCollect";
-    import {notice} from "../../../assets/js/notice";
+    import {list as getTaskStages, sort, tasks as getTasks} from "@/api/taskStages";
+    import {read as getProject} from "@/api/project";
+    import {inviteMember, list as getProjectMembers, removeMember} from "@/api/projectMember";
+    import {save as createTask, taskDone, sort as sortTask, recycleBatch, batchAssignTask} from "@/api/task";
+    import {save as createState, edit as editStage, del as delStage} from "@/api/taskStages";
+    import {checkResponse, getApiUrl, getAuthorization, getUploadUrl} from "@/assets/js/utils";
+    import {formatTaskTime} from "@/assets/js/dateTime";
+    import {collect} from "@/api/projectCollect";
+    import {notice} from "@/assets/js/notice";
 
     export default {
         name: "project-space-task",
@@ -607,11 +615,13 @@
             draggable,
             projectSelect,
             TaskSearch,
+            TaskTable,
             inviteProjectMember,
-            projectConfig
+            projectConfig,
         },
         data() {
             return {
+                viewType: 'task-board',
                 code: this.$route.params.code,
                 loading: true,
                 project: {task_board_theme: 'simple'},
@@ -699,12 +709,24 @@
             },
             scrollOps() {
                 return {
+                    mode: 'slide',
                     rail: {
                         background: '#e5e5e5',
                         opacity: 1
                     },
                     bar: {
                         keepShow: true
+                    },
+                    pushLoad: {
+                        enable: true,
+                        tips: {
+                            deactive: 'Push to Load',
+                            active: 'Release to Load',
+                            start: 'Loading...',
+                            beforeDeactive: 'Load Successfully!'
+                        },
+                        auto: true,
+                        autoLoadDistance: 0
                     }
                 }
             }
@@ -822,7 +844,9 @@
                         let searchParams = app.taskSearchParams;
                         let params = {};
                         taskStages.forEach((v, k) => {
-                            params = {stageCode: v.code};
+                            v.page = 1;
+                            app.getTasks(v, k, showLoading);
+                            /*params = {stageCode: v.code};
                             params = Object.assign(params, searchParams);
                             getTasks(params).then((res) => {
                                 let canNotReadCount = 0;
@@ -842,8 +866,33 @@
                                 if (!showLoading) {
                                     app.$set(app.taskStages, k, v);
                                 }
-                            })
+                            })*/
                         });
+                    }
+                })
+            },
+            getTasks(stage, index, showLoading) {
+                let searchParams = this.taskSearchParams;
+                let params = {};
+                params = {stageCode: stage.code};
+                params = Object.assign(params, searchParams);
+                getTasks(params).then((res) => {
+                    let canNotReadCount = 0;
+                    res.data.forEach((task) => {
+                        if (!task.canRead) {
+                            canNotReadCount++;
+                        }
+                        if (task.done) {
+                            stage.doneTasks.push(task);
+                        } else {
+                            stage.unDoneTasks.push(task);
+                        }
+                    });
+                    stage.canNotReadCount = canNotReadCount;
+                    stage.tasksLoading = false;
+                    stage.tasks = res.data;
+                    if (!showLoading) {
+                        this.$set(this.taskStages, index, stage);
                     }
                 })
             },
@@ -1182,7 +1231,6 @@
                     this.taskStages[stageIndex].fixedCreator = true;
                 }
             },
-
             visibleDraw(type) {
                 if (type == 'member') {
                     this.configDraw.visible = false;
@@ -1197,6 +1245,13 @@
                     this.inviteMemberDraw.visible = false;
                     this.taskSearch.visible = false;
                     this.configDraw.visible = !this.configDraw.visible;
+                }
+            },
+            changeViewType() {
+                if (this.viewType === 'task-board') {
+                    this.viewType = 'task-table';
+                }else{
+                    this.viewType = 'task-board';
                 }
             },
             removeMember(member, index) {
@@ -1386,6 +1441,15 @@
                     }
                 }
             }
+        }
+    }
+
+    .task-table {
+        .ant-table-body{
+            margin: 0 10px 0 15px;
+        }
+        .wrapper-content{
+            position: inherit !important;
         }
     }
 </style>

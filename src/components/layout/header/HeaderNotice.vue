@@ -9,7 +9,7 @@
                         <template v-if="total && totalSum['message']">
                             <a-list>
                                 <template v-for="item in list['message']">
-                                    <a-list-item :key="item.id">
+                                    <a-list-item :key="item.id" @click="messageAction(item)">
                                         <a-list-item-meta :description="item.create_time">
                                              <span slot="title">
                                                     <p>{{item.title}}</p>
@@ -116,7 +116,7 @@
 <script>
     import {mapState} from 'vuex'
     import moment from 'moment';
-    import {_clearAll, noReads} from "../../../api/notify";
+    import {_clearAll, noReads, setReadied} from "../../../api/notify";
     import {notice} from "../../../assets/js/notice";
     import {showMsgNotification} from "../../../assets/js/notify";
     import {selfList} from "../../../api/task";
@@ -150,9 +150,10 @@
             socketAction(val) {
                 if (val.action === 'notice') {
                     this.init();
-                } else if (val.action === 'task') {
+                } else if (val.action === 'task' || val.action === 'events') {
                     this.init();
                     const permission = showMsgNotification(val.title, val.msg, {icon: val.data.notify.avatar});
+                    console.log(permission);
                     if (permission === false) {
                         notice(val, 'notice', 'info', 10);
                     }
@@ -198,6 +199,15 @@
                     this.task.total = res.data.total;
                     this.total = this.messageTotal + this.task.total;
                 })
+            },
+            messageAction(message) {
+                const sendData = JSON.parse(message.send_data);
+                this.showNotice = false;
+                if (message.action === 'task') {
+                    setReadied(JSON.stringify([message.id]));
+                    this.$router.push(`/project/space/task/${sendData.project_code}/detail/${sendData.code}`);
+                }
+                this.init();
             },
             formatTime(time) {
                 return moment(time).format('YY年MM月DD日 HH:mm');

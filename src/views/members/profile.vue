@@ -133,7 +133,7 @@
                                     </router-link>
                                     </span>
                                     <span class="label m-r-xs pull-right" :class="showTimeLabel(item.end_time)"
-                                          v-if="item.end_time">{{showTaskTime(item.begin_time, item.end_time)}}</span>
+                                          v-if="item.end_time && !item.done">{{showTaskTime(item.begin_time, item.end_time)}}</span>
                                 </div>
                                 <div slot="description">
 

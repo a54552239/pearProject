@@ -47,8 +47,8 @@
         </div>
         <!--<wrapper-content :showHeader="false">-->
         <div class="page-wrapper">
-            <a-row :gutter="24">
-                <a-col :xl="16" :lg="24" :md="24" :sm="24" :xs="24">
+            <a-row class="page-wrapper-content" :gutter="24">
+                <a-col class="project-list-content" :xl="16" :lg="24" :md="24" :sm="24" :xs="24">
                     <a-card
                             class="project-list"
                             :loading="loading"
@@ -57,12 +57,17 @@
                             title="进行中的项目"
                             :body-style="{ padding: 0 }">
                         <router-link to="/project/list/my" slot="extra">全部项目</router-link>
-                        <div>
+                        <div style="display: flex; flex-direction: row; flex-wrap: wrap; justify-content: start;">
                             <a-card-grid class="project-card-grid" :key="i" v-for="(item, i) in projectList">
                                 <a-card :bordered="false" :body-style="{ padding: 0 }" @click="routerLink('/project/space/task/' + item.code)">
+                                    <img
+                                        slot="cover"
+                                        alt="example"
+                                        :src="item.cover"
+                                    />
                                     <a-card-meta>
                                         <div slot="title" class="card-title">
-                                            <a-avatar size="small" :src="item.cover"/>
+<!--                                            <a-avatar size="small" :src="item.cover"/>-->
                                             <router-link :to="'/project/space/task/' + item.code">
                                                 <a-icon type="star" theme="filled" style="color: #ffaf38;margin-right: 6px;" v-show="item.collected"/>{{ item.name }}
                                             </router-link>
@@ -121,7 +126,7 @@
                     </a-card>
                 </a-col>
                 <a-col
-                        style="padding: 0 12px"
+                        style="padding: 0 12px;flex: 1"
                         :xl="8"
                         :lg="24"
                         :md="24"
@@ -154,16 +159,32 @@
                                 <a-list-item-meta>
                                     <div slot="title">
                                         <div style="display: flex;justify-content: space-between ">
-                                            <router-link target="_blank"
-                                                         class="task-title-wrap"
-                                                         :to="`/project/space/task/${item.projectInfo.code}/detail/${item.code}`">
+                                            <a class="task-title-wrap">
                                                 <a-tooltip title="优先级">
                                                     <a-tag :color="priColor(item.pri)">{{item.priText}}</a-tag>
                                                 </a-tooltip>
-                                                <a-tooltip :title="item.name">
-                                                    {{ item.name }}
+                                                <a-tooltip placement="top">
+                                                    <template slot="title">
+                                                        <template v-if="item.pcode">
+                                                            <span v-if="item.parentDone" style="font-size: 12px;">父任务已完成，无法重做子任务</span>
+                                                            <span v-else-if="item.hasUnDone" style="font-size: 12px;">子任务尚未全部完成，无法完成父任务</span>
+                                                        </template>
+                                                        <template v-else>
+                                                            <span v-if="item.hasUnDone" style="font-size: 12px;">子任务尚未全部完成，无法完成父任务</span>
+                                                        </template>
+                                                    </template>
+                                                     <span class="check-box-wrapper task-item"
+                                                           @click.stop="()=>{if(item.deleted || item.hasUnDone || (item.pcode && item.parentDone)) return false;taskDone(item.code, !item.done)}">
+                                                        <a-icon class="check-box"
+                                                                :class="{'disabled': item.deleted || item.parentDone || item.hasUnDone}"
+                                                                :type="item.done ? 'check-square' : 'border'"
+                                                                :style="{fontSize:'16px'}"/>
+                                                </span>
                                                 </a-tooltip>
-                                            </router-link>
+                                                <a-tooltip :title="item.name">
+                                                    <span @click="showTaskDetail = true;taskCode = item.code">{{ item.name }}</span>
+                                                </a-tooltip>
+                                            </a>
                                             <div>
                                                 <a-tooltip title="任务开始 - 截止时间" v-if="item.end_time">
                                                     <span class="label m-r-sm" :class="showTimeLabel(item.end_time)">{{showTaskTime(item.begin_time, item.end_time)}}</span>
@@ -209,6 +230,69 @@
                                 <radar :data="radarData" />
                             </div>
                         </a-card>-->
+                    <a-card class="events-list" :loading="events.loading" :title="`日程 · ${events.eventList.length}`" :bordered="false"  style="margin-bottom: 24px">
+                        <router-link to="/calendar" slot="extra">日程日历</router-link>
+                        <div class="list-content">
+                            <a-list
+                                :loading="events.loading"
+                            >
+                                <a-list-item class="list-item" :key="index" v-for="(item, index) in events.eventList">
+                                    <a-list-item-meta>
+                                        <div slot="title" style="display:flex;line-height: 20px;">
+                                            <div class="info-item">
+                                                <div class="text-center text-grey">
+                                                    <div>{{ moment(item.begin_time).format('YYYY年MM月DD日 HH:mm') }}</div>
+                                                    <div> ~</div>
+                                                    <div>{{ moment(item.end_time).format('YYYY年MM月DD日 HH:mm') }}</div>
+                                                </div>
+                                            </div>
+                                            <div class="info-item">
+                                                <div class="line-item" style="font-size: 18px;margin-bottom: 20px;">
+                                                    <span> {{ item.title }}</span>
+                                                </div>
+                                                <div class="line-item text-grey"> <a-icon type="environment" class="m-r-xs"/>{{ item.position }}</div>
+                                                <template v-if="item.description">
+                                                    <!--                                                <div class="line-item">备注</div>-->
+                                                    <div class="line-item text-grey">{{item.description}}</div>
+                                                </template>
+                                                <div class="line-item">参与者 · {{item.memberList.length}}</div>
+                                                <div class="line-item">
+                                                    <template v-for="member in item.memberList">
+                                                        <a-tooltip :title="`${member.memberInfo.name} ${member.is_owner ? ' · 组织者' : member.status ? member.status == 1 ? ' · 已接受' : ' · 已拒绝' : ' · 未响应'}`" :key="member.id">
+                                                            <a-avatar :size="24" icon="user" :src="member.memberInfo.avatar"
+                                                                      class="m-r-sm" />
+                                                        </a-tooltip>
+                                                    </template>
+                                                </div>
+                                                <template v-if="item.projectName">
+                                                    <div class="line-item m-t text-grey" @click="routerLink('/project/space/events/' + item.project_code)">
+                                                        <a-tag color="#52c41a" style="cursor: pointer;">{{item.projectName}}</a-tag>
+                                                    </div>
+                                                </template>
+                                            </div>
+                                            <div class="actions" style="position: absolute;right: 0;">
+                                                <template v-if="item.waitConfirm">
+                                                    <a-tooltip title="接受">
+                                                        <a class="m-l-xs muted"><a-icon type="check"  @click="confirmJoinEvents(item, 1)"/></a>
+                                                    </a-tooltip>
+                                                    <a-tooltip title="拒绝">
+                                                        <a class="m-l muted"> <a-icon type="close" @click="confirmJoinEvents(item, 2)"/></a>
+                                                    </a-tooltip>
+                                                </template>
+                                            </div>
+                                        </div>
+                                    </a-list-item-meta>
+                                    <div class="other-info muted">
+                                    </div>
+                                </a-list-item>
+                                <div v-if="events.showLoadingMore" slot="loadMore"
+                                     :style="{ textAlign: 'center', marginTop: '12px', height: '32px', lineHeight: '32px' }">
+                                    <a-spin v-if="events.loadingMore"/>
+                                    <a-button v-else @click="onLoadMoreEvents">查看更多日程</a-button>
+                                </div>
+                            </a-list>
+                        </div>
+                    </a-card>
                     <a-card :loading="loading" :title="'团队  · ' + accounts.total" :bordered="false">
                         <div class="members">
                             <a-row>
@@ -227,24 +311,43 @@
             </a-row>
         </div>
         <!--</wrapper-content>-->
+        <a-modal
+            destroyOnClose
+            class="task-detail-modal"
+            width="min-content"
+            :closable="false"
+            :visible="showTaskDetail"
+            title=""
+            :footer="null"
+            @cancel="detailClose"
+        >
+            <task-detail :taskCode="taskCode" @close="detailClose"></task-detail>
+
+        </a-modal>
     </div>
 </template>
 <script>
     import {mapState} from 'vuex'
     import moment from "moment";
-    import {getYiYan} from "../../api/other";
-    import {formatTaskTime, relativelyTime, showHelloTime} from "../../assets/js/dateTime";
+    import taskDetail from '../../components/project/taskDetail'
+    import {getYiYan} from "@/api/other";
+    import {formatTaskTime, relativelyTime, showHelloTime} from "assets/js/dateTime";
     import {selfList as getProjectList} from "../../api/project";
     import {list as accountList} from "../../api/user";
     import pagination from "../../mixins/pagination";
-    import {getLogBySelfProject, selfList} from "../../api/task";
+    import {getLogBySelfProject, selfList, taskDone} from "@/api/task";
     import task from "../project/space/task";
+    import {confirmJoin, myList} from "@/api/projectEvents";
+    import {checkResponse} from "assets/js/utils";
 
     export default {
-        components: {},
+        components: {
+            taskDetail
+        },
         mixins: [pagination],
         data() {
             return {
+                moment,
                 loading: false,
                 yiyan: {},
                 projectList: [],
@@ -269,6 +372,17 @@
                     pageSize: 10,
                     loading: false,
                 },
+                showTaskDetail: false,
+                taskCode: '',
+                events: {
+                    eventList: [],
+                    showLoadingMore: false,
+                    loadingMore: false,
+                    total: 0,
+                    page: 1,
+                    pageSize: 10,
+                    loading: false,
+                }
             }
         },
         computed: {
@@ -306,7 +420,7 @@
                 this.getTasks();
                 this.getTaskLog();
                 this.getAccountList();
-
+                this.getEvents();
             },
             getProjectList(loading) {
                 if (loading) {
@@ -331,13 +445,26 @@
                     this.accounts.total = res.data.total;
                 })
             },
+            getEvents() {
+                let app = this;
+                myList({page: this.events.page, pageSize: this.events.pageSize, deleted: 0}).then(res => {
+                    app.events.eventList = app.events.eventList.concat(res.data.list);
+                    app.events.total = res.data.total;
+                    app.events.showLoadingMore = app.events.total > app.events.eventList.length;
+                    app.events.loading = false;
+                    app.events.loadingMore = false
+                })
+            },
             getYiYan() {
                 let app = this;
                 getYiYan(function (data) {
                     app.yiyan = data
                 }, 'd')
             },
-            getTasks() {
+            getTasks(reload = true) {
+                if (reload) {
+                    this.task.page = 1;
+                }
                 this.task.loading = true;
                 selfList({page: this.task.page, pageSize: this.task.pageSize, taskType: this.task.taskType, type: this.task.done}).then(res => {
                     this.task.loading = false;
@@ -350,24 +477,55 @@
                 console.log(key);
                 this.task.taskType = key;
                 this.task.loadingMore = true;
-                this.task.page = 1;
                 this.getTasks();
             },
             taskSelectChange(value) {
                 this.task.done = value;
                 this.task.loadingMore = true;
-                this.task.page = 1;
                 this.getTasks();
             },
             onLoadMoreTask(page, PageSize) {
                 this.task.loadingMore = true;
                 this.task.page = page;
-                this.getTasks();
+                this.getTasks(false);
             },
             onLoadMoreAccounts(page, PageSize) {
                 this.accounts.loadingMore = true;
                 this.accounts.page = page;
                 this.getAccountList();
+            },
+            detailClose() {
+                this.taskCode = '';
+                this.showTaskDetail = false;
+                this.getTasks(false);
+            },
+            taskDone(taskCode, done) {
+                done ? done = 1 : done = 0;
+                taskDone(taskCode, done).then((res) => {
+                    const result = checkResponse(res);
+                    if (!result) {
+                        return false;
+                    }
+                    this.getTasks(false);
+                });
+            },
+            onLoadMoreEvents(page, PageSize) {
+                this.events.loadingMore = true;
+                this.events.page = page;
+                this.getEvents();
+            },
+            confirmJoinEvents(events, status) {
+                let app = this;
+                confirmJoin({eventsCode: events.code, status: status}).then(res=>{
+                    if (checkResponse(res)) {
+                        events.waitConfirm = 0;
+                        events.memberList.forEach(v => {
+                            if (v.member_code == app.$store.state.userInfo.code ) {
+                                v.status = status;
+                            }
+                        })
+                    }
+                });
             },
             priColor(pri) {
                 switch (pri) {
@@ -468,14 +626,34 @@
         .page-wrapper {
             margin: 24px;
 
+            .page-wrapper-content {
+                display: flex;
+            }
+
             .project-list {
+                .project-card-grid {
+                    width: 25%;
+                    padding: 12px;
+                    cursor: pointer;
+                }
+
+                .ant-card-cover {
+                    height: 125px;
+                    img {
+                        display: block !important;
+                        width: 100% !important;
+                        height: 100% !important;
+                        object-fit: cover !important;
+                    }
+                }
+
 
                 .card-title {
                     font-size: 0;
 
                     a {
                         color: rgba(0, 0, 0, 0.85);
-                        margin-left: 12px;
+                        //margin-left: 12px;
                         line-height: 24px;
                         height: 24px;
                         display: inline-block;
@@ -486,6 +664,11 @@
                             color: #1890ff;
                         }
                     }
+                }
+
+                .ant-card-meta-title {
+                    margin-bottom: 0px;
+                    margin-top: 8px;
                 }
 
                 .card-description {
@@ -563,6 +746,106 @@
                         text-overflow: ellipsis;
                         white-space: nowrap;
                         padding-right: 10px;
+
+                        .check-box-wrapper {
+                            text-align: center;
+                            margin: 11px 2px 0 0;
+                            padding: 10px 0;
+                            transition: background 218ms;
+                            border-radius: 3px;
+                            .check-box {
+                                color: #A6A6A6;
+                                cursor: pointer;
+                                border-radius: 3px;
+                                margin: 5px;
+                            }
+                            &:hover {
+                                .check-box {
+                                    color: grey;
+                                }
+
+                                background: #f5f5f5;
+                            }
+                        }
+                    }
+                }
+            }
+
+            .events-list {
+                .ant-card-body {
+                    padding: 0px 6px;
+
+                    .ant-list-item-meta, .ant-list-item-meta-content{
+                        width: 100%;
+                    }
+                }
+                .list-content {
+
+                    .list-item-title {
+                        padding: 10px 20px;
+
+                        .ant-list-item-action {
+                            li {
+                                color: #fff;
+                            }
+
+                            em {
+                                width: 0;
+                            }
+                        }
+                    }
+
+                    .list-item {
+                        margin-top: 10px;
+                        border-bottom: none;
+                        margin-bottom: 2px;
+                        border-bottom: 1px solid #f5f5f5;
+                        padding: 10px 20px;
+                        transition: background-color 218ms;
+
+                        &:hover {
+                            //cursor: pointer;
+                            //background-color: #f5f5f5;
+                        }
+
+                        .ant-list-item-meta-title {
+                            overflow: hidden;
+                            text-overflow: ellipsis;
+                            white-space: nowrap;
+                            position: relative;
+                            margin-bottom: 0;
+                            line-height: 32px;
+                        }
+
+                        .ant-list-item-action {
+                            em {
+                                width: 0;
+                            }
+                        }
+                    }
+
+                    .info-item {
+                        margin-right: 35px;
+                    }
+
+                    .line-item {
+                        margin-bottom: 10px;
+                    }
+
+                    .other-info {
+                        display: flex;
+
+                        .info-item {
+                            display: flex;
+                            flex-direction: column;
+                            padding-left: 0;
+                            width: 105px;
+                            text-align: right;
+                        }
+
+                        .schedule {
+                            width: 250px;
+                        }
                     }
                 }
             }

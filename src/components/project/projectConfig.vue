@@ -518,7 +518,8 @@
                                 if (!checkResponse(res)) {
                                     return;
                                 }
-                                app.$router.replace('/project/archive');
+                                app.$emit('complete');
+                                // app.$router.replace('/project/list/archive');
                             });
                             return Promise.resolve();
                         }
@@ -535,7 +536,8 @@
                                 if (!checkResponse(res)) {
                                     return;
                                 }
-                                app.$router.replace('/project/list/my');
+                                app.$emit('complete');
+                                // app.$router.replace('/project/list/my');
                             });
                             return Promise.resolve();
                         }
@@ -556,7 +558,8 @@
                                 if (!checkResponse(res)) {
                                     return;
                                 }
-                                app.$router.replace('/project/recycle');
+                                app.$emit('complete');
+                                // app.$router.replace('/project/recycle');
                             });
                             return Promise.resolve();
                         }
@@ -573,7 +576,8 @@
                                 if (!checkResponse(res)) {
                                     return;
                                 }
-                                app.$router.replace('/project/list/my');
+                                app.$emit('complete');
+                                // app.$router.replace('/project/list/my');
                             });
                             return Promise.resolve();
                         }
@@ -593,6 +597,7 @@
                             if (!checkResponse(res)) {
                                 return;
                             }
+                            app.$emit('complete');
                             app.$router.replace('/project/list/my');
 
                         });
