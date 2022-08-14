@@ -16,7 +16,7 @@ const common = {
     },
     actions: {
         GET_MENU({commit}) {
-            getMenuForUser().then(res => {
+            return getMenuForUser().then(res => {
                 setStore('menu', res.data);
                 commit('SET_MENU', res.data);
             });
